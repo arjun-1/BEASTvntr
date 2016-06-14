@@ -126,8 +126,9 @@ public class Sainudiin extends SubstitutionModel.Base {
   }
 
 	protected void setupRateMatrix() {
-    // Note that in setting up the rate matrix, we always assume iMin=0, since the data is already corrected
-    // for iMin when parsing in BeautiAlignmentProvider.java
+    // Note that in setting up the rate matrix, we always assume iMin=0, since
+    // the data is already corrected for iMin when parsing in 
+    // BeautiAlignmentProvider.java
     final double rb = rbInput.get().getValue();
     final double ieq = ieqInput.get().getValue();
     final double g = gInput.get().getValue();
@@ -144,7 +145,6 @@ public class Sainudiin extends SubstitutionModel.Base {
     }
 
 		double alpha, beta, gamma = 1, rowSum;
-    Double[][] gammaValues = new Double[2][3];
   
     for (int i = 0; i < nrOfStates; i++) {
       rowSum = 0;

@@ -67,8 +67,9 @@ public class SainudiinStepWise extends Sainudiin {
 
   @Override
 	protected void setupRateMatrix() {
-    // Note that in setting up the rate matrix, we always assume iMin=0, since the data is already corrected
-    // for iMin when parsing in BeautiAlignmentProvider.java
+    // Note that in setting up the rate matrix, we always assume iMin=0, since
+    // the data is already corrected for iMin when parsing in 
+    // BeautiAlignmentProvider.java
     // This rate matrix is almost the same as that of Sainudiin.java. 
     // Here however, we calculate the freqs from the stationary distribution.
     final double rb = rbInput.get().getValue();
@@ -86,7 +87,9 @@ public class SainudiinStepWise extends Sainudiin {
       b1 = rb * -1.0 / (Math.sqrt(ieq * ieq + 1.0));
     }
 
-		double alpha = 1.0, beta = 1.0, gamma = 1.0, rowSum, alphaold, betaold, sumfreq = 0.0, birthj, deathjplus1;
+		double alpha = 1.0, beta = 1.0, gamma = 1.0, rowSum;
+    // extra variables needed for calculation of frequencies:
+    double alphaold, betaold, sumfreq = 0.0, birthj, deathjplus1;
   
     for (int i = 0; i < nrOfStates; i++) {
       rowSum = 0.0;
@@ -141,7 +144,8 @@ public class SainudiinStepWise extends Sainudiin {
       }
       rateMatrix[i][i] = -rowSum;
 
-      //Calc frequencies
+      // Calc frequencies from stationary distribution, which is a special case
+      // of the birth death chain
       birthj      = alphaold * betaold;
       deathjplus1 = alpha * (1.0 - beta);
 
