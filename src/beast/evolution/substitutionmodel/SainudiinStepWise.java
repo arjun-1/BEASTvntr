@@ -48,12 +48,10 @@ public class SainudiinStepWise extends Sainudiin {
 	public void initAndValidate() {
 		updateMatrix = true;
 
-    nrOfStates = 15;  // TODO: since freqs are not provided, we assume the number of states to be 15.
-                      // This should be provided by the user however.
+    nrOfStates = nrOfStatesInput.get().getValue().intValue();
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
     ieqInput.get().setBounds(Math.max(0.0, ieqInput.get().getLower()), Math.min(ieqInput.get().getUpper(), (float) nrOfStates - 1.0));
-    gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
     a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
 				
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
@@ -162,6 +160,17 @@ public class SainudiinStepWise extends Sainudiin {
 
   @Override
   public double[] getFrequencies() {
-      return frequencies;
+    return frequencies;
+  }
+
+  @Override
+  public boolean canHandleDataType(DataType dataType) {
+    if (dataType instanceof IntegerData) {
+      dataType.setStateCount(nrOfStates);
+      return true;
+    } else {
+      return false;
+    }
+    //return dataType instanceof IntegerData;
   }
 }

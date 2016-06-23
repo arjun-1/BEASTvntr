@@ -43,6 +43,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq - i_min", Validate.REQUIRED);
   final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
   final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length i - i_min", Validate.REQUIRED);
+  final public Input<RealParameter> nrOfStatesInput = new Input<>("nrOfStates", "number of states", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
   protected EigenDecomposition eigenDecomposition;
@@ -57,8 +58,9 @@ public class Sainudiin extends SubstitutionModel.Base {
 		super.initAndValidate();
 		updateMatrix = true;
 
+
     frequencies = frequenciesInput.get();
-    nrOfStates = frequencies.getFreqs().length;
+    nrOfStates = nrOfStatesInput.get().getValue().intValue();
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
     ieqInput.get().setBounds(Math.max(0.0, ieqInput.get().getLower()), Math.min(ieqInput.get().getUpper(), nrOfStates - 1.0));
@@ -240,6 +242,12 @@ public class Sainudiin extends SubstitutionModel.Base {
 
 	@Override
 	public boolean canHandleDataType(DataType dataType) {
-		return dataType instanceof IntegerData;
+    if (dataType instanceof IntegerData) {
+      dataType.setStateCount(nrOfStates);
+      return true;
+    } else {
+      return false;
+    }
+		//return dataType instanceof IntegerData;
 	}
 }
