@@ -32,7 +32,7 @@ import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.IntegerData;
+import beast.evolution.datatype.FiniteIntegerData;
 import beast.evolution.tree.Node;
 
 @Description("Substitution model of Sainudiin (R. Sainudiin et al., 2004) using Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
@@ -242,12 +242,6 @@ public class Sainudiin extends SubstitutionModel.Base {
 
 	@Override
 	public boolean canHandleDataType(DataType dataType) {
-    if (dataType instanceof IntegerData) {
-      dataType.setStateCount(nrOfStates);
-      return true;
-    } else {
-      return false;
-    }
-		//return dataType instanceof IntegerData;
+    return dataType instanceof FiniteIntegerData;
 	}
 }
