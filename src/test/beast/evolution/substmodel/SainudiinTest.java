@@ -74,12 +74,13 @@ public class SainudiinTest extends TestCase {
             Frequencies freqs = new Frequencies();
             freqs.initByName("frequencies", f, "estimate", false);
 
+
             Sainudiin sainudiin = new Sainudiin();
+            sainudiin.setNrOfStates(15);
             sainudiin.initByName("rb", test.getRb().toString(),
                 "ieq", test.getIeq().toString(), 
                 "g", test.getG().toString(), 
                 "a1", test.getA1().toString(), 
-                "nrOfStates", test.getNrOfStates().toString(), 
                 "frequencies", freqs);
 
             double distance = test.getDistance();

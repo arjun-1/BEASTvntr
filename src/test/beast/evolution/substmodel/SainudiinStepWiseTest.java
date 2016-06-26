@@ -71,10 +71,10 @@ public class SainudiinStepWiseTest extends TestCase {
             freqs.initByName("frequencies", f, "estimate", false);
 
             SainudiinStepWise sainudiinstepwise = new SainudiinStepWise();
+            sainudiinstepwise.setNrOfStates(15);
             sainudiinstepwise.initByName("rb", test.getRb().toString(),
                 "ieq", test.getIeq().toString(),
-                "a1", test.getA1().toString(),
-                "nrOfStates", test.getNrOfStates().toString());
+                "a1", test.getA1().toString());
 
             double distance = test.getDistance();
 

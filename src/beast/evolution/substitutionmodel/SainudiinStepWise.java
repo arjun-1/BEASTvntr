@@ -32,6 +32,8 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.FiniteIntegerData;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.likelihood.ThreadedTreeLikelihood;
 import beast.evolution.tree.Node;
 
 @Description("Substitution model of Sainudiin (R. Sainudiin et al., 2004) using Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
@@ -48,7 +50,19 @@ public class SainudiinStepWise extends Sainudiin {
 	public void initAndValidate() {
 		updateMatrix = true;
 
-    nrOfStates = nrOfStatesInput.get().getValue().intValue();
+    for (Object beastObjecti : getOutputs()) {
+      if (beastObjecti instanceof SiteModel) {
+        SiteModel sitemodel = (SiteModel) beastObjecti;
+        for (Object beastObjectj : sitemodel.getOutputs()) {
+          if (beastObjectj instanceof ThreadedTreeLikelihood) {
+            ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
+            nrOfStates = likelihood.dataInput.get().getMaxStateCount();
+            break;
+          }
+        }
+        break;
+      }
+    }
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
     ieqInput.get().setBounds(Math.max(0.0, ieqInput.get().getLower()), Math.min(ieqInput.get().getUpper(), (float) nrOfStates - 1.0));

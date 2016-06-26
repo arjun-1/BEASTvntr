@@ -33,7 +33,10 @@ import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.FiniteIntegerData;
+import beast.evolution.sitemodel.SiteModel;
+import beast.evolution.likelihood.ThreadedTreeLikelihood;
 import beast.evolution.tree.Node;
+import beast.core.util.Log;
 
 @Description("Substitution model of Sainudiin (R. Sainudiin et al., 2004) using Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
 @Citation(value = "Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models. Genetics 168:83–395", DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
@@ -43,7 +46,6 @@ public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq - i_min", Validate.REQUIRED);
   final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
   final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length i - i_min", Validate.REQUIRED);
-  final public Input<RealParameter> nrOfStatesInput = new Input<>("nrOfStates", "number of states", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
   protected EigenDecomposition eigenDecomposition;
@@ -53,14 +55,30 @@ public class Sainudiin extends SubstitutionModel.Base {
   protected boolean updateMatrix = true;
   private boolean storedUpdateMatrix = true;
 
+  public void setNrOfStates(int newNrOfStates) {// required for unit test
+    nrOfStates = newNrOfStates;
+  }
+
 	@Override
 	public void initAndValidate() {
 		super.initAndValidate();
 		updateMatrix = true;
 
-
     frequencies = frequenciesInput.get();
-    nrOfStates = nrOfStatesInput.get().getValue().intValue();
+
+    for (Object beastObjecti : getOutputs()) {
+      if (beastObjecti instanceof SiteModel) {
+        SiteModel sitemodel = (SiteModel) beastObjecti;
+        for (Object beastObjectj : sitemodel.getOutputs()) {
+          if (beastObjectj instanceof ThreadedTreeLikelihood) {
+            ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
+            nrOfStates = likelihood.dataInput.get().getMaxStateCount();
+            break;
+          }
+        }
+        break;
+      }
+    }
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
     ieqInput.get().setBounds(Math.max(0.0, ieqInput.get().getLower()), Math.min(ieqInput.get().getUpper(), nrOfStates - 1.0));
