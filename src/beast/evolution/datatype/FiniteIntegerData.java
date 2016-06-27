@@ -13,17 +13,16 @@ import java.util.Collections;
 @Description("Datatype for finite integer sequences")
 public class FiniteIntegerData extends Base {
 
-    final public Input<Integer> maxNrOfStatesInput = new Input<>("nrOfStates", "specifies the maximum number of states");
+    final public Input<Integer> max_iInput = new Input<>("max_i", "specifies the highest state");
+    final public Input<Integer> min_iInput = new Input<>("min_i", "specifies the lowest state");
 
-    private String[] ambiguities = {};
     private ArrayList<String> codeMapping;
-
-    private int ambCount;
 
     @Override
     public void initAndValidate() {
-        if (maxNrOfStatesInput.get() != null && maxNrOfStatesInput.get() != 0) {
-            stateCount = maxNrOfStatesInput.get();
+        if (max_iInput.get() != null && max_iInput.get() != 0 &&
+            min_iInput.get() != null) {
+            stateCount = max_iInput.get() - min_iInput.get() + 1;
         } else {
             stateCount = -1;
         }
@@ -35,13 +34,9 @@ public class FiniteIntegerData extends Base {
     }
 
     private void createCodeMapping() {
-        ambCount = ambiguities.length;
         codeMapping = new ArrayList<>();
         for (int i=0; i<stateCount; i++) {
-            codeMapping.add(Integer.toString(i));
-        }
-        for (int i=0; i< ambCount; i++) {
-            codeMapping.add(ambiguities[i]);
+            codeMapping.add(Integer.toString(i + min_iInput.get()));
         }
         codeMapping.add(Character.toString(GAP_CHAR));
         codeMapping.add(Character.toString(MISSING_CHAR));
@@ -68,9 +63,9 @@ public class FiniteIntegerData extends Base {
     }
     
     @Override
-    public int[] getStatesForCode(int state) {
-        if (state >= 0) {
-            return mapCodeToStateSet[state];
+    public int[] getStatesForCode(int code) {
+        if (code >= 0) {
+            return mapCodeToStateSet[code - min_iInput.get()];
         } else {
             return mapCodeToStateSet[mapCodeToStateSet.length - 1];
         }
@@ -86,7 +81,7 @@ public class FiniteIntegerData extends Base {
         if (state < 0) {
             return '?';
         }
-        return (char)('0'+state);
+        return (char)('0' + state + min_iInput.get());
     }
     
     @Override
