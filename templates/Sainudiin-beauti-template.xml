@@ -1,0 +1,157 @@
+<beast version='2.0'
+       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+       
+    <mergewith point='substModelTemplates'>
+
+        <subtemplate id='Sainudiin' class='beast.evolution.substitutionmodel.Sainudiin' mainid='Sainudiin.s:$(n)'>
+            <![CDATA[
+            <plugin spec='Sainudiin' id='Sainudiin.s:$(n)'>
+                <parameter id="rb.s:$(n)" name='rb' value='0.0' estimate='true' lower='0.0' upper='10.0'/>
+                <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
+                <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
+                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' upper='10.0' estimate='true'/>
+                <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
+                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='15' value='0.0666667' lower='0' upper='1'/>
+                </frequencies>
+                <!-- <parameter id="nrOfStates.s:$(n)" name='nrOfStates' value='15' lower='1' estimate='false'/> -->
+            </plugin>
+
+            <plugin id='rbWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@rb.s:$(n)"/>
+            <plugin id='ieqWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ieq.s:$(n)"/>
+            <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
+            <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
+            <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
+
+            <prior id='rbPrior.s:$(n)' x='@rb.s:$(n)'>
+				<distr spec="beast.math.distributions.Uniform" lower='0' upper='10'/>
+            </prior>
+            <prior id='ieqPrior.s:$(n)' x='@ieq.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='0.0' upper='14.0'/>    
+            </prior>
+            <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
+				<distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+            </prior>
+            <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
+            <distr spec="Normal">
+                <parameter name='mean' value="1.0" estimate='false'/>
+                <parameter name='sigma' value="0.5" estimate='false'/>
+            </distr>
+            </prior>
+]]>
+
+            <connect srcID='rb.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'/>
+            <connect srcID='ieq.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'/>
+            <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
+            <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>             
+            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+
+            <connect srcID='rbWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='ieqWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'/>
+            <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
+                Exchange values of frequencies of partition s:$(n)
+            </connect>
+
+            <connect srcID='rb.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'/>
+            <connect srcID='ieq.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'/>
+            <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
+            <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>         
+            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+
+
+            <connect srcID='rbPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='ieqPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+            </connect>
+        </subtemplate>
+
+        <subtemplate id='SainudiinStepWise' class='beast.evolution.substitutionmodel.SainudiinStepWise' mainid='SainudiinStepWise.s:$(n)'>
+            <![CDATA[
+            <plugin spec='SainudiinStepWise' id='SainudiinStepWise.s:$(n)'>
+                <parameter id="rb.s:$(n)" name='rb' value='0.0' estimate='true' lower='0.0' upper='10.0'/>
+                <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
+                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' upper='10.0' estimate='true'/>
+                <!-- <parameter id="nrOfStates.s:$(n)" name='nrOfStates' value='15' lower='1' estimate='false'/> -->
+            </plugin>
+            
+            <plugin id='rbWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@rb.s:$(n)"/>
+            <plugin id='ieqWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ieq.s:$(n)"/>
+            <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
+
+            <prior id='rbPrior.s:$(n)' x='@rb.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='0' upper='10'/>
+            </prior>
+            <prior id='ieqPrior.s:$(n)' x='@ieq.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='0.0' upper='14.0'/>    
+            </prior>
+            <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
+            <distr spec="Normal">
+                <parameter name='mean' value="1.0" estimate='false'/>
+                <parameter name='sigma' value="0.5" estimate='false'/>
+            </distr>
+            </prior>
+]]>
+
+            <connect srcID='rb.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'/>
+            <connect srcID='ieq.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'/> 
+            <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+
+            <connect srcID='rbWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='ieqWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+            </connect>
+
+            <connect srcID='rb.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'/>    
+            <connect srcID='ieq.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'/> 
+            <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>         
+
+            <connect srcID='rbPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='ieqPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(ieq.s:$(n)) and ieq.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+            </connect>
+        </subtemplate>
+    </mergewith>
+</beast>

@@ -80,8 +80,7 @@ public class SainudiinStepWise extends Sainudiin {
   @Override
 	protected void setupRateMatrix() {
     // Note that in setting up the rate matrix, we always assume iMin=0, since
-    // the data is already corrected for iMin when parsing in 
-    // BeautiAlignmentProvider.java
+    // the data is already corrected for iMin inFiniteIntegerData
     // This rate matrix is almost the same as that of Sainudiin.java. 
     // Here however, we calculate the freqs from the stationary distribution.
     final double rb = rbInput.get().getValue();
