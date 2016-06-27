@@ -13,16 +13,16 @@ import java.util.Collections;
 @Description("Datatype for finite integer sequences")
 public class FiniteIntegerData extends Base {
 
-    final public Input<Integer> max_iInput = new Input<>("max_i", "specifies the highest state");
-    final public Input<Integer> min_iInput = new Input<>("min_i", "specifies the lowest state");
+    final public Input<Integer> maxRepeatInput = new Input<>("maxRepeat", "specifies the highest state");
+    final public Input<Integer> minRepeatInput = new Input<>("minRepeat", "specifies the lowest state");
 
     private ArrayList<String> codeMapping;
 
     @Override
     public void initAndValidate() {
-        if (max_iInput.get() != null && max_iInput.get() != 0 &&
-            min_iInput.get() != null) {
-            stateCount = max_iInput.get() - min_iInput.get() + 1;
+        if (maxRepeatInput.get() != null && maxRepeatInput.get() != 0 &&
+            minRepeatInput.get() != null) {
+            stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
         } else {
             stateCount = -1;
         }
@@ -36,7 +36,7 @@ public class FiniteIntegerData extends Base {
     private void createCodeMapping() {
         codeMapping = new ArrayList<>();
         for (int i=0; i<stateCount; i++) {
-            codeMapping.add(Integer.toString(i + min_iInput.get()));
+            codeMapping.add(Integer.toString(i + minRepeatInput.get()));
         }
         codeMapping.add(Character.toString(GAP_CHAR));
         codeMapping.add(Character.toString(MISSING_CHAR));
@@ -65,7 +65,7 @@ public class FiniteIntegerData extends Base {
     @Override
     public int[] getStatesForCode(int code) {
         if (code >= 0) {
-            return mapCodeToStateSet[code - min_iInput.get()];
+            return mapCodeToStateSet[code - minRepeatInput.get()];
         } else {
             return mapCodeToStateSet[mapCodeToStateSet.length - 1];
         }
@@ -81,7 +81,7 @@ public class FiniteIntegerData extends Base {
         if (state < 0) {
             return '?';
         }
-        return (char)('0' + state + min_iInput.get());
+        return (char)('0' + state + minRepeatInput.get());
     }
     
     @Override
