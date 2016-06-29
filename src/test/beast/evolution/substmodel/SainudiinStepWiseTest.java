@@ -72,6 +72,7 @@ public class SainudiinStepWiseTest extends TestCase {
 
             SainudiinStepWise sainudiinstepwise = new SainudiinStepWise();
             sainudiinstepwise.setNrOfStates(15);
+            sainudiinstepwise.setMinRepeat(0);
             sainudiinstepwise.initByName("rb", test.getRb().toString(),
                 "ieq", test.getIeq().toString(),
                 "a1", test.getA1().toString());

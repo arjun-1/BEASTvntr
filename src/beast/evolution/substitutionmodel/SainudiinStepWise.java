@@ -100,7 +100,7 @@ public class SainudiinStepWise extends Sainudiin {
 
 		double alpha = 1.0, beta = 1.0, gamma = 1.0, rowSum;
     // extra variables needed for calculation of frequencies:
-    double alphaold, betaold, sumfreq = 0.0, birthj, deathjplus1;
+    double alphaold, betaold, freqSum = 0.0, birthj, deathjplus1;
   
     for (int i = 0; i < nrOfStates; i++) {
       rowSum = 0.0;
@@ -164,10 +164,10 @@ public class SainudiinStepWise extends Sainudiin {
         frequencies[i] = 1.0;
       else
         frequencies[i] = frequencies[i - 1] * birthj / deathjplus1;
-      sumfreq += frequencies[i];
+      freqSum += frequencies[i];
     }
     for(int i = 0; i < nrOfStates; i++) {
-      frequencies[i] /= sumfreq;
+      frequencies[i] /= freqSum;
     }
 	}
 

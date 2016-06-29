@@ -55,16 +55,20 @@ public class Sainudiin extends SubstitutionModel.Base {
   protected boolean updateMatrix = true;
   private boolean storedUpdateMatrix = true;
 
+  private int minRepeat;
+
   public void setNrOfStates(int newNrOfStates) {// required for unit test
     nrOfStates = newNrOfStates;
+  }
+
+  public void setMinRepeat(int newMinRepeat) {// required for unit test
+    minRepeat = newMinRepeat;
   }
 
 	@Override
 	public void initAndValidate() {
 		super.initAndValidate();
 		updateMatrix = true;
-
-    frequencies = frequenciesInput.get();
 
     for (Object beastObjecti : getOutputs()) {
       if (beastObjecti instanceof SiteModel) {
@@ -73,11 +77,18 @@ public class Sainudiin extends SubstitutionModel.Base {
           if (beastObjectj instanceof ThreadedTreeLikelihood) {
             ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
             nrOfStates = likelihood.dataInput.get().getMaxStateCount();
+            FiniteIntegerData dataType = (FiniteIntegerData) likelihood.dataInput.get().getDataType();
+            minRepeat = dataType.minRepeatInput.get();
+            //Log.info.println("minRepeat: " + minRepeat);
             break;
           }
         }
         break;
       }
+    }
+
+    if (nrOfStates != frequencies.getFreqs().length && nrOfStates != 0) {
+        throw new IllegalArgumentException("Frequencies has wrong size. Expected " + nrOfStates + ", but got " + frequencies.getFreqs().length + ". Change freqParameter in the XML file accordingly.");
     }
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
@@ -149,7 +160,7 @@ public class Sainudiin extends SubstitutionModel.Base {
     // Note that in setting up the rate matrix, we always assume iMin=0, since
     // the data is already corrected for iMin in FiniteIntegerData
     final double rb = rbInput.get().getValue();
-    final double ieq = ieqInput.get().getValue();
+    final double ieq = ieqInput.get().getValue() - minRepeat;
     final double g = gInput.get().getValue();
     final double a1 = a1Input.get().getValue();
 

@@ -21,7 +21,8 @@ import beast.evolution.alignment.Sequence;
 
 
 public class CSVImporter implements AlignmentImporter {
-	public class DatatypeSelector {
+	public class DatatypeSelector { //just a class to ask the user whether to
+		//import nucleotide or repeats, and to set the bounds for repeats
 		String selectedDatatype;
 		int minRepeat;
 		int maxRepeat;
@@ -131,7 +132,7 @@ public class CSVImporter implements AlignmentImporter {
 					case "Repeats":
     				int parsedAllel = Integer.parseInt(row[i]);
     				if (datatypeSelection.checkParsedAllel(parsedAllel)) {
-							throw new IllegalArgumentException("Encountered repeat out of bounds");
+							throw new IllegalArgumentException("Encountered repeat out of bounds: " + parsedAllel);
 						}
     				sb.append(parsedAllel);
     				sb.append(",");

@@ -77,6 +77,7 @@ public class SainudiinTest extends TestCase {
 
             Sainudiin sainudiin = new Sainudiin();
             sainudiin.setNrOfStates(15);
+            sainudiin.setMinRepeat(0);
             sainudiin.initByName("rb", test.getRb().toString(),
                 "ieq", test.getIeq().toString(), 
                 "g", test.getG().toString(), 
