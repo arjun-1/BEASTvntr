@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-
+// Copied from StandardModel.java
 @Description("Datatype for finite integer sequences")
 public class FiniteIntegerData extends Base {
 

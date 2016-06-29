@@ -1,7 +1,7 @@
 /*
 * File Sainudiin.java
 *
-* Copyright (C) 2016 Arjun Dhawan arjun.dhawan@rivm.nl, RIVM
+* Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
 * Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
 * This file is part of BEAST2.
