@@ -46,7 +46,7 @@ import beast.core.util.Log;
   "  Genetics 168:383–395\n\n" + 
   "Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
   "  Microsatellite Mutation Models, Population History and Genealogies\n" + 
-  "  Using Transdimensional Markov Chain Monte Carlo\n" + 
+  "  Using Transdimensional Markov Chain Monte Carlo.\n" + 
   "  Genetics 188:151-164",
   DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
 
@@ -97,8 +97,30 @@ public class Sainudiin extends SubstitutionModel.Base {
       }
     }
 
+    if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
+      Log.info.println("WARNING: Frequencies has wrong size. Expected " + nrOfStates + 
+        ", but got " + frequencies.getFreqs().length + 
+        ". Will change now to correct dimension and " + 
+        "assume uniform distribution");
+
+      String valuesString = "";
+      for (int i = 0; i < nrOfStates; i++) {
+        valuesString += 1 / (double) nrOfStates + " ";
+      }
+      RealParameter freqsRParam = new RealParameter();
+      freqsRParam.setID(frequenciesInput.get().frequenciesInput.get().getID());
+      freqsRParam.initByName(
+              "value", valuesString,
+              "lower", 0.0,
+              "upper", 1.0,
+              "dimension", nrOfStates
+      );
+      frequenciesInput.get().frequenciesInput.get().assignFrom(freqsRParam);
+      frequenciesInput.get().initAndValidate();
+    }
+
     if (nrOfStates != frequencies.getFreqs().length && nrOfStates != 0) {
-        throw new IllegalArgumentException("Frequencies has wrong size. Expected " + nrOfStates + ", but got " + frequencies.getFreqs().length + ". Change freqParameter in the XML file accordingly.");
+        throw new IllegalArgumentException("Frequencies has wrong size. Expected " + nrOfStates + ", but got " + frequencies.getFreqs().length + ". Attempted correction failed.");
     }
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());

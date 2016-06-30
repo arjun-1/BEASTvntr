@@ -86,7 +86,15 @@ public class FiniteIntegerData extends Base {
     
     @Override
     public String getCode(int state) {
+        if (state < 0) {
+            return "?";
+        }
         return codeMapping.get(state);
+    }
+
+    @Override
+    public boolean isAmbiguousState(int state) {
+        return state < 0;
     }
 
 }

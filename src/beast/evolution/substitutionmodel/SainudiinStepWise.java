@@ -40,7 +40,7 @@ import beast.evolution.tree.Node;
   "  Genetics 168:383–395\n\n" + 
   "Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
   "  Microsatellite Mutation Models, Population History and Genealogies\n" + 
-  "  Using Transdimensional Markov Chain Monte Carlo\n" + 
+  "  Using Transdimensional Markov Chain Monte Carlo.\n" + 
   "  Genetics 188:151-164",
   DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
 public class SainudiinStepWise extends Sainudiin {
@@ -75,7 +75,7 @@ public class SainudiinStepWise extends Sainudiin {
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
     ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
     a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
-				
+
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
 
