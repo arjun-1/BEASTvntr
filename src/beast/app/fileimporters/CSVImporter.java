@@ -4,17 +4,17 @@
 * Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
 *
 * This file is part of BEASTvntr.
-
+*
 * BEASTvntr is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
 * the Free Software Foundation, either version 3 of the License, or
 * (at your option) any later version.
-
+*
 * BEASTvntr is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU General Public License for more details.
-
+*
 * You should have received a copy of the GNU General Public License
 * along with BEASTvntr.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -73,7 +73,7 @@ public class CSVImporter implements AlignmentImporter {
 		      JPanel myPanel = new JPanel();
 		      myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
 
-		      myPanel.add(new JLabel("<html>Choose the Minimum and Maximum repeat<br>(such that Maximum repeat - Minimum repeat > 1)</html>"));
+		      myPanel.add(new JLabel("<html>Choose the Minimum and Maximum repeat<br>(Maximum repeat - Minimum repeat >= 0 must hold)</html>"));
 		      myPanel.add(new JLabel("Minimum repeat ( >= 0 ):"));
 		      myPanel.add(minRepeatField);
 		      myPanel.add(new JLabel("Maximum repeat:"));
@@ -84,12 +84,12 @@ public class CSVImporter implements AlignmentImporter {
 		      if (result == JOptionPane.OK_OPTION) {
 		      	minRepeat = Integer.parseInt(minRepeatField.getText());
 		        maxRepeat = Integer.parseInt(maxRepeatField.getText());
-		      	if (maxRepeat > minRepeat && minRepeat >= 0) {		
+		      	if (maxRepeat >= minRepeat && minRepeat >= 0) {		
 					    type.setInputValue("minRepeat", minRepeat);
 					    type.setInputValue("maxRepeat", maxRepeat);
 					  	type.initAndValidate();
 					  } else {
-					  	throw new IllegalArgumentException("Bad minimum and maximum repeat");	
+					  	throw new IllegalArgumentException("Bad values for maxRepeat: " + maxRepeat + ", minRepeat: " + minRepeat);
 						}
 					} else {
 						throw new IllegalArgumentException("Minimum and maximum repeat were not specified");
@@ -106,6 +106,7 @@ public class CSVImporter implements AlignmentImporter {
 		public boolean checkParsedAllel(int parsedAllel) {//check for non sensical values
 			switch (selectedDatatype) {
 				case "Repeats":
+				// Remember that -1 means ambiguous
 					if ((parsedAllel > 0 && parsedAllel < minRepeat) || parsedAllel > maxRepeat) {
 						return true;
 					} else {

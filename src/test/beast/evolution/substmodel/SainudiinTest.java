@@ -17,7 +17,6 @@ public class SainudiinTest extends TestCase {
         Double getIeq();
         Double getG();
         Double getA1();
-        Double getNrOfStates();
 
         double getDistance();
 
@@ -47,11 +46,7 @@ public class SainudiinTest extends TestCase {
         public Double getA1() {
             return 1.0;
         }
-        @Override
-        public Double getNrOfStates() {
-            return 15.0;
-        }
-
+        
         @Override
 		public double getDistance() {
             return 0.5;

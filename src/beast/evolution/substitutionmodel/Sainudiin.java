@@ -38,14 +38,23 @@ import beast.evolution.likelihood.ThreadedTreeLikelihood;
 import beast.evolution.tree.Node;
 import beast.core.util.Log;
 
-@Description("Substitution model of Sainudiin (R. Sainudiin et al., 2004) using Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
-@Citation(value = "Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models. Genetics 168:83–395", DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
+@Description(
+  "Substitution model of Sainudiin (R. Sainudiin et al., 2004) using\n" +
+  "  Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
+@Citation(value = 
+  "Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models.\n" +
+  "  Genetics 168:383–395\n\n" + 
+  "Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
+  "  Microsatellite Mutation Models, Population History and Genealogies\n" + 
+  "  Using Transdimensional Markov Chain Monte Carlo\n" + 
+  "  Genetics 188:151-164",
+  DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
 
 public class Sainudiin extends SubstitutionModel.Base {
-  final public Input<RealParameter> rbInput = new Input<>("rb", "force of attraction to i_eq", Validate.REQUIRED);
-	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq - i_min", Validate.REQUIRED);
+  final public Input<RealParameter> rbInput = new Input<>("rb", "force of attraction to equilibrium state i_eq", Validate.REQUIRED);
+	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq of mutational bias", Validate.REQUIRED);
   final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
-  final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length i - i_min", Validate.REQUIRED);
+  final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length (i - minRepeat)", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
   protected EigenDecomposition eigenDecomposition;
@@ -55,7 +64,7 @@ public class Sainudiin extends SubstitutionModel.Base {
   protected boolean updateMatrix = true;
   private boolean storedUpdateMatrix = true;
 
-  private int minRepeat;
+  int minRepeat;
 
   public void setNrOfStates(int newNrOfStates) {// required for unit test
     nrOfStates = newNrOfStates;
@@ -70,6 +79,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		super.initAndValidate();
 		updateMatrix = true;
 
+    //navigate the graph of beast objects, to find the alignment and find the nrOfStates and minRepeat.
     for (Object beastObjecti : getOutputs()) {
       if (beastObjecti instanceof SiteModel) {
         SiteModel sitemodel = (SiteModel) beastObjecti;
@@ -92,7 +102,7 @@ public class Sainudiin extends SubstitutionModel.Base {
     }
 
     rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
-    ieqInput.get().setBounds(Math.max(0.0, ieqInput.get().getLower()), Math.min(ieqInput.get().getUpper(), nrOfStates - 1.0));
+    ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
     gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
     a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
 		
@@ -157,16 +167,16 @@ public class Sainudiin extends SubstitutionModel.Base {
   }
 
 	protected void setupRateMatrix() {
-    // Note that in setting up the rate matrix, we always assume iMin=0, since
-    // the data is already corrected for iMin in FiniteIntegerData
+    // Note that in setting up the rate matrix, we always assume minRepeat=0, since
+    // the data is already corrected for minRepeat in FiniteIntegerData
     final double rb = rbInput.get().getValue();
-    final double ieq = ieqInput.get().getValue() - minRepeat;
+    final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
     final double g = gInput.get().getValue();
     final double a1 = a1Input.get().getValue();
 
     double b0;
     double b1;
-    if (ieq == 0) { // make sure we don't divide by zero
+    if (ieq < 1.0E-10) { // make sure we don't divide by zero
       b0 = 0;
       b1 = -1 * rb;
     } else {
@@ -184,9 +194,9 @@ public class Sainudiin extends SubstitutionModel.Base {
 
       for (int j = 0; j < nrOfStates; j++) {
         if (j == i + 1) {
-          if(g == 0) {
+          if(g < 1.0E-10) {
             gamma = 1.0;
-          } else if (g == 1) {
+          } else if (g > 1.0 - 1.0E-10) {
             gamma = 1 / (double) (nrOfStates - 1 - i);
           } else {
             gamma = (1 - g) / (1 - Math.pow(g, nrOfStates - 1 - i)) * Math.pow(g, (int) Math.abs(i - j) - 1); 
@@ -194,9 +204,9 @@ public class Sainudiin extends SubstitutionModel.Base {
           rateMatrix[i][j] = alpha * beta * gamma;
           rowSum += rateMatrix[i][j];
         } else if (j > i + 1) {
-          if(g == 0) {
+          if(g < 1.0E-10) {
             gamma = 0.0;
-          } else if (g == 1) {
+          } else if (g > 1.0 - 1.0E-10) {
             gamma = 1 / (double) (nrOfStates - 1 - i);
           } else {
             gamma = (1 - g) / (1 - Math.pow(g, nrOfStates - 1 - i)) * Math.pow(g, (int) Math.abs(i - j) - 1);
@@ -204,20 +214,20 @@ public class Sainudiin extends SubstitutionModel.Base {
           rateMatrix[i][j] = alpha * beta * gamma;
           rowSum += rateMatrix[i][j];
         } else if (j == i - 1) {
-          if(g == 0) {
+          if(g < 1.0E-10) {
             gamma = 1.0;
-          } else if (g == 1) {
-            gamma = 1 / (double) i;//
+          } else if (g > 1.0 - 1.0E-10) {
+            gamma = 1.0 / (double) i;
           } else {
             gamma = (1 - g) / (1 - Math.pow(g, i - 0)) * Math.pow(g, (int) Math.abs(i - j) - 1); 
           }
           rateMatrix[i][j] = alpha * (1 - beta) * gamma;
           rowSum += rateMatrix[i][j];
         } else if (j < i - 1) {
-          if(g == 0) {
+          if(g < 1.0E-10) {
             gamma = 0.0;
-          } else if (g == 1) {
-            gamma = 1 / (double) i;
+          } else if (g > 1.0 - 1.0E-10) {
+            gamma = 1.0 / (double) i;
           } else {
             gamma = (1 - g) / (1 - Math.pow(g, i - 0)) * Math.pow(g, (int) Math.abs(i - j) - 1);
           }

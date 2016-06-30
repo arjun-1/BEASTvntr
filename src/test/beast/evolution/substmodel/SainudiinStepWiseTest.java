@@ -16,7 +16,6 @@ public class SainudiinStepWiseTest extends TestCase {
         Double getRb();
         Double getIeq();
         Double getA1();
-        Double getNrOfStates();
 
         double getDistance();
 
@@ -42,10 +41,6 @@ public class SainudiinStepWiseTest extends TestCase {
         @Override
         public Double getA1() {
             return 1.0;
-        }
-        @Override
-        public Double getNrOfStates() {
-            return 15.0;
         }
 
         @Override

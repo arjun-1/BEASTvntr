@@ -21,10 +21,10 @@ public class FiniteIntegerData extends Base {
     @Override
     public void initAndValidate() {
         if (maxRepeatInput.get() != null && maxRepeatInput.get() != 0 &&
-            minRepeatInput.get() != null) {
+            minRepeatInput.get() != null && maxRepeatInput.get() - minRepeatInput.get() >= 0) {
             stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
         } else {
-            stateCount = -1;
+            throw new IllegalArgumentException("Bad values for maxRepeat: " + maxRepeatInput.get() + ", minRepeat: " +minRepeatInput.get());
         }
 
         mapCodeToStateSet = null;
