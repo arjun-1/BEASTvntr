@@ -20,8 +20,9 @@ public class FiniteIntegerData extends Base {
 
     @Override
     public void initAndValidate() {
-        if (maxRepeatInput.get() != null && maxRepeatInput.get() != 0 &&
-            minRepeatInput.get() != null && maxRepeatInput.get() - minRepeatInput.get() >= 0) {
+        if (maxRepeatInput.get() != null && minRepeatInput.get() != null && 
+            maxRepeatInput.get() - minRepeatInput.get() >= 0 &&
+            minRepeatInput.get() >= 0) {
             stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
         } else {
             throw new IllegalArgumentException("Bad values for maxRepeat: " + maxRepeatInput.get() + ", minRepeat: " +minRepeatInput.get());
@@ -43,10 +44,8 @@ public class FiniteIntegerData extends Base {
 
         mapCodeToStateSet = new int[codeMapping.size()][];
         for (int i = 0; i < codeMapping.size() - 2; i++) {
-            int [] stateSet = new int[codeMapping.get(i).length()];
-            for (int k = 0; k < stateSet.length; k++) {
-                stateSet[k] = (codeMapping.get(i).charAt(k) - '0');
-            }
+            int [] stateSet = new int[1];
+            stateSet[0] = Integer.parseInt(codeMapping.get(i)) - minRepeatInput.get();
             mapCodeToStateSet[i] = stateSet;
         }
         
@@ -64,9 +63,13 @@ public class FiniteIntegerData extends Base {
     
     @Override
     public int[] getStatesForCode(int code) {
-        if (code >= 0) {
+        if (code >= 0 && code - minRepeatInput.get() >= 0) {
             return mapCodeToStateSet[code - minRepeatInput.get()];
-        } else {
+        } else if (code >= 0 && code - minRepeatInput.get() < 0) {
+            throw new IllegalArgumentException("Encountered repeat out of bounds: " + code + " < " + minRepeatInput.get()); 
+        } else if (code - maxRepeatInput.get() > 0) {
+            throw new IllegalArgumentException("Encountered repeat out of bounds: " + code + " > " + maxRepeatInput.get());  
+        } else { // code < 0
             return mapCodeToStateSet[mapCodeToStateSet.length - 1];
         }
     }
@@ -80,16 +83,22 @@ public class FiniteIntegerData extends Base {
     public char getChar(int state) {
         if (state < 0) {
             return '?';
+        } else if (state < stateCount) {
+            return (char)('0' + state + minRepeatInput.get());
+        } else {
+            throw new IllegalArgumentException("Encountered state out of bounds: " + state + " >= " + stateCount);  
         }
-        return (char)('0' + state + minRepeatInput.get());
     }
     
     @Override
     public String getCode(int state) {
         if (state < 0) {
             return "?";
+        } else if (state < stateCount) {
+            return codeMapping.get(state);
+        } else {
+            throw new IllegalArgumentException("Encountered state out of bounds: " + state + " >= " + stateCount);  
         }
-        return codeMapping.get(state);
     }
 
     @Override

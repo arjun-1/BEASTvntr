@@ -101,7 +101,7 @@ public class Sainudiin extends SubstitutionModel.Base {
       Log.info.println("WARNING: Frequencies has wrong size. Expected " + nrOfStates + 
         ", but got " + frequencies.getFreqs().length + 
         ". Will change now to correct dimension and " + 
-        "assume uniform distribution");
+        "assume uniform distribution for initial values.");
 
       String valuesString = "";
       for (int i = 0; i < nrOfStates; i++) {
@@ -185,7 +185,7 @@ public class Sainudiin extends SubstitutionModel.Base {
      * access to (copy of) rate matrix *
      */
   protected double[][] getRateMatrix() {
-      return rateMatrix.clone();
+    return rateMatrix.clone();
   }
 
 	protected void setupRateMatrix() {
