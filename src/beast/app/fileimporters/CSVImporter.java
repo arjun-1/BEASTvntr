@@ -152,12 +152,13 @@ public class CSVImporter implements AlignmentImporter {
     	for (int i = 1; i < row.length; i++) {
     		switch (datatypeSelection.selectedDatatype) {
 					case "Repeats":
-    				int parsedAllel = Integer.parseInt(row[i]);
+	    			int parsedAllel = Integer.parseInt(row[i]);
     				if (datatypeSelection.checkParsedAllel(parsedAllel)) {
 							throw new IllegalArgumentException("Encountered repeat out of bounds: " + parsedAllel);
 						}
     				sb.append(parsedAllel);
     				sb.append(",");
+    				
     				break;
     			case "Nucleotides":
     				sb.append(row[i]);

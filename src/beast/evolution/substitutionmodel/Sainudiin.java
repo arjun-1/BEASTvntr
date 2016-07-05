@@ -97,6 +97,8 @@ public class Sainudiin extends SubstitutionModel.Base {
       }
     }
 
+    // In case initial frequencies of wrong dimension are provided in the beauti template,
+    // change them.
     if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
       Log.info.println("WARNING: Frequencies has wrong size. Expected " + nrOfStates + 
         ", but got " + frequencies.getFreqs().length + 

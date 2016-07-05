@@ -37,7 +37,7 @@ public class FiniteIntegerData extends Base {
     private void createCodeMapping() {
         codeMapping = new ArrayList<>();
         for (int i=0; i<stateCount; i++) {
-            codeMapping.add(Integer.toString(i + minRepeatInput.get()));
+            codeMapping.add(Integer.toString(i));
         }
         codeMapping.add(Character.toString(GAP_CHAR));
         codeMapping.add(Character.toString(MISSING_CHAR));
@@ -45,7 +45,7 @@ public class FiniteIntegerData extends Base {
         mapCodeToStateSet = new int[codeMapping.size()][];
         for (int i = 0; i < codeMapping.size() - 2; i++) {
             int [] stateSet = new int[1];
-            stateSet[0] = Integer.parseInt(codeMapping.get(i)) - minRepeatInput.get();
+            stateSet[0] = Integer.parseInt(codeMapping.get(i));
             mapCodeToStateSet[i] = stateSet;
         }
         
@@ -62,14 +62,10 @@ public class FiniteIntegerData extends Base {
     }
     
     @Override
-    public int[] getStatesForCode(int code) {
-        if (code >= 0 && code - minRepeatInput.get() >= 0) {
-            return mapCodeToStateSet[code - minRepeatInput.get()];
-        } else if (code >= 0 && code - minRepeatInput.get() < 0) {
-            throw new IllegalArgumentException("Encountered repeat out of bounds: " + code + " < " + minRepeatInput.get()); 
-        } else if (code - maxRepeatInput.get() > 0) {
-            throw new IllegalArgumentException("Encountered repeat out of bounds: " + code + " > " + maxRepeatInput.get());  
-        } else { // code < 0
+    public int[] getStatesForCode(int state) {
+        if (state >= 0) {
+            return mapCodeToStateSet[state];
+        } else {
             return mapCodeToStateSet[mapCodeToStateSet.length - 1];
         }
     }
@@ -83,27 +79,42 @@ public class FiniteIntegerData extends Base {
     public char getChar(int state) {
         if (state < 0) {
             return '?';
-        } else if (state < stateCount) {
-            return (char)('0' + state + minRepeatInput.get());
-        } else {
-            throw new IllegalArgumentException("Encountered state out of bounds: " + state + " >= " + stateCount);  
         }
+        return (char)('0'+state);
     }
-    
+
     @Override
     public String getCode(int state) {
         if (state < 0) {
             return "?";
-        } else if (state < stateCount) {
-            return codeMapping.get(state);
-        } else {
-            throw new IllegalArgumentException("Encountered state out of bounds: " + state + " >= " + stateCount);  
         }
+        return codeMapping.get(state);
     }
 
     @Override
-    public boolean isAmbiguousState(int state) {
-        return state < 0;
-    }
+    public List<Integer> string2state(String data) {
+        List<Integer> sequence;
+        sequence = new ArrayList<>();
+        // remove spaces
+        data = data.replaceAll("\\s", "");
+        data = data.toUpperCase();
+
+        // assume it is a comma separated string of integers
+        String[] strs = data.split(",");
+        for (String str : strs) {
+            try {                
+                if (Integer.parseInt(str)  >= 0 && Integer.parseInt(str)  - minRepeatInput.get() < 0) {
+                    throw new IllegalArgumentException("Encountered repeat out of bounds: " + Integer.parseInt(str) + " < " +minRepeatInput.get()); 
+                } else if (Integer.parseInt(str)  - maxRepeatInput.get() > 0) {
+                    throw new IllegalArgumentException("Encountered repeat out of bounds: " + Integer.parseInt(str) + " > " + maxRepeatInput.get());  
+                } else {
+                    sequence.add(Integer.parseInt(str) - minRepeatInput.get());
+                }
+            } catch (NumberFormatException e) {
+                sequence.add(-1);
+            }
+        }
+        return sequence;
+    } // string2state
 
 }
