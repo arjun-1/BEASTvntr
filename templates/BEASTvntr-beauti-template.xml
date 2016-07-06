@@ -9,7 +9,7 @@
                 <parameter id="rb.s:$(n)" name='rb' value='0.0' estimate='true' lower='0.0' upper='10.0'/>
                 <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' upper='10.0' estimate='true'/>
+                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' upper='10.0' estimate='false'/>
                 <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
                     <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='16' value='0.0625' lower='0' upper='1'/>
                     <!-- dimension and value get's corrected by Sainudiin -->
@@ -96,7 +96,7 @@
             <plugin spec='SainudiinStepWise' id='SainudiinStepWise.s:$(n)'>
                 <parameter id="rb.s:$(n)" name='rb' value='0.0' estimate='true' lower='0.0' upper='10.0'/>
                 <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
-                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' upper='10.0' estimate='true'/>
+                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' upper='10.0' estimate='false'/>
             </plugin>
             
             <plugin id='rbWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@rb.s:$(n)"/>
