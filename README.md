@@ -78,7 +78,8 @@ During a MCMC run, it is possible that the likelihood makes a sudden unrealistic
 The cause of this issue might be that too many parameters are being estimated in the model. If you encounter such an issue, doing any of the following might resolve it:  
 1. Pass `-beagle_scaling none` as an option to beast.  
 2. Use *SainudiinStepWise* instead of *Sainudiin* as substitution model. The *SainudiinStepWise*   does not estimate the frequencies of the repeats, thus this greatly reduces any over-parametrization.  
-3. Use more restrictive priors on any of the parameters `r_b, i_eq, g, a_1` of the model.
+3. Use more restrictive priors on any of the parameters `r_b, i_eq, g, a_1` of the model.  
+4. Remove any duplicate VNTR sequence in the imported alignment.
 
 See [this](https://groups.google.com/forum/#!topic/beast-users/ScG6PEZTADE) forum post for more information on a similar problem.
 
