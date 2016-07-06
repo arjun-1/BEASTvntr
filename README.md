@@ -33,9 +33,9 @@ Install the package
 cp release/add-on ~/.beast/2.4/BEASTvntr
 ```
 ## Example
-These instructions will show how to infer phylogeny for VNTR data of a set of taxa provided in a paper of [Comas](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0007815)
+These instructions will show how to infer phylogeny for VNTR data of a set of taxa provided in a [paper](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0007815) by Comas.
 ### Setting up the XML file
-First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti. In the Beauti window, click **File > Import Alignment** and select *comas_VNTR.csv*. In the window that appears, we can either select repeats or nucleotides to import. Select *Repeats* and click **OK**.
+First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats or nucleotides to import. Select *Repeats* and click **OK**.
 
 After selecting repeats, we must specify the minimum and maximum repeat which will bound our state space. For *Minimum repeat* specify **1** and for *Maximum repeat* specify **15**, and click **OK**.
 
@@ -58,9 +58,9 @@ Writing file comas_VNTR.trees
 ```
 
 ## Background
-To infer phylogeny, BEASTvntr uses two implementations of a model explained in a paper of [Sainudiin](http://www.genetics.org/content/168/1/383.long). The first implementation is called *Sainudiin* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. The second implementation called *SainudiinStepWise*, is the same as *Sainudiin*, except that it only allows single step mutations, and that the frequencies of the repeats of the root node are calculated from other model parameters. 
+To infer phylogeny, BEASTvntr uses two implementations of a model explained in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. The first implementation is called *Sainudiin* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. The second implementation called *SainudiinStepWise*, is the same as *Sainudiin*, except that it only allows single step mutations, and that the frequencies of the repeats of the root node are calculated from other model parameters. 
 
-These implementations use a modified for expression for the mutational bias beta however, which is described in a paper of [Wu](http://www.genetics.org/content/188/1/151.long). In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b_0, b_1`. However, BEASTvntr uses a reparametrization of these parameters:
+These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b_0, b_1`. However, BEASTvntr uses a reparametrization of these parameters:
 ```
 b_0 =  r_b / sqrt( 1 + 1 / i_eq^2 )
 b_1 = -r_b / sqrt( 1 + i_eq^2 )
@@ -89,4 +89,4 @@ See [this](https://groups.google.com/forum/#!topic/beast-users/ScG6PEZTADE) foru
 
 ## License
 
-This project is licensed under version 3 of the GNU Lesser General Public License - see the [COPYING.LESSER](COPYING.LESSER) file for details
+This project is licensed under version 3 of the GNU Lesser General Public License - see the [COPYING.LESSER](COPYING.LESSER) file for details.
