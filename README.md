@@ -2,8 +2,8 @@
 
 A package for BEAST2 which can infer phylogeny for VNTR (=Variable Number of Tandem Repeat) data.
 
-## Pre-built Binaries
-...
+## Pre-built Package
+To install BEASTvntr manually, download the [latest release](https://github.com/arjun-1/BEASTvntr/releases/download/v0.0.1/BEASTvntr.addon.v0.0.1.zip) and extract the contents into its own folder in `~/.beast/2.4/`.
 ## Building from Source
 
 These instructions will get you a copy of the BEASTvntr project up and running on for development and testing purposes.
