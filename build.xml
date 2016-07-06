@@ -209,7 +209,7 @@
 			<fileset file="version.xml"/>
 		</copy>
 		<copy todir="${Add_on_dir}/examples">
-			<fileset dir="examples" includes="*.xml">
+			<fileset dir="examples" includes="*/*">
 			</fileset>
 		</copy>
 
