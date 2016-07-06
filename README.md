@@ -88,4 +88,4 @@ See [this](https://groups.google.com/forum/#!topic/beast-users/ScG6PEZTADE) foru
 
 ## License
 
-This project is licensed under the GNU Lesser General Public License - see the [COPYING.LESSER](COPYING.LESSER) file for details
+This project is licensed under version 3 of the GNU Lesser General Public License - see the [COPYING.LESSER](COPYING.LESSER) file for details
