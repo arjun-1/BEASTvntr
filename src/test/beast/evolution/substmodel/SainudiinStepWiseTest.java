@@ -11,8 +11,6 @@ import junit.framework.TestCase;
 public class SainudiinStepWiseTest extends TestCase {
 
     public interface Instance {
-        Double[] getPi();
-        
         Double getRb();
         Double getIeq();
         Double getA1();
@@ -24,11 +22,6 @@ public class SainudiinStepWiseTest extends TestCase {
 
 
     protected Instance test0 = new Instance() {
-        @Override
-        public Double[] getPi() {
-            return new Double[]{0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667,0.066666667};
-        }
-
         @Override
 		public Double getRb() {
             return 0.5;
@@ -45,7 +38,7 @@ public class SainudiinStepWiseTest extends TestCase {
 
         @Override
 		public double getDistance() {
-            return 0.5;
+            return 0.5 * 4.761921891506542;
         }
 
         @Override
@@ -59,12 +52,6 @@ public class SainudiinStepWiseTest extends TestCase {
 
     public void testSainudiinStepWise() throws Exception {
         for (Instance test : all) {
-
-            RealParameter f = new RealParameter(test.getPi());
-
-            Frequencies freqs = new Frequencies();
-            freqs.initByName("frequencies", f, "estimate", false);
-
             SainudiinStepWise sainudiinstepwise = new SainudiinStepWise();
             sainudiinstepwise.setNrOfStates(15);
             sainudiinstepwise.setMinRepeat(0);
@@ -79,7 +66,7 @@ public class SainudiinStepWiseTest extends TestCase {
             final double[] result = test.getExpectedResult();
 
             for (int k = 0; k < mat.length; ++k) {
-                assertEquals(mat[k], result[k], 1e-12);
+                assertEquals(mat[k], result[k], 1e-8);
                 System.out.println(k + " : " + (mat[k] - result[k]));
             }
         }

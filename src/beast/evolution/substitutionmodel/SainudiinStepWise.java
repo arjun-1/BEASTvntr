@@ -95,22 +95,18 @@ public class SainudiinStepWise extends Sainudiin {
 		final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
 		final double a1 = a1Input.get().getValue();
 
-		double b0;
-		double b1;
-		if (ieq < 1.0E-10) {
-			b0 = 0;
-			b1 = -1 * rb;
-		} else {
-			b0 = rb * 1.0 / Math.sqrt(1.0 + 1.0 / (ieq * ieq));
-			b1 = rb * -1.0 / (Math.sqrt(ieq * ieq + 1.0));
-		}
+		double b0 = rb * 1 / Math.sqrt(1 + 1 / (ieq * ieq));
+		double b1 = rb * -1 / (Math.sqrt(ieq * ieq + 1));
 
-		double alpha = 1.0, beta = 1.0, gamma = 1.0, rowSum;
+		double alpha = 1.0, beta = 1.0, gamma = 1.0;
+		rowSum = new double[nrOfStates];
+		rowSum2 = new double[nrOfStates];
 		// extra variables needed for calculation of frequencies:
 		double alphaOld, betaOld, freqSum = 0.0, birthj, deathjplus1;
 	
 		for (int i = 0; i < nrOfStates; i++) {
-			rowSum = 0.0;
+			rowSum[i] = 0.0;
+			rowSum2[i] = 0.0;
 
 			alphaOld = alpha;
 			betaOld = beta;
@@ -121,22 +117,26 @@ public class SainudiinStepWise extends Sainudiin {
 				if (j == i + 1) {
 					gamma = 1.0;
 					rateMatrix[i][j] = alpha * beta * gamma;
-					rowSum += rateMatrix[i][j];
+					rowSum[i] += rateMatrix[i][j];
+					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
 				} else if (j > i + 1) {
 					gamma = 0.0;
 					rateMatrix[i][j] = alpha * beta * gamma;
-					rowSum += rateMatrix[i][j];
+					rowSum[i] += rateMatrix[i][j];
+					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
 				} else if (j == i - 1) {
 					gamma = 1.0;
 					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
-					rowSum += rateMatrix[i][j];
+					rowSum[i] += rateMatrix[i][j];
+					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
 				} else if (j < i - 1) {
 					gamma = 0.0;
 					rateMatrix[i][j] = alpha * (1.0 - beta) * gamma;
-					rowSum += rateMatrix[i][j];
+					rowSum[i] += rateMatrix[i][j];
+					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
 				}       
 			}
-			rateMatrix[i][i] = -rowSum;
+			rateMatrix[i][i] = -rowSum[i];
 
 			// Calc frequencies from stationary distribution, which is a special case
 			// of the birth death chain
