@@ -13,7 +13,7 @@ public class SainudiinStepWiseTest extends TestCase {
     public interface Instance {
         Double getRb();
         Double getIeq();
-        Double getA1();
+        Double getOneOnA1();
 
         double getDistance();
 
@@ -32,7 +32,7 @@ public class SainudiinStepWiseTest extends TestCase {
         }
  
         @Override
-        public Double getA1() {
+        public Double getOneOnA1() {
             return 1.0;
         }
 
@@ -57,7 +57,7 @@ public class SainudiinStepWiseTest extends TestCase {
             sainudiinstepwise.setMinRepeat(0);
             sainudiinstepwise.initByName("rb", test.getRb().toString(),
                 "ieq", test.getIeq().toString(),
-                "a1", test.getA1().toString());
+                "oneOnA1", test.getOneOnA1().toString());
 
             double distance = test.getDistance();
 

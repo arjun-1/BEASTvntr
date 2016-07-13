@@ -74,7 +74,7 @@ public class SainudiinStepWise extends Sainudiin {
 
 		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
 		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
-		a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
+		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
 
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
@@ -93,7 +93,7 @@ public class SainudiinStepWise extends Sainudiin {
 		// Here however, we calculate the freqs from the stationary distribution.
 		final double rb = rbInput.get().getValue();
 		final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
-		final double a1 = a1Input.get().getValue();
+		final double oneOnA1 = oneOnA1Input.get().getValue();
 
 		double b0 = rb * 1 / Math.sqrt(1 + 1 / (ieq * ieq));
 		double b1 = rb * -1 / (Math.sqrt(ieq * ieq + 1));
@@ -110,7 +110,12 @@ public class SainudiinStepWise extends Sainudiin {
 
 			alphaOld = alpha;
 			betaOld = beta;
-			alpha = 1.0 + a1 * (i - 0);
+			
+			/*
+			/* The following is equivalent to:
+			/* 1.0 + oneOnA1 * (i - 0)
+			*/
+			alpha = oneOnA1 + (i - 0);
 			beta = 1.0 / (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {
@@ -118,22 +123,22 @@ public class SainudiinStepWise extends Sainudiin {
 					gamma = 1.0;
 					rateMatrix[i][j] = alpha * beta * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j > i + 1) {
 					gamma = 0.0;
 					rateMatrix[i][j] = alpha * beta * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j == i - 1) {
 					gamma = 1.0;
 					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j < i - 1) {
 					gamma = 0.0;
 					rateMatrix[i][j] = alpha * (1.0 - beta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				}       
 			}
 			rateMatrix[i][i] = -rowSum[i];

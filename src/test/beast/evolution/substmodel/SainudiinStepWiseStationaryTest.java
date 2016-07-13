@@ -16,7 +16,7 @@ public class SainudiinStepWiseStationaryTest extends TestCase {
 	public interface Instance {
 		Double getRb();
 		Double getIeq();
-		Double getA1();
+		Double getOneOnA1();
 
 		double getDistance();
 
@@ -35,7 +35,7 @@ public class SainudiinStepWiseStationaryTest extends TestCase {
 		}
  
 		@Override
-		public Double getA1() {
+		public Double getOneOnA1() {
 			return 1.0;
 		}
 
@@ -61,27 +61,27 @@ public class SainudiinStepWiseStationaryTest extends TestCase {
 			sainudiinstepwise.setMinRepeat(0);
 			sainudiinstepwise.initByName("rb", test.getRb().toString(),
 				"ieq", test.getIeq().toString(),
-				"a1", test.getA1().toString());
+				"oneOnA1", test.getOneOnA1().toString());
 
 			double[] mat = new double[15 * 15];
 			sainudiinstepwise.getTransitionProbabilities(null, 1.0, 0, 1, mat);
 
 			final double[] result = test.getExpectedResult();
 
-			double[] stat = sainudiinstepwise.getFrequencies();
+			double[] frequencies = sainudiinstepwise.getFrequencies();
 			for (int k = 0; k < 15; ++k) {
-				assertEquals(stat[k], result[k], 1e-8);
-				System.out.println(k + " : " + (stat[k] - result[k]));
+				assertEquals(frequencies[k], result[k], 1e-8);
+				System.out.println(k + " : " + (frequencies[k] - result[k]));
 			}
 
 			double[] Eval = sainudiinstepwise.eigenDecomposition.getEigenValues();
 			double[] Ievc = sainudiinstepwise.eigenDecomposition.getInverseEigenVectors();
 
-			double[] statFromEigen = sainudiinstepwise.findStationaryDistribution(Eval, Ievc);
+			double[] stationaryDistribution = sainudiinstepwise.getStationaryDistribution(Eval, Ievc);
 
 			for (int k = 0; k < 15; ++k) {
-				assertEquals(statFromEigen[k], result[k], 1e-8);
-				System.out.println(k + " : " + (statFromEigen[k] - result[k]));
+				assertEquals(stationaryDistribution[k], result[k], 1e-8);
+				System.out.println(k + " : " + (stationaryDistribution[k] - result[k]));
 			}
 			
 		}

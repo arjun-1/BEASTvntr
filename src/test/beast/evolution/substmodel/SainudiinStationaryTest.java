@@ -16,7 +16,7 @@ public class SainudiinStationaryTest extends TestCase {
 		Double getRb();
 		Double getIeq();
 		Double getG();
-		Double getA1();
+		Double getOneOnA1();
 
 		double getDistance();
 
@@ -43,7 +43,7 @@ public class SainudiinStationaryTest extends TestCase {
 			return 0.1;
 		}
 		@Override
-		public Double getA1() {
+		public Double getOneOnA1() {
 			return 1.0;
 		}
 		
@@ -76,9 +76,8 @@ public class SainudiinStationaryTest extends TestCase {
 			sainudiin.initByName("rb", test.getRb().toString(),
 				"ieq", test.getIeq().toString(), 
 				"g", test.getG().toString(), 
-				"a1", test.getA1().toString()
-				);
-				//,"frequencies", freqs);
+				"oneOnA1", test.getOneOnA1().toString()
+				,"frequencies", freqs);
 
 			double distance = test.getDistance();
 
@@ -90,11 +89,11 @@ public class SainudiinStationaryTest extends TestCase {
 			double[] Eval = sainudiin.eigenDecomposition.getEigenValues();
 			double[] Ievc = sainudiin.eigenDecomposition.getInverseEigenVectors();
 
-			double[] statFromEigen = sainudiin.findStationaryDistribution(Eval, Ievc);
+			double[] stationaryDistribution = sainudiin.getStationaryDistribution(Eval, Ievc);
 
 			for (int k = 0; k < 15; ++k) {
-				assertEquals(statFromEigen[k], result[k], 1e-8);
-				System.out.println(k + " : " + (statFromEigen[k] - result[k]));
+				assertEquals(stationaryDistribution[k], result[k], 1e-8);
+				System.out.println(k + " : " + (stationaryDistribution[k] - result[k]));
 			}
 		}
 	}

@@ -16,13 +16,12 @@ public class SainudiinTest extends TestCase {
 		Double getRb();
 		Double getIeq();
 		Double getG();
-		Double getA1();
+		Double getOneOnA1();
 
 		double getDistance();
 
 		double[] getExpectedResult();
 	}
-
 
 	protected Instance test0 = new Instance() {
 		@Override
@@ -43,7 +42,7 @@ public class SainudiinTest extends TestCase {
 			return 0.1;
 		}
 		@Override
-		public Double getA1() {
+		public Double getOneOnA1() {
 			return 1.0;
 		}
 		
@@ -76,8 +75,8 @@ public class SainudiinTest extends TestCase {
 			sainudiin.initByName("rb", test.getRb().toString(),
 				"ieq", test.getIeq().toString(), 
 				"g", test.getG().toString(), 
-				"a1", test.getA1().toString()//, 
-				);//"frequencies", freqs);
+				"oneOnA1", test.getOneOnA1().toString(), 
+				"frequencies", freqs);
 
 			double distance = test.getDistance();
 

@@ -54,12 +54,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> rbInput = new Input<>("rb", "force of attraction to equilibrium state i_eq", Validate.REQUIRED);
 	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq of mutational bias", Validate.REQUIRED);
 	final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
-	final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length (i - minRepeat)", Validate.REQUIRED);
-	public Sainudiin() {
-		// this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
-		frequenciesInput.setRule(Validate.OPTIONAL);
-	}
-	double[] frequencies;
+	final public Input<RealParameter> oneOnA1Input = new Input<>("oneOnA1", "proportionality of mutation rate to repeat length (i - minRepeat)", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
 	public EigenDecomposition eigenDecomposition;
@@ -96,7 +91,6 @@ public class Sainudiin extends SubstitutionModel.Base {
 						nrOfStates = likelihood.dataInput.get().getMaxStateCount();
 						FiniteIntegerData dataType = (FiniteIntegerData) likelihood.dataInput.get().getDataType();
 						minRepeat = dataType.minRepeatInput.get();
-						//Log.info.println("minRepeat: " + minRepeat);
 						break;
 					}
 				}
@@ -106,44 +100,39 @@ public class Sainudiin extends SubstitutionModel.Base {
 
 		// In case initial frequencies of wrong dimension are provided in the beauti template,
 		// change them.
-		// if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
-		// 	Log.info.println("WARNING: Frequencies has wrong size. Expected " + nrOfStates + 
-		// 		", but got " + frequencies.getFreqs().length + 
-		// 		". Will change now to correct dimension and " + 
-		// 		"assume uniform distribution for initial values.");
+		if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
+			Log.info.println("WARNING: Frequencies has wrong size. Expected " + nrOfStates + 
+				", but got " + frequencies.getFreqs().length + 
+				". Will change now to correct dimension and " + 
+				"assume uniform distribution for initial values.");
 
-		// 	String valuesString = "";
-		// 	for (int i = 0; i < nrOfStates; i++) {
-		// 		valuesString += 1 / (double) nrOfStates + " ";
-		// 	}
-		// 	RealParameter freqsRParam = new RealParameter();
-		// 	freqsRParam.setID(frequenciesInput.get().frequenciesInput.get().getID());
-		// 	freqsRParam.initByName(
-		// 					"value", valuesString,
-		// 					"lower", 0.0,
-		// 					"upper", 1.0,
-		// 					"dimension", nrOfStates
-		// 	);
-		// 	frequenciesInput.get().frequenciesInput.get().assignFrom(freqsRParam);
-		// 	frequenciesInput.get().initAndValidate();
-		// }
+			String valuesString = "";
+			for (int i = 0; i < nrOfStates; i++) {
+				valuesString += 1 / (double) nrOfStates + " ";
+			}
+			RealParameter freqsRParam = new RealParameter();
+			freqsRParam.setID(frequenciesInput.get().frequenciesInput.get().getID());
+			freqsRParam.initByName(
+							"value", valuesString,
+							"lower", 0.0,
+							"upper", 1.0,
+							"dimension", nrOfStates
+			);
+			frequenciesInput.get().frequenciesInput.get().assignFrom(freqsRParam);
+			frequenciesInput.get().initAndValidate();
+		}
 
-		// if (nrOfStates != frequencies.getFreqs().length && nrOfStates != 0) {
-		// 		throw new IllegalArgumentException("Frequencies has wrong size. Expected " + nrOfStates + ", but got " + frequencies.getFreqs().length + ". Attempted correction failed.");
-		// }
+		if (nrOfStates != frequencies.getFreqs().length && nrOfStates != 0) {
+				throw new IllegalArgumentException("Frequencies has wrong size. Expected " + nrOfStates + ", but got " + frequencies.getFreqs().length + ". Attempted correction failed.");
+		}
 
 		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
 		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-		a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
+		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
 		
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
-
-		if (frequenciesInput.get() != null) {
-				throw new RuntimeException("Frequencies must not be specified in SainudiinStepWise. The stationary distribution is calculated from the other parameters.");
-		}
-		//frequencies = new double[nrOfStates];
 	}
 
 	// copied from GeneralSubstitutionModel.java
@@ -176,16 +165,14 @@ public class Sainudiin extends SubstitutionModel.Base {
 		// Eigen values
 		double[] Eval = eigenDecomposition.getEigenValues();
 
-		double statFromEigen[] = findStationaryDistribution(Eval, Ievc);
-		frequencies = statFromEigen;
+		double stationaryDistribution[] = getStationaryDistribution(Eval, Ievc);
 		double normalization = 0.0;
 
 		for (i = 0; i < nrOfStates; i++) {
-			//normalization += statFromEigen[i] * rowSum[i];
-			normalization += statFromEigen[i] * rowSum2[i];
+			normalization += stationaryDistribution[i] * rowSum2[i];
 		}
-		distance /= normalization;
 
+		distance /= normalization;
 
 		for (i = 0; i < nrOfStates; i++) {
 			temp = Math.exp(distance * Eval[i]);
@@ -207,33 +194,22 @@ public class Sainudiin extends SubstitutionModel.Base {
 		}	
 	} // getTransitionProbabilities
 
-	@Override
-	public double[] getFrequencies() {
-		if(frequencies == null) {
-			frequencies = new double [nrOfStates];
-			for(int i=0; i<nrOfStates; i++) {
-				frequencies[i] = 1.0 / (double) nrOfStates;
-			}
-		}
-		return frequencies;
-	}
-
-	/**
-		 * access to (copy of) rate matrix *
-		 */
+	/*
+	* access to (copy of) rate matrix *
+	*/
 	protected double[][] getRateMatrix() {
 		return rateMatrix.clone();
 	}
 
-	public double[] findStationaryDistribution(double[] Eval, double[] Ievc) {
+	public double[] getStationaryDistribution(double[] Eval, double[] Ievc) {
 		//find smallest eigenvalue
 		int index = 0;
 		double smallest = Math.abs(Eval[0]);
 		for (int i = 0; i < nrOfStates; i++) {
-		    if(Math.abs(Eval[i]) < smallest) {
-		        index = i;
-		        smallest = Math.abs(Eval[i]);
-		    }
+			if(Math.abs(Eval[i]) < smallest) {
+				index = i;
+				smallest = Math.abs(Eval[i]);
+			}
 		}
 		
 		//make sure the smallest eigenvalue is zero
@@ -242,15 +218,15 @@ public class Sainudiin extends SubstitutionModel.Base {
 
 		//normalize the eigenvector
 		double sum = 0.0;
-		double[] statFromEigen = new double[nrOfStates];
+		double[] statDist = new double[nrOfStates];
 		for (int k = 0; k < nrOfStates; k++) {
-		    sum += Ievc[index * nrOfStates + k];
+			sum += Ievc[index * nrOfStates + k];
 		}
 
 		for (int k = 0; k < nrOfStates; k++) {
-		    statFromEigen[k] = Ievc[index * nrOfStates + k] / sum;
+			statDist[k] = Ievc[index * nrOfStates + k] / sum;
 		}
-		return statFromEigen;
+		return statDist;
 	}
 
 	protected void setupRateMatrix() {
@@ -259,7 +235,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		final double rb = rbInput.get().getValue();
 		final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
 		final double g = gInput.get().getValue();
-		final double a1 = a1Input.get().getValue();
+		final double oneOnA1 = oneOnA1Input.get().getValue();
 
 		double b0 = rb * 1 / Math.sqrt(1 + 1 / (ieq * ieq));
 		double b1 = rb * -1 / (Math.sqrt(ieq * ieq + 1));
@@ -272,7 +248,11 @@ public class Sainudiin extends SubstitutionModel.Base {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
 
-			alpha = 1 + a1 * (i - 0);
+			/*
+			/* The following is equivalent to:
+			/* 1.0 + oneOnA1 * (i - 0)
+			*/
+			alpha = oneOnA1 + (i - 0);
 			beta = 1 / (1 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {
@@ -283,7 +263,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					}
 					rateMatrix[i][j] = alpha * beta * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 
 				} else if (j > i + 1) {
 					gamma = (1 - g) / (1 - Math.pow(g, nrOfStates - 1 - i)) * Math.pow(g, (int) Math.abs(i - j) - 1);
@@ -292,7 +272,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					}
 					rateMatrix[i][j] = alpha * beta * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j == i - 1) {
 					gamma = (1 - g) / (1 - Math.pow(g, i - 0)) * Math.pow(g, (int) Math.abs(i - j) - 1); 
 					if(Double.isNaN(gamma)) { // if g = 1.0
@@ -300,7 +280,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					}
 					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j < i - 1) {
 					gamma = (1 - g) / (1 - Math.pow(g, i - 0)) * Math.pow(g, (int) Math.abs(i - j) - 1);
 					if(Double.isNaN(gamma)) { // if g = 1.0
@@ -308,7 +288,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					}
 					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
-					rowSum2[i] += Math.abs(i - j) * rateMatrix[i][j];
+					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				}
 			}
 			rateMatrix[i][i] = -rowSum[i];
@@ -326,7 +306,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	public void store() {
 		storedUpdateMatrix = updateMatrix;
 		if( eigenDecomposition != null ) {
-				storedEigenDecomposition = eigenDecomposition.copy();
+			storedEigenDecomposition = eigenDecomposition.copy();
 		}
 		super.store();
 	}
