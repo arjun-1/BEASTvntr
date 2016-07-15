@@ -31,6 +31,7 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
+import beast.core.parameter.IntegerParameter;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.FiniteIntegerData;
 import beast.evolution.sitemodel.SiteModel;
@@ -54,7 +55,8 @@ public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> rbInput = new Input<>("rb", "force of attraction to equilibrium state i_eq", Validate.REQUIRED);
 	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq of mutational bias", Validate.REQUIRED);
 	final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
-	final public Input<RealParameter> oneOnA1Input = new Input<>("oneOnA1", "proportionality of mutation rate to repeat length (i - minRepeat)", Validate.REQUIRED);
+	final public Input<RealParameter> oneOnA1Input = new Input<>("oneOnA1", "one over the proportionality of mutation rate to repeat length (i - minRepeat)", Validate.REQUIRED);
+	final public Input<IntegerParameter> startLinearRegimeInput = new Input<>("startLinRegime", "lowest repeat where the mutation rate starts to become proportional to repeat length", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
 	public EigenDecomposition eigenDecomposition;
@@ -115,6 +117,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
 		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
+		startLinearRegimeInput.get().setBounds(startLinearRegimeInput.get().getLower(), startLinearRegimeInput.get().getUpper());
 		
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
@@ -238,6 +241,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		// the data is already corrected for minRepeat in FiniteIntegerData
 		final double rb = rbInput.get().getValue();
 		final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
+		final int startLinearRegime = startLinearRegimeInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
 		final double g = gInput.get().getValue();
 		final double oneOnA1 = oneOnA1Input.get().getValue();
 
@@ -252,10 +256,11 @@ public class Sainudiin extends SubstitutionModel.Base {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
 			/*
-			/* The following is equivalent to:
-			/* 1.0 + oneOnA1 * (i - 0)
+			* The following are equivalent:
+			* 1.0 + oneOnA1 * (i - 0)
+			* oneOnA1 + (i - 0);
 			*/
-			double alpha = oneOnA1 + (i - 0);
+			double alpha = i <= startLinearRegime ? oneOnA1 : oneOnA1 + (i - startLinearRegime);
 			double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {

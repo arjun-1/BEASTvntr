@@ -48,6 +48,7 @@ public class SainudiinStepWise extends Sainudiin {
 		// this is added to avoid a parsing error inherited from superclass because frequencies and g are not provided.
 		frequenciesInput.setRule(Validate.OPTIONAL);
 		gInput.setRule(Validate.OPTIONAL);
+		startLinearRegimeInput.setRule(Validate.OPTIONAL);
 	}
 	double[] freqs;
 

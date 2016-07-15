@@ -17,6 +17,7 @@ public class SainudiinStationaryTest extends TestCase {
 		Double getIeq();
 		Double getG();
 		Double getOneOnA1();
+		Integer getStartLinearRegime();
 
 		double getDistance();
 
@@ -45,6 +46,10 @@ public class SainudiinStationaryTest extends TestCase {
 		@Override
 		public Double getOneOnA1() {
 			return 1.0;
+		}
+		@Override
+		public Integer getStartLinearRegime() {
+			return 0;
 		}
 		
 		@Override
@@ -76,8 +81,9 @@ public class SainudiinStationaryTest extends TestCase {
 			sainudiin.initByName("rb", test.getRb().toString(),
 				"ieq", test.getIeq().toString(), 
 				"g", test.getG().toString(), 
-				"oneOnA1", test.getOneOnA1().toString()
-				,"frequencies", freqs);
+				"oneOnA1", test.getOneOnA1().toString(),
+				"startLinRegime", test.getStartLinearRegime().toString(),
+				"frequencies", freqs);
 
 			double distance = test.getDistance();
 

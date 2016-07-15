@@ -7,9 +7,10 @@
             <![CDATA[
             <plugin spec='Sainudiin' id='Sainudiin.s:$(n)'>
                 <parameter id="rb.s:$(n)" name='rb' value='0.0' estimate='true' lower='0.0' upper='10.0'/>
-                <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
+                <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
                 <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' upper='10.0' estimate='true'/>
+                <parameter id="startLinRegime.s:$(n)" spec='parameter.IntegerParameter' name='startLinRegime' value='1' lower='1' upper='15' estimate='true'/>
                 <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
                     <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='16' value='0.0625' lower='0' upper='1'/>
                     <!-- dimension and value get's corrected by Sainudiin -->
@@ -19,6 +20,7 @@
             <plugin id='ieqWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ieq.s:$(n)"/>
             <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
             <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
+            <plugin id='startLinRegimeWalker.s:$(n)' spec='IntRandomWalkOperator' windowSize="1" weight="0.1" parameter="@startLinRegime.s:$(n)"/>
             <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
             <prior id='rbPrior.s:$(n)' x='@rb.s:$(n)'>
@@ -33,6 +35,9 @@
             <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
                 <distr spec="beast.math.distributions.Uniform" lower='0' upper='10'/>
             </prior>
+            <prior id='startLinRegimePrior.s:$(n)' x='@startLinRegime.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='1' upper='15'/>
+            </prior>
 ]]>
 
             <connect srcID='rb.s:$(n)' targetID='state' inputName='stateNode'
@@ -42,7 +47,9 @@
             <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
             <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>             
+                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+            <connect srcID='startLinRegime.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'/>
             <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
@@ -57,6 +64,9 @@
             <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
             </connect>
+            <connect srcID='startLinRegimeWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'>
+            </connect>
             <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
                 Exchange values of frequencies of partition s:$(n)
@@ -69,7 +79,9 @@
             <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
             <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>         
+                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+            <connect srcID='startLinRegime.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'/>
             <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
@@ -85,6 +97,9 @@
             <connect srcID='oneOnA1Prior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
             </connect>
+            <connect srcID='startLinRegimePrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'>
+            </connect>
         </subtemplate>
 
         <subtemplate id='SainudiinFreqsComputed' class='beast.evolution.substitutionmodel.SainudiinFreqsComputed' mainid='SainudiinFreqsComputed.s:$(n)'>
@@ -94,11 +109,13 @@
                 <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
                 <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' upper='10.0' estimate='true'/>
+                <parameter id="startLinRegime.s:$(n)" spec='parameter.IntegerParameter' name='startLinRegime' value='1' lower='1' upper='15' estimate='true'/>
             </plugin>
             <plugin id='rbWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@rb.s:$(n)"/>
             <plugin id='ieqWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ieq.s:$(n)"/>
             <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
             <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
+            <plugin id='startLinRegimeWalker.s:$(n)' spec='IntRandomWalkOperator' windowSize="1" weight="0.1" parameter="@startLinRegime.s:$(n)"/>
 
             <prior id='rbPrior.s:$(n)' x='@rb.s:$(n)'>
 				<distr spec="beast.math.distributions.Uniform" lower='0' upper='10'/>
@@ -112,6 +129,9 @@
             <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
                 <distr spec="beast.math.distributions.Uniform" lower='0' upper='10'/>
             </prior>
+            <prior id='startLinRegimePrior.s:$(n)' x='@startLinRegime.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='1' upper='15'/>
+            </prior>
 ]]>
 
             <connect srcID='rb.s:$(n)' targetID='state' inputName='stateNode'
@@ -122,6 +142,7 @@
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
             <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+
 
             <connect srcID='rbWalker.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'>
@@ -134,6 +155,9 @@
             <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
             </connect>
+            <connect srcID='startLinRegimeWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'>
+            </connect>
 
             <connect srcID='rb.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'/>
@@ -143,6 +167,8 @@
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
             <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+            <connect srcID='startLinRegime.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'/>
 
             <connect srcID='rbPrior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(rb.s:$(n)) and rb.s:$(n)/estimate=true'>
@@ -155,6 +181,9 @@
             </connect>
             <connect srcID='oneOnA1Prior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
+            </connect>
+            <connect srcID='startLinRegimePrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(startLinRegime.s:$(n)) and startLinRegime.s:$(n)/estimate=true'>
             </connect>
         </subtemplate>
 
