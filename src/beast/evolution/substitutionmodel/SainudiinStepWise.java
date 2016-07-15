@@ -49,28 +49,12 @@ public class SainudiinStepWise extends Sainudiin {
 		frequenciesInput.setRule(Validate.OPTIONAL);
 		gInput.setRule(Validate.OPTIONAL);
 	}
-	double[] frequencies;
+	double[] freqs;
 
 	@Override
 	public void initAndValidate() {
 		updateMatrix = true;
-
-		//navigate the graph of beast objects, to find the alignment and find the nrOfStates and minRepeat.
-		for (Object beastObjecti : getOutputs()) {
-			if (beastObjecti instanceof SiteModel) {
-				SiteModel sitemodel = (SiteModel) beastObjecti;
-				for (Object beastObjectj : sitemodel.getOutputs()) {
-					if (beastObjectj instanceof ThreadedTreeLikelihood) {
-						ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
-						nrOfStates = likelihood.dataInput.get().getMaxStateCount();
-						FiniteIntegerData dataType = (FiniteIntegerData) likelihood.dataInput.get().getDataType();
-						minRepeat = dataType.minRepeatInput.get();
-						break;
-					}
-				}
-				break;
-			}
-		}
+		setStateBoundsFromAlignment();
 
 		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
 		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
@@ -82,7 +66,7 @@ public class SainudiinStepWise extends Sainudiin {
 		if (frequenciesInput.get() != null) {
 				throw new RuntimeException("Frequencies must not be specified in SainudiinStepWise. The stationary distribution is calculated from the other parameters.");
 		}
-		frequencies = new double[nrOfStates];
+		freqs = new double[nrOfStates];
 	}
 
 	@Override
@@ -95,47 +79,43 @@ public class SainudiinStepWise extends Sainudiin {
 		final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
 		final double oneOnA1 = oneOnA1Input.get().getValue();
 
-		double b0 = rb * 1 / Math.sqrt(1 + 1 / (ieq * ieq));
-		double b1 = rb * -1 / (Math.sqrt(ieq * ieq + 1));
+		double b0 = rb * Math.abs(ieq) / Math.sqrt(ieq * ieq + 1.0);
+		double b1 = -rb / (Math.sqrt(ieq * ieq + 1.0));
 
-		double alpha = 1.0, beta = 1.0, gamma = 1.0;
 		rowSum = new double[nrOfStates];
 		rowSum2 = new double[nrOfStates];
 		// extra variables needed for calculation of frequencies:
-		double alphaOld, betaOld, freqSum = 0.0, birthj, deathjplus1;
+		double freqSum = 0.0;
+		double alphaOld = 1.0, betaOld = 1.0;
 	
 		for (int i = 0; i < nrOfStates; i++) {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
-
-			alphaOld = alpha;
-			betaOld = beta;
-			
 			/*
 			/* The following is equivalent to:
 			/* 1.0 + oneOnA1 * (i - 0)
 			*/
-			alpha = oneOnA1 + (i - 0);
-			beta = 1.0 / (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
+			double alpha = oneOnA1 + (i - 0);
+			double beta = 1.0 / (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {
 				if (j == i + 1) {
-					gamma = 1.0;
+					double gamma = 1.0;
 					rateMatrix[i][j] = alpha * beta * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j > i + 1) {
-					gamma = 0.0;
+					double gamma = 0.0;
 					rateMatrix[i][j] = alpha * beta * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j == i - 1) {
-					gamma = 1.0;
+					double gamma = 1.0;
 					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j < i - 1) {
-					gamma = 0.0;
+					double gamma = 0.0;
 					rateMatrix[i][j] = alpha * (1.0 - beta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
@@ -145,23 +125,26 @@ public class SainudiinStepWise extends Sainudiin {
 
 			// Calc frequencies from stationary distribution, which is a special case
 			// of the birth death chain
-			birthj      = alphaOld * betaOld;
-			deathjplus1 = alpha * (1.0 - beta);
+			double birthj      = alphaOld * betaOld;
+			double deathjplus1 = alpha * (1.0 - beta);
 
 			if(i == 0) 
-				frequencies[i] = 1.0;
+				freqs[i] = 1.0;
 			else
-				frequencies[i] = frequencies[i - 1] * birthj / deathjplus1;
-			freqSum += frequencies[i];
+				freqs[i] = freqs[i - 1] * birthj / deathjplus1;
+			freqSum += freqs[i];
+
+			alphaOld = alpha;
+			betaOld = beta;
 		}
 		for(int i = 0; i < nrOfStates; i++) {
-			frequencies[i] /= freqSum;
+			freqs[i] /= freqSum;
 		}
 	}
 
 	@Override
 	public double[] getFrequencies() {
-		return frequencies;
+		return freqs;
 	}
 
 	@Override

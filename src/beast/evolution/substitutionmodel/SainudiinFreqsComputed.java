@@ -56,28 +56,11 @@ public class SainudiinFreqsComputed extends Sainudiin {
 		// this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
 		frequenciesInput.setRule(Validate.OPTIONAL);
 	}
-	double[] frequencies;
 
 	@Override
 	public void initAndValidate() {
 		updateMatrix = true;
-
-		//navigate the graph of beast objects, to find the alignment and find the nrOfStates and minRepeat.
-		for (Object beastObjecti : getOutputs()) {
-			if (beastObjecti instanceof SiteModel) {
-				SiteModel sitemodel = (SiteModel) beastObjecti;
-				for (Object beastObjectj : sitemodel.getOutputs()) {
-					if (beastObjectj instanceof ThreadedTreeLikelihood) {
-						ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
-						nrOfStates = likelihood.dataInput.get().getMaxStateCount();
-						FiniteIntegerData dataType = (FiniteIntegerData) likelihood.dataInput.get().getDataType();
-						minRepeat = dataType.minRepeatInput.get();
-						break;
-					}
-				}
-				break;
-			}
-		}	
+		setStateBoundsFromAlignment();
 
 		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
 		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
@@ -88,79 +71,18 @@ public class SainudiinFreqsComputed extends Sainudiin {
 		rateMatrix = new double[nrOfStates][nrOfStates];
 
 		if (frequenciesInput.get() != null) {
-				throw new RuntimeException("Frequencies must not be specified in SainudiinStepWise. The Frquencies are calculated from the other parameters.");
+			throw new RuntimeException("Frequencies must not be specified in SainudiinFreqsComputed. The Frequencies are calculated from the other parameters.");
 		}
 	}
 
-	// copied from GeneralSubstitutionModel.java
-	@Override
-	public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
-		double distance = (startTime - endTime) * rate;
-
-		int i, j, k;
-		double temp;
-
-		// this must be synchronized to avoid being called simultaneously by
-		// two different likelihood threads - AJD
-		synchronized (this) {
-		 if (updateMatrix) {
-				setupRateMatrix();
-				eigenDecomposition = eigenSystem.decomposeMatrix(rateMatrix);
-				updateMatrix = false;
-		 }
-		}
-
-		// is the following really necessary?
-		// implemented a pool of iexp matrices to support multiple threads
-		// without creating a new matrix each call. - AJD
-		// a quick timing experiment shows no difference - RRB
-		double[] iexp = new double[nrOfStates * nrOfStates];
-		// Eigen vectors
-		double[] Evec = eigenDecomposition.getEigenVectors();
-		// inverse Eigen vectors
-		double[] Ievc = eigenDecomposition.getInverseEigenVectors();
-		// Eigen values
-		double[] Eval = eigenDecomposition.getEigenValues();
-
-		double stationaryDistribution[] = getStationaryDistribution(Eval, Ievc);
-		frequencies = stationaryDistribution;
-		double normalization = 0.0;
-
-		for (i = 0; i < nrOfStates; i++) {
-			//normalization += statFromEigen[i] * rowSum[i];
-			normalization += stationaryDistribution[i] * rowSum2[i];
-		}
-
-		distance /= normalization;
-
-		for (i = 0; i < nrOfStates; i++) {
-			temp = Math.exp(distance * Eval[i]);
-			for (j = 0; j < nrOfStates; j++) {
-				iexp[i * nrOfStates + j] = Ievc[i * nrOfStates + j] * temp;
-			}
-		}
-
-		int u = 0;
-		for (i = 0; i < nrOfStates; i++) {
-			for (j = 0; j < nrOfStates; j++) {
-				temp = 0.0;
-				for (k = 0; k < nrOfStates; k++) {
-						temp += Evec[i * nrOfStates + k] * iexp[k * nrOfStates + j];
-				}
-				matrix[u] = Math.abs(temp);
-				u++;
-			}
-		}	
-	} // getTransitionProbabilities
-
 	@Override
 	public double[] getFrequencies() {
-		if(frequencies == null) { // This is the case only during initialization
-			frequencies = new double [nrOfStates];
+		if(stationaryDistribution == null) { // This is the case only during initialization
+			stationaryDistribution = new double[nrOfStates];
 			for(int i = 0; i < nrOfStates; i++) {
-				frequencies[i] = 1.0 / (double) nrOfStates;
+				stationaryDistribution[i] = 1.0 / (double) nrOfStates;
 			}
 		}
-		return frequencies;
+		return stationaryDistribution;
 	}
 }

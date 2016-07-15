@@ -85,7 +85,7 @@ public class SainudiinTest extends TestCase {
 			final double[] result = test.getExpectedResult();
 
 			for (int k = 0; k < mat.length; ++k) {
-				assertEquals(mat[k], result[k], 1e-8);
+				assertEquals(mat[k], result[k], 1e-9);
 				System.out.println(k + " : " + (mat[k] - result[k]));
 			}
 		}

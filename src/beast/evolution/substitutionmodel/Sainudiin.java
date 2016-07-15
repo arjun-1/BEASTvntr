@@ -64,6 +64,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	protected boolean updateMatrix = true;
 	private boolean storedUpdateMatrix = true;
 
+	double[] stationaryDistribution;
 	int minRepeat;
 	double[] rowSum;
 	double[] rowSum2;
@@ -80,23 +81,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	public void initAndValidate() {
 		super.initAndValidate();
 		updateMatrix = true;
-
-		//navigate the graph of beast objects, to find the alignment and find the nrOfStates and minRepeat.
-		for (Object beastObjecti : getOutputs()) {
-			if (beastObjecti instanceof SiteModel) {
-				SiteModel sitemodel = (SiteModel) beastObjecti;
-				for (Object beastObjectj : sitemodel.getOutputs()) {
-					if (beastObjectj instanceof ThreadedTreeLikelihood) {
-						ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
-						nrOfStates = likelihood.dataInput.get().getMaxStateCount();
-						FiniteIntegerData dataType = (FiniteIntegerData) likelihood.dataInput.get().getDataType();
-						minRepeat = dataType.minRepeatInput.get();
-						break;
-					}
-				}
-				break;
-			}
-		}
+		setStateBoundsFromAlignment();
 
 		// In case initial frequencies of wrong dimension are provided in the beauti template,
 		// change them.
@@ -135,6 +120,25 @@ public class Sainudiin extends SubstitutionModel.Base {
 		rateMatrix = new double[nrOfStates][nrOfStates];
 	}
 
+	public void setStateBoundsFromAlignment() {
+		//navigate the graph of beast objects, to find the alignment and find the nrOfStates and minRepeat.
+		for (Object beastObjecti : getOutputs()) {
+			if (beastObjecti instanceof SiteModel) {
+				SiteModel sitemodel = (SiteModel) beastObjecti;
+				for (Object beastObjectj : sitemodel.getOutputs()) {
+					if (beastObjectj instanceof ThreadedTreeLikelihood) {
+						ThreadedTreeLikelihood likelihood = (ThreadedTreeLikelihood) beastObjectj;
+						nrOfStates = likelihood.dataInput.get().getMaxStateCount();
+						FiniteIntegerData dataType = (FiniteIntegerData) likelihood.dataInput.get().getDataType();
+						minRepeat = dataType.minRepeatInput.get();
+						break;
+					}
+				}
+				break;
+			}
+		}
+	}
+
 	// copied from GeneralSubstitutionModel.java
 	@Override
 	public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
@@ -165,7 +169,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		// Eigen values
 		double[] Eval = eigenDecomposition.getEigenValues();
 
-		double stationaryDistribution[] = getStationaryDistribution(Eval, Ievc);
+		stationaryDistribution = findStationaryDistribution(Eval, Ievc);
 		double normalization = 0.0;
 
 		for (i = 0; i < nrOfStates; i++) {
@@ -201,7 +205,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		return rateMatrix.clone();
 	}
 
-	public double[] getStationaryDistribution(double[] Eval, double[] Ievc) {
+	public double[] findStationaryDistribution(double[] Eval, double[] Ievc) {
 		//find smallest eigenvalue
 		int index = 0;
 		double smallest = Math.abs(Eval[0]);
@@ -218,15 +222,15 @@ public class Sainudiin extends SubstitutionModel.Base {
 
 		//normalize the eigenvector
 		double sum = 0.0;
-		double[] statDist = new double[nrOfStates];
+		double[] stationaryDistribution = new double[nrOfStates];
 		for (int k = 0; k < nrOfStates; k++) {
 			sum += Ievc[index * nrOfStates + k];
 		}
 
 		for (int k = 0; k < nrOfStates; k++) {
-			statDist[k] = Ievc[index * nrOfStates + k] / sum;
+			stationaryDistribution[k] = Ievc[index * nrOfStates + k] / sum;
 		}
-		return statDist;
+		return stationaryDistribution;
 	}
 
 	protected void setupRateMatrix() {
@@ -237,56 +241,54 @@ public class Sainudiin extends SubstitutionModel.Base {
 		final double g = gInput.get().getValue();
 		final double oneOnA1 = oneOnA1Input.get().getValue();
 
-		double b0 = rb * 1 / Math.sqrt(1 + 1 / (ieq * ieq));
-		double b1 = rb * -1 / (Math.sqrt(ieq * ieq + 1));
+		//double b0 = rb / Math.sqrt(1.0 + 1.0 / (ieq * ieq));
+		double b0 = rb * Math.abs(ieq) / Math.sqrt(ieq * ieq + 1.0);
+		double b1 = -rb / (Math.sqrt(ieq * ieq + 1.0));
 
-		double alpha, beta, gamma = 1;
 		rowSum = new double[nrOfStates];
 		rowSum2 = new double[nrOfStates];
 	
 		for (int i = 0; i < nrOfStates; i++) {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
-
 			/*
 			/* The following is equivalent to:
 			/* 1.0 + oneOnA1 * (i - 0)
 			*/
-			alpha = oneOnA1 + (i - 0);
-			beta = 1 / (1 + Math.exp(-(b0 + b1 * (i - 0))));
+			double alpha = oneOnA1 + (i - 0);
+			double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {
 				if (j == i + 1) {
-					gamma = (1 - g) / (1 - Math.pow(g, nrOfStates - 1 - i)) * Math.pow(g, (int) Math.abs(i - j) - 1); 
+					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
 					if(Double.isNaN(gamma)) { // if g = 1.0
 						gamma = 1 / (double) (nrOfStates - 1 - i);
 					}
-					rateMatrix[i][j] = alpha * beta * gamma;
+					rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
-
 				} else if (j > i + 1) {
-					gamma = (1 - g) / (1 - Math.pow(g, nrOfStates - 1 - i)) * Math.pow(g, (int) Math.abs(i - j) - 1);
+					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
 					if(Double.isNaN(gamma)) { // if g = 1.0
 						gamma = 1 / (double) (nrOfStates - 1 - i);
 					}
-					rateMatrix[i][j] = alpha * beta * gamma;
+					rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j == i - 1) {
-					gamma = (1 - g) / (1 - Math.pow(g, i - 0)) * Math.pow(g, (int) Math.abs(i - j) - 1); 
+					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
 					if(Double.isNaN(gamma)) { // if g = 1.0
 						gamma = 1.0 / (double) i;
 					}
-					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
+					rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j < i - 1) {
-					gamma = (1 - g) / (1 - Math.pow(g, i - 0)) * Math.pow(g, (int) Math.abs(i - j) - 1);
+					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0))); 
 					if(Double.isNaN(gamma)) { // if g = 1.0
 						gamma = 1.0 / (double) i;
 					}
-					rateMatrix[i][j] = alpha * (1 - beta) * gamma;
+					rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
 					rowSum[i] += rateMatrix[i][j];
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				}

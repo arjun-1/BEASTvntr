@@ -77,7 +77,7 @@ public class SainudiinStepWiseStationaryTest extends TestCase {
 			double[] Eval = sainudiinstepwise.eigenDecomposition.getEigenValues();
 			double[] Ievc = sainudiinstepwise.eigenDecomposition.getInverseEigenVectors();
 
-			double[] stationaryDistribution = sainudiinstepwise.getStationaryDistribution(Eval, Ievc);
+			double[] stationaryDistribution = sainudiinstepwise.findStationaryDistribution(Eval, Ievc);
 
 			for (int k = 0; k < 15; ++k) {
 				assertEquals(stationaryDistribution[k], result[k], 1e-8);
