@@ -10,7 +10,7 @@
                 <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
                 <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' upper='10.0' estimate='true'/>
-                <parameter id="startLinRegime.s:$(n)" spec='parameter.IntegerParameter' name='startLinRegime' value='1' lower='1' upper='15' estimate='true'/>
+                <parameter id="startLinRegime.s:$(n)" spec='parameter.IntegerParameter' name='startLinRegime' value='3' lower='1' upper='15' estimate='false'/>
                 <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
                     <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='16' value='0.0625' lower='0' upper='1'/>
                     <!-- dimension and value get's corrected by Sainudiin -->
@@ -106,10 +106,10 @@
             <![CDATA[
             <plugin spec='SainudiinFreqsComputed' id='SainudiinFreqsComputed.s:$(n)'>
                 <parameter id="rb.s:$(n)" name='rb' value='0.0' estimate='true' lower='0.0' upper='10.0'/>
-                <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='0.0' upper='14.0' estimate='true'/>
+                <parameter id="ieq.s:$(n)" name='ieq' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
                 <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' upper='10.0' estimate='true'/>
-                <parameter id="startLinRegime.s:$(n)" spec='parameter.IntegerParameter' name='startLinRegime' value='1' lower='1' upper='15' estimate='true'/>
+                <parameter id="startLinRegime.s:$(n)" spec='parameter.IntegerParameter' name='startLinRegime' value='3' lower='1' upper='15' estimate='false'/>
             </plugin>
             <plugin id='rbWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@rb.s:$(n)"/>
             <plugin id='ieqWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ieq.s:$(n)"/>

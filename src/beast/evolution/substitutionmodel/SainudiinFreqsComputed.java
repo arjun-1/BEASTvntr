@@ -1,27 +1,22 @@
 /*
-* File SainudiinFreqsComputed.java
+* File SainudiinStepWise.java
 *
 * Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
-* Copyright (C) 2010 Remco Bouckaert remco@cs.auckland.ac.nz
 *
-* This file is part of BEAST2.
-* See the NOTICE file distributed with this work for additional
-* information regarding copyright ownership and licensing.
+* This file is part of BEASTvntr.
 *
-* BEAST is free software; you can redistribute it and/or modify
-* it under the terms of the GNU Lesser General Public License as
-* published by the Free Software Foundation; either version 2
-* of the License, or (at your option) any later version.
+* BEASTvntr is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
 *
-* BEAST is distributed in the hope that it will be useful,
+* BEASTvntr is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU Lesser General Public License for more details.
+* GNU General Public License for more details.
 *
-* You should have received a copy of the GNU Lesser General Public
-* License along with BEAST; if not, write to the
-* Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
-* Boston, MA  02110-1301  USA
+* You should have received a copy of the GNU General Public License
+* along with BEASTvntr.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 package beast.evolution.substitutionmodel;
@@ -78,7 +73,9 @@ public class SainudiinFreqsComputed extends Sainudiin {
 
 	@Override
 	public double[] getFrequencies() {
-		if(stationaryDistribution == null) { // This is the case only during initialization
+		// During initialization, the stationary distribution is not yet set.
+		// If this is the case, set it, and assume all frequencies equal.
+		if(stationaryDistribution == null) {
 			stationaryDistribution = new double[nrOfStates];
 			for(int i = 0; i < nrOfStates; i++) {
 				stationaryDistribution[i] = 1.0 / (double) nrOfStates;

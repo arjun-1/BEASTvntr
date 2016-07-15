@@ -71,60 +71,9 @@ public class Sainudiin extends SubstitutionModel.Base {
 	double[] rowSum;
 	double[] rowSum2;
 
-	public void setNrOfStates(int newNrOfStates) {// required for unit test
-		nrOfStates = newNrOfStates;
-	}
-
-	public void setMinRepeat(int newMinRepeat) {// required for unit test
-		minRepeat = newMinRepeat;
-	}
-
-	@Override
-	public void initAndValidate() {
-		super.initAndValidate();
-		updateMatrix = true;
-		setStateBoundsFromAlignment();
-
-		// In case initial frequencies of wrong dimension are provided in the beauti template,
-		// change them.
-		if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
-			Log.info.println("WARNING: Frequencies has wrong size. Expected " + nrOfStates + 
-				", but got " + frequencies.getFreqs().length + 
-				". Will change now to correct dimension and " + 
-				"assume uniform distribution for initial values.");
-
-			String valuesString = "";
-			for (int i = 0; i < nrOfStates; i++) {
-				valuesString += 1 / (double) nrOfStates + " ";
-			}
-			RealParameter freqsRParam = new RealParameter();
-			freqsRParam.setID(frequenciesInput.get().frequenciesInput.get().getID());
-			freqsRParam.initByName(
-							"value", valuesString,
-							"lower", 0.0,
-							"upper", 1.0,
-							"dimension", nrOfStates
-			);
-			frequenciesInput.get().frequenciesInput.get().assignFrom(freqsRParam);
-			frequenciesInput.get().initAndValidate();
-		}
-
-		if (nrOfStates != frequencies.getFreqs().length && nrOfStates != 0) {
-				throw new IllegalArgumentException("Frequencies has wrong size. Expected " + nrOfStates + ", but got " + frequencies.getFreqs().length + ". Attempted correction failed.");
-		}
-
-		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
-		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
-		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
-		startLinearRegimeInput.get().setBounds(startLinearRegimeInput.get().getLower(), startLinearRegimeInput.get().getUpper());
-		
-		eigenSystem = new DefaultEigenSystem(nrOfStates);
-		rateMatrix = new double[nrOfStates][nrOfStates];
-	}
-
+	// setStateBoundsFromAlignment navigates the graph of beast objects, 
+	// to find the alignment and find the nrOfStates and minRepeat.
 	public void setStateBoundsFromAlignment() {
-		//navigate the graph of beast objects, to find the alignment and find the nrOfStates and minRepeat.
 		for (Object beastObjecti : getOutputs()) {
 			if (beastObjecti instanceof SiteModel) {
 				SiteModel sitemodel = (SiteModel) beastObjecti;
@@ -142,7 +91,66 @@ public class Sainudiin extends SubstitutionModel.Base {
 		}
 	}
 
-	// copied from GeneralSubstitutionModel.java
+	// setNrOfStates and setMinRepeat are required to set the state bounds during
+	// unit testing.
+	public void setNrOfStates(int newNrOfStates) {
+		nrOfStates = newNrOfStates;
+	}
+	public void setMinRepeat(int newMinRepeat) {
+		minRepeat = newMinRepeat;
+	}
+
+	@Override
+	public void initAndValidate() {
+		super.initAndValidate();
+		updateMatrix = true;
+		setStateBoundsFromAlignment();
+
+		// In case the initial frequencies in the beauti template are not of the 
+		// same dimension as the nrOfStates found in the alignment, change the 
+		// dimension of the frequencies, and set them to be all equal.
+		if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
+			Log.info.println("WARNING: Frequencies has wrong size. Expected " + 
+				nrOfStates + ", but got " + frequencies.getFreqs().length + 
+				". Will change now to correct dimension and " + 
+				"assume uniform distribution for initial values.");
+
+			String valuesString = "";
+			for (int i = 0; i < nrOfStates; i++) {
+				valuesString += 1 / (double) nrOfStates + " ";
+			}
+			RealParameter freqsRParam = new RealParameter();
+			freqsRParam.setID(frequenciesInput.get().frequenciesInput.get().getID());
+			freqsRParam.initByName(
+				"value", valuesString,
+				"lower", 0.0,
+				"upper", 1.0,
+				"dimension", nrOfStates
+			);
+			frequenciesInput.get().frequenciesInput.get().assignFrom(freqsRParam);
+			frequenciesInput.get().initAndValidate();
+		}
+
+		// Sanity check: if for some reason the frequencies are still of wrong
+		// dimension, stop the program.
+		if (nrOfStates != frequencies.getFreqs().length && nrOfStates != 0) {
+				throw new IllegalArgumentException(
+					"Frequencies has wrong size. Expected " + nrOfStates + ", but got " +
+					frequencies.getFreqs().length + ". Attempted correction failed."
+				);
+		}
+
+		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
+		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
+		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
+		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
+		startLinearRegimeInput.get().setBounds(startLinearRegimeInput.get().getLower(), startLinearRegimeInput.get().getUpper());
+		
+		eigenSystem = new DefaultEigenSystem(nrOfStates);
+		rateMatrix = new double[nrOfStates][nrOfStates];
+	}
+
+	// Copied from GeneralSubstitutionModel.java
 	@Override
 	public void getTransitionProbabilities(Node node, double startTime, double endTime, double rate, double[] matrix) {
 		double distance = (startTime - endTime) * rate;
@@ -159,7 +167,6 @@ public class Sainudiin extends SubstitutionModel.Base {
 				updateMatrix = false;
 		 }
 		}
-
 		// is the following really necessary?
 		// implemented a pool of iexp matrices to support multiple threads
 		// without creating a new matrix each call. - AJD
@@ -172,6 +179,8 @@ public class Sainudiin extends SubstitutionModel.Base {
 		// Eigen values
 		double[] Eval = eigenDecomposition.getEigenValues();
 
+		// Normalize the rate matrix, using the stationary distribution present
+		// in the inverse matrix of eigenvectors.
 		stationaryDistribution = findStationaryDistribution(Eval, Ievc);
 		double normalization = 0.0;
 
@@ -209,7 +218,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	}
 
 	public double[] findStationaryDistribution(double[] Eval, double[] Ievc) {
-		//find smallest eigenvalue
+		// Loop through the eigenvalues to find smallest eigenvalue.
 		int index = 0;
 		double smallest = Math.abs(Eval[0]);
 		for (int i = 0; i < nrOfStates; i++) {
@@ -219,11 +228,11 @@ public class Sainudiin extends SubstitutionModel.Base {
 			}
 		}
 		
-		//make sure the smallest eigenvalue is zero
+		// make sure the smallest eigenvalue is zero
 		// assertEquals(Math.abs(Eval[index]), 0, 1e-12);
 		// System.out.println("Eigenvalue" + " : " + Eval[index]);
 
-		//normalize the eigenvector
+		// Normalize the eigenvector to 1.
 		double sum = 0.0;
 		double[] stationaryDistribution = new double[nrOfStates];
 		for (int k = 0; k < nrOfStates; k++) {
@@ -237,15 +246,15 @@ public class Sainudiin extends SubstitutionModel.Base {
 	}
 
 	protected void setupRateMatrix() {
-		// Note that in setting up the rate matrix, we always assume minRepeat=0, since
-		// the data is already corrected for minRepeat in FiniteIntegerData
+		// Since the data is already corrected for minRepeat in FiniteIntegerData,
+		// we always assume minRepeat is 0 in the substitution model. Except for
+		// parameters ieq, startLinearRegime, which are not from FiniteIntegerData.
 		final double rb = rbInput.get().getValue();
-		final double ieq = ieqInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
-		final int startLinearRegime = startLinearRegimeInput.get().getValue() - minRepeat;//translation to provide correct output in the logs
+		final double ieq = ieqInput.get().getValue() - minRepeat;
+		final int startLinearRegime = startLinearRegimeInput.get().getValue() - minRepeat;
 		final double g = gInput.get().getValue();
 		final double oneOnA1 = oneOnA1Input.get().getValue();
 
-		//double b0 = rb / Math.sqrt(1.0 + 1.0 / (ieq * ieq));
 		double b0 = rb * Math.abs(ieq) / Math.sqrt(ieq * ieq + 1.0);
 		double b1 = -rb / (Math.sqrt(ieq * ieq + 1.0));
 
@@ -255,18 +264,16 @@ public class Sainudiin extends SubstitutionModel.Base {
 		for (int i = 0; i < nrOfStates; i++) {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
-			/*
-			* The following are equivalent:
-			* 1.0 + oneOnA1 * (i - 0)
-			* oneOnA1 + (i - 0);
-			*/
+
+			// Note that 1.0 + oneOnA1 * (i - 0) and oneOnA1 + (i - 0) are equivalent.
 			double alpha = i <= startLinearRegime ? oneOnA1 : oneOnA1 + (i - startLinearRegime);
 			double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {
 				if (j == i + 1) {
 					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
-					if(Double.isNaN(gamma)) { // if g = 1.0
+					// If g = 1.0, we assume the limiting case for gamma
+					if(Double.isNaN(gamma)) { 
 						gamma = 1 / (double) (nrOfStates - 1 - i);
 					}
 					rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
@@ -274,7 +281,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j > i + 1) {
 					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
-					if(Double.isNaN(gamma)) { // if g = 1.0
+					if(Double.isNaN(gamma)) {
 						gamma = 1 / (double) (nrOfStates - 1 - i);
 					}
 					rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
@@ -282,7 +289,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j == i - 1) {
 					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
-					if(Double.isNaN(gamma)) { // if g = 1.0
+					if(Double.isNaN(gamma)) {
 						gamma = 1.0 / (double) i;
 					}
 					rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
@@ -290,7 +297,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 					rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
 				} else if (j < i - 1) {
 					double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0))); 
-					if(Double.isNaN(gamma)) { // if g = 1.0
+					if(Double.isNaN(gamma)) {
 						gamma = 1.0 / (double) i;
 					}
 					rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
@@ -302,14 +309,16 @@ public class Sainudiin extends SubstitutionModel.Base {
 		}
 	}
 
-	@Override  // copied from GeneralSubstitutionModel.java
+	// Copied from GeneralSubstitutionModel.java
+	@Override  
 	protected boolean requiresRecalculation() {
 		// we only get here if something is dirty
 		updateMatrix = true;
 		return true;
 	}
 
-	@Override // copied from GeneralSubstitutionModel.java
+	// Copied from GeneralSubstitutionModel.java
+	@Override
 	public void store() {
 		storedUpdateMatrix = updateMatrix;
 		if( eigenDecomposition != null ) {
@@ -318,7 +327,8 @@ public class Sainudiin extends SubstitutionModel.Base {
 		super.store();
 	}
 
-	@Override // copied from GeneralSubstitutionModel.java
+	// Copied from GeneralSubstitutionModel.java
+	@Override
 	public void restore() {
 		updateMatrix = storedUpdateMatrix;
 		if( storedEigenDecomposition != null ) {
@@ -329,7 +339,8 @@ public class Sainudiin extends SubstitutionModel.Base {
 		super.restore();
 	}
 
-	@Override // copied from GeneralSubstitutionModel.java
+	// Copied from GeneralSubstitutionModel.java
+	@Override
 	public EigenDecomposition getEigenDecomposition(Node node) {
 		synchronized (this) {
 			if (updateMatrix) {
