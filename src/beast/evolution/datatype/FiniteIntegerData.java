@@ -20,8 +20,7 @@ public class FiniteIntegerData extends Base {
 
     @Override
     public void initAndValidate() {
-        if (maxRepeatInput.get() != null && minRepeatInput.get() != null && 
-            maxRepeatInput.get() - minRepeatInput.get() >= 0 &&
+        if (maxRepeatInput.get() - minRepeatInput.get() >= 0 &&
             minRepeatInput.get() >= 0) {
             stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
         } else {

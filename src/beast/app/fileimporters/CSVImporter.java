@@ -25,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.File;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.io.IOException;
 
@@ -42,31 +43,126 @@ import beast.evolution.alignment.Sequence;
 
 
 public class CSVImporter implements AlignmentImporter {
-	public class DatatypeSelector { //just a class to ask the user whether to
-		//import nucleotide or repeats, and to set the bounds for repeats
-		String selectedDatatype;
-		int minRepeat;
-		int maxRepeat;
-		FiniteIntegerData type = new FiniteIntegerData();
+	
+	public String [] getFileExtensions() {
+		return new String[]{"csv"};
+	}
 
-		public DatatypeSelector() {
-			String[] selectionsDatatype = {"Repeats", "Nucleotides"};
-			String datatype;
-			selectedDatatype = (String) JOptionPane.showInputDialog(
+	enum ParseOption {
+		REPEATS, REPEATS_INHOMOGEN, NUCLEOTIDES
+	}
+
+	private int[][] sequenceData;
+	private String[][] sequenceDataNucleotides;
+	private String[] taxaNames;
+	private int nrOfTaxa;
+	private int nrOfLoci;
+
+	private void parseFileAsRepeats(File file) throws IOException {
+		BufferedReader fin = new BufferedReader(new FileReader(file));
+    List<String> sequenceList = new ArrayList<String>();
+
+    while (fin.ready()) {
+    	String line = fin.readLine();
+    	if ( line.trim().length() == 0 ) {
+					continue;  // Skip blank lines
+			}
+			sequenceList.add(line);
+		}
+		fin.close();
+
+		nrOfTaxa = sequenceList.size();
+		nrOfLoci = sequenceList.get(0).split(",").length - 1;
+		sequenceData = new int[nrOfTaxa][nrOfLoci];
+		taxaNames = new String[nrOfTaxa];
+
+		int taxonIndex = 0;
+		for(String sequenceString : sequenceList) {
+			String[] splitSequenceString = sequenceString.split(",");
+    	taxaNames[taxonIndex] = splitSequenceString[0];
+
+    	if (taxaNames[taxonIndex] == null || taxaNames[taxonIndex].trim().length() == 0) {
+				// check if not null and not only white space
+				throw new IllegalArgumentException("Expected taxon defined on first line");
+			}
+			for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+				int parsedAllel = Integer.parseInt(splitSequenceString[locusIndex + 1]);
+				sequenceData[taxonIndex][locusIndex] = parsedAllel;
+			}
+			taxonIndex += 1;
+		}
+	}
+
+	private void parseFileAsNucleotides(File file) throws IOException {
+		BufferedReader fin = new BufferedReader(new FileReader(file));
+    List<String> sequenceList = new ArrayList<String>();
+
+    while (fin.ready()) {
+    	String line = fin.readLine();
+    	if ( line.trim().length() == 0 ) {
+					continue;  // Skip blank lines
+			}
+			sequenceList.add(line);
+		}
+		fin.close();
+
+		nrOfTaxa = sequenceList.size();
+		nrOfLoci = sequenceList.get(0).split(",").length - 1;
+		sequenceDataNucleotides = new String[nrOfTaxa][nrOfLoci];
+		taxaNames = new String[nrOfTaxa];
+
+		int taxonIndex = 0;
+		for(String sequenceString : sequenceList) {
+			String[] splitSequenceString = sequenceString.split(",");
+    	taxaNames[taxonIndex] = splitSequenceString[0];
+
+    	if (taxaNames[taxonIndex] == null || taxaNames[taxonIndex].trim().length() == 0) {
+				// check if not null and not only white space
+				throw new IllegalArgumentException("Expected taxon defined on first line");
+			}
+			for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+				String parsedAllel = splitSequenceString[locusIndex + 1];
+				sequenceDataNucleotides[taxonIndex][locusIndex] = parsedAllel;
+			}
+			taxonIndex += 1;
+		}
+	}
+
+	public List<BEASTInterface> loadFile(File file) {    
+		Alignment alignment;
+		FiniteIntegerData finiteIntegerData = new FiniteIntegerData();;
+		ArrayList<BEASTInterface> alignmentList = new ArrayList<BEASTInterface>();;
+
+		int minRepeat = 1, maxRepeat = 15;
+		ParseOption choice = ParseOption.REPEATS;
+
+		String[] parseOptions = {"Repeats", "Repeats (Inhomogen)", "Nucleotides"};
+		String	selectedOption = (String) JOptionPane.showInputDialog(
 				null,
-				"Choose DataType (default: Repeats)",
-				"Choose DataType",
+				"Choose Parsing Option (default: Repeats)",
+				"Choose Parsing Option",
 				JOptionPane.PLAIN_MESSAGE,
 				null,
-				selectionsDatatype,
-				selectionsDatatype[0]
+				parseOptions,
+				parseOptions[0]
 			);
-			
-			switch (selectedDatatype) {
+			switch (selectedOption) {
 				case "Repeats":
-					
-					datatype = "finiteinteger";
-
+					choice = ParseOption.REPEATS;
+					break;
+				case "Repeats (Inhomogen)":
+					choice = ParseOption.REPEATS_INHOMOGEN;
+					break;
+				case "Nucleotides":
+					choice = ParseOption.NUCLEOTIDES;
+					break;
+				default:
+					throw new IllegalArgumentException("No parsing option specified");
+			}
+			
+			switch (choice) {
+				case REPEATS:
+				case REPEATS_INHOMOGEN:
 		      JTextField minRepeatField = new JTextField(5);
 		      JTextField maxRepeatField = new JTextField(5);
 
@@ -84,115 +180,90 @@ public class CSVImporter implements AlignmentImporter {
 		      if (result == JOptionPane.OK_OPTION) {
 		      	minRepeat = Integer.parseInt(minRepeatField.getText());
 		        maxRepeat = Integer.parseInt(maxRepeatField.getText());
-		      	if (maxRepeat >= minRepeat && minRepeat >= 0) {		
-					    type.setInputValue("minRepeat", minRepeat);
-					    type.setInputValue("maxRepeat", maxRepeat);
-					  	type.initAndValidate();
-					  } else {
-					  	throw new IllegalArgumentException("Bad values for maxRepeat: " + maxRepeat + ", minRepeat: " + minRepeat);
-						}
 					} else {
 						throw new IllegalArgumentException("Minimum and maximum repeat were not specified");
 					}
 					break;
-				case "Nucleotides":
-					datatype = "nucleotide";
+				case NUCLEOTIDES:
 					break;
-				default:
-					throw new IllegalArgumentException("No datatype specified");
-			}
 		}
 
-		public boolean checkParsedAllel(int parsedAllel) {//check for non sensical values
-			switch (selectedDatatype) {
-				case "Repeats":
-				// Remember that -1 means ambiguous
-					if ((parsedAllel > 0 && parsedAllel < minRepeat) || parsedAllel > maxRepeat) {
-						return true;
-					} else {
-						return false;
-					}
-				case "Nucleotides":
-					return false;
-				default:
-					return false;
-			}
-		}
-	}
 
-	public String [] getFileExtensions() {
-		return new String[]{"csv"};
-	}
+		String ID = file.getName();
+		ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 
-	public List<BEASTInterface> loadFile(File file) {    
 		try {
-		// start reading the csv file
-		BufferedReader fin = new BufferedReader(new FileReader(file));
-
-		DatatypeSelector datatypeSelection = new DatatypeSelector();
-
-    Alignment m_alignment = new Alignment();
-
-    while (fin.ready()) {
-    	String line = fin.readLine();
-    	if ( line.trim().length() == 0 ) {
-					continue;  // Skip blank lines
+			// Put the sequences into alignments
+			switch(choice) {
+				case REPEATS:
+				case REPEATS_INHOMOGEN:
+					parseFileAsRepeats(file);
+					finiteIntegerData.setInputValue("minRepeat", minRepeat);
+					finiteIntegerData.setInputValue("maxRepeat", maxRepeat);
+					finiteIntegerData.initAndValidate();
+				break;
+				case NUCLEOTIDES:
+					parseFileAsNucleotides(file);
 			}
-    	String[] row = line.split(",");
-    	String currentTaxon = row[0];
-
-			if (currentTaxon == null || currentTaxon.trim().length() == 0) {
-				// check if not null and not only white space
-				fin.close();
-				throw new IllegalArgumentException("Expected taxon defined on first line");
-			}
-    	StringBuilder sb = new StringBuilder();
-    	int rowLength = row.length;
-    	
-    	for (int i = 1; i < row.length; i++) {
-    		switch (datatypeSelection.selectedDatatype) {
-					case "Repeats":
-	    			int parsedAllel = Integer.parseInt(row[i]);
-    				if (datatypeSelection.checkParsedAllel(parsedAllel)) {
-							throw new IllegalArgumentException("Encountered repeat out of bounds: " + parsedAllel);
+			switch(choice){
+				case REPEATS:
+					// case of homogeneous
+					alignment = new Alignment();
+					for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+						StringBuilder sb = new StringBuilder();
+						for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+							sb.append(sequenceData[taxonIndex][locusIndex]);
+			    		sb.append(",");
 						}
-    				sb.append(parsedAllel);
-    				sb.append(",");
-    				
-    				break;
-    			case "Nucleotides":
-    				sb.append(row[i]);
-    		}
-    	}
-    	String sequenceData = sb.toString();
-    	Sequence sequence = new Sequence();
-    	
-    	if (datatypeSelection.selectedDatatype == "Repeats") {
-    		sequence.init(datatypeSelection.maxRepeat - datatypeSelection.minRepeat + 1, currentTaxon, sequenceData);
-    	} else if (datatypeSelection.selectedDatatype == "Nucleotides") {
-    		sequence.init(4, currentTaxon, sequenceData);
-    	}
-    	sequence.setID("seq_" + currentTaxon);
-    	m_alignment.sequenceInput.setValue(sequence, m_alignment);
-    }
-    fin.close();
-    
-    String ID = file.getName();
-    ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
-    m_alignment.setID(ID);
-
-    if (datatypeSelection.selectedDatatype == "Repeats") {
-    	m_alignment.setInputValue("userDataType", datatypeSelection.type);
-    } else if (datatypeSelection.selectedDatatype == "Nucleotides") {
-    	m_alignment.dataTypeInput.setValue("nucleotide", m_alignment);
-    }
-
-    m_alignment.initAndValidate();
-    return Arrays.asList(m_alignment);
-	} catch (Exception e) {
-		e.printStackTrace();
-		JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
-		return null;
+						Sequence sequence = new Sequence();
+						sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], sb.toString());
+						sequence.setID("seq_" + taxaNames[taxonIndex]);
+						alignment.sequenceInput.setValue(sequence, alignment);
+					}
+					alignment.setID(ID);
+					alignment.setInputValue("userDataType", finiteIntegerData);
+					alignment.initAndValidate();
+					alignmentList.add(alignment);
+					break;
+				case REPEATS_INHOMOGEN:
+					for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+						alignment = new Alignment();
+						for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+							Sequence sequence = new Sequence();
+							sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], Integer.toString(sequenceData[taxonIndex][locusIndex]) + ",");
+							sequence.setID("seq_" + taxaNames[taxonIndex]);
+							alignment.sequenceInput.setValue(sequence, alignment);
+						}
+						alignment.setID("VNTR" + String.format("%02d", locusIndex + 1));
+						alignment.setInputValue("userDataType", finiteIntegerData);
+						alignment.initAndValidate();
+						alignmentList.add(alignment);
+					}
+					break;
+				case NUCLEOTIDES:
+					alignment = new Alignment();
+					for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+						StringBuilder sb = new StringBuilder();
+						for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+							sb.append(sequenceDataNucleotides[taxonIndex][locusIndex]);
+			    		sb.append(",");
+						}
+						Sequence sequence = new Sequence();
+						sequence.init(4, taxaNames[taxonIndex], sb.toString());
+						sequence.setID("seq_" + taxaNames[taxonIndex]);
+						alignment.sequenceInput.setValue(sequence, alignment);
+					}
+					alignment.setID(ID);
+					alignment.dataTypeInput.setValue("nucleotide", alignment);
+					alignment.initAndValidate();
+					alignmentList.add(alignment);
+					break;
+			}
+			return alignmentList;
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
+			return null;
 		}
 	}
 }
