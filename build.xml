@@ -27,6 +27,8 @@
 	<path id="classpath">
         <pathelement path="${buildvntr}"/>
 		<fileset dir="${libvntr}" includes="junit-4.8.2.jar"/>
+		<fileset dir="${libvntr}" includes="EJML-core-0.29.jar"/>
+		<fileset dir="${libvntr}" includes="EJML-dense64-0.29.jar"/>
 		<fileset dir="${beast2path}/lib" includes="jam.jar"/>
 		<fileset dir="${beast2path}/lib" includes="beagle.jar"/>
 		<fileset dir="${beast2path}/lib" includes="fest.jar"/>
@@ -215,6 +217,8 @@
 
 		<copy todir="${Add_on_dir}/lib">
 			<fileset  file="${distvntr}/BEASTvntr.addon.jar" />
+			<fileset  file="lib/EJML-core-0.29.jar" />
+			<fileset  file="lib/EJML-dense64-0.29.jar" />
 		</copy>
 		<copy todir="${Add_on_dir}">
 			<fileset file="${distvntr}/BEASTvntr.src.jar" />

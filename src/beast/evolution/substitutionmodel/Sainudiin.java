@@ -59,17 +59,17 @@ public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<IntegerParameter> startLinearRegimeInput = new Input<>("startLinRegime", "lowest repeat where the mutation rate starts to become proportional to repeat length", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
-	public EigenDecomposition eigenDecomposition;
+	private EigenDecomposition eigenDecomposition;
 	private EigenDecomposition storedEigenDecomposition = null;
 	protected double[][] rateMatrix;
 
 	protected boolean updateMatrix = true;
 	private boolean storedUpdateMatrix = true;
 
-	double[] stationaryDistribution;
-	int minRepeat;
-	double[] rowSum;
-	double[] rowSum2;
+	protected double[] stationaryDistribution;
+	private int minRepeat;
+	private double[] rowSum;
+	private double[] rowSum2;
 
 	// setStateBoundsFromAlignment navigates the graph of beast objects, 
 	// to find the alignment and find the nrOfStates and minRepeat.
@@ -146,7 +146,9 @@ public class Sainudiin extends SubstitutionModel.Base {
 		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
 		startLinearRegimeInput.get().setBounds(startLinearRegimeInput.get().getLower(), startLinearRegimeInput.get().getUpper());
 		
-		eigenSystem = new DefaultEigenSystem(nrOfStates);
+		//eigenSystem = new DefaultEigenSystem(nrOfStates);
+		eigenSystem = new EJMLEigenSystem(nrOfStates);
+
 		rateMatrix = new double[nrOfStates][nrOfStates];
 	}
 
@@ -210,37 +212,32 @@ public class Sainudiin extends SubstitutionModel.Base {
 		}	
 	} // getTransitionProbabilities
 
-	/*
-	* access to (copy of) rate matrix *
-	*/
-	protected double[][] getRateMatrix() {
-		return rateMatrix.clone();
-	}
+	public static double[] findStationaryDistribution(double[] Eval, double[] Ievc) {
+		final double THRESHOLD = 1.0E-10;
 
-	public double[] findStationaryDistribution(double[] Eval, double[] Ievc) {
-		// Loop through the eigenvalues to find smallest eigenvalue.
+		// Loop through the eigenvalues to find the zero eigenvalue.
 		int index = 0;
-		double smallest = Math.abs(Eval[0]);
-		for (int i = 0; i < nrOfStates; i++) {
-			if(Math.abs(Eval[i]) < smallest) {
+		boolean foundZero = false;
+		for (int i = 0; i < Eval.length; i++) {
+			if(Math.abs(Eval[i]) < THRESHOLD) {
 				index = i;
-				smallest = Math.abs(Eval[i]);
+				foundZero = true;
+				break;
 			}
 		}
-		
-		// make sure the smallest eigenvalue is zero
-		// assertEquals(Math.abs(Eval[index]), 0, 1e-12);
-		// System.out.println("Eigenvalue" + " : " + Eval[index]);
+		if (!foundZero) {
+			throw new RuntimeException("Could not find zero eigenvalue.");
+		}
 
 		// Normalize the eigenvector to 1.
 		double sum = 0.0;
-		double[] stationaryDistribution = new double[nrOfStates];
-		for (int k = 0; k < nrOfStates; k++) {
-			sum += Ievc[index * nrOfStates + k];
+		double[] stationaryDistribution = new double[Eval.length];
+		for (int k = 0; k < Eval.length; k++) {
+			sum += Ievc[index * Eval.length + k];
 		}
 
-		for (int k = 0; k < nrOfStates; k++) {
-			stationaryDistribution[k] = Ievc[index * nrOfStates + k] / sum;
+		for (int k = 0; k < Eval.length; k++) {
+			stationaryDistribution[k] = Ievc[index * Eval.length + k] / sum;
 		}
 		return stationaryDistribution;
 	}
