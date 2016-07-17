@@ -57,15 +57,15 @@ public class FiniteIntegerDataTest extends TestCase {
 		sequence.init(13, "myTaxon", "5,6,16,17");
 		sequence.setID("mySequence");
 
-		Alignment m_alignment = new Alignment();
-		m_alignment.sequenceInput.setValue(sequence, m_alignment);
-		m_alignment.setID("myAlignment");
-		m_alignment.setInputValue("userDataType", datatype);
-		m_alignment.initAndValidate();
+		Alignment alignment = new Alignment();
+		alignment.sequenceInput.setValue(sequence, alignment);
+		alignment.setID("myAlignment");
+		alignment.setInputValue("userDataType", datatype);
+		alignment.initAndValidate();
 
-		assertEquals(0, m_alignment.getPattern(0, 0));
-		assertEquals(1, m_alignment.getPattern(0, 1));
-		assertEquals(11, m_alignment.getPattern(0, 2));
-		assertEquals(12, m_alignment.getPattern(0, 3));
+		assertEquals(0, alignment.getPattern(0, 0));
+		assertEquals(1, alignment.getPattern(0, 1));
+		assertEquals(11, alignment.getPattern(0, 2));
+		assertEquals(12, alignment.getPattern(0, 3));
 	}
 }

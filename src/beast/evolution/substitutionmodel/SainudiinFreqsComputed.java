@@ -1,5 +1,5 @@
 /*
-* File SainudiinStepWise.java
+* File SainudiinFreqsComputed.java
 *
 * Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
 *

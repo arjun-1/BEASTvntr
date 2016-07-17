@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
-// Copied from StandardModel.java
+// (Almost) copied from StandardModel.java
 @Description("Datatype for finite integer sequences")
 public class FiniteIntegerData extends Base {
 
@@ -24,7 +24,7 @@ public class FiniteIntegerData extends Base {
             minRepeatInput.get() >= 0) {
             stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
         } else {
-            throw new IllegalArgumentException("Bad values for maxRepeat: " + maxRepeatInput.get() + ", minRepeat: " +minRepeatInput.get());
+            throw new IllegalArgumentException("Bad values for maximum repeat: " + maxRepeatInput.get() + ", minimum repeat: " +minRepeatInput.get());
         }
 
         mapCodeToStateSet = null;
@@ -103,9 +103,9 @@ public class FiniteIntegerData extends Base {
         for (String str : strs) {
             try {                
                 if (Integer.parseInt(str)  >= 0 && Integer.parseInt(str)  - minRepeatInput.get() < 0) {
-                    throw new IllegalArgumentException("Encountered repeat out of bounds: " + Integer.parseInt(str) + " < " +minRepeatInput.get()); 
+                    throw new IllegalArgumentException("Encountered repeat out of model bounds: " + Integer.parseInt(str) + " < " +minRepeatInput.get()); 
                 } else if (Integer.parseInt(str)  - maxRepeatInput.get() > 0) {
-                    throw new IllegalArgumentException("Encountered repeat out of bounds: " + Integer.parseInt(str) + " > " + maxRepeatInput.get());  
+                    throw new IllegalArgumentException("Encountered repeat out of model bounds: " + Integer.parseInt(str) + " > " + maxRepeatInput.get());  
                 } else {
                     sequence.add(Integer.parseInt(str) - minRepeatInput.get());
                 }

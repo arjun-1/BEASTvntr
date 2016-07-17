@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.io.IOException;
+import java.lang.reflect.Array;
+
 
 import javax.swing.JOptionPane;
 import javax.swing.*;
@@ -52,20 +54,20 @@ public class CSVImporter implements AlignmentImporter {
 		REPEATS_HOMOGEN, REPEATS_INHOMOGEN, NUCLEOTIDES
 	}
 
-	private int[][] sequenceDataRepeats;
-	private String[][] sequenceDataNucleotides;
 	private String[] taxaNames;
 	private int nrOfTaxa;
 	private int nrOfLoci;
+	private Object sequenceData;
+	ParseOption choice;
 
-	private void parseFileAsRepeats(File file) throws IOException {
+	private void parseFile(File file) throws IOException {
 		BufferedReader fin = new BufferedReader(new FileReader(file));
     List<String> sequenceList = new ArrayList<String>();
 
     while (fin.ready()) {
     	String line = fin.readLine();
     	if ( line.trim().length() == 0 ) {
-					continue;  // Skip blank lines
+				continue;  // Skip blank lines
 			}
 			sequenceList.add(line);
 		}
@@ -73,56 +75,44 @@ public class CSVImporter implements AlignmentImporter {
 
 		nrOfTaxa = sequenceList.size();
 		nrOfLoci = sequenceList.get(0).split(",").length - 1;
-		sequenceDataRepeats = new int[nrOfTaxa][nrOfLoci];
+
+		switch(choice) {
+			case REPEATS_HOMOGEN:
+			case REPEATS_INHOMOGEN:
+				sequenceData = Array.newInstance(int.class,  nrOfTaxa, nrOfLoci);
+				break;
+			case NUCLEOTIDES:
+				sequenceData = Array.newInstance(char.class,  nrOfTaxa, nrOfLoci);
+				break;
+		}
+
 		taxaNames = new String[nrOfTaxa];
 
 		int taxonIndex = 0;
 		for(String sequenceString : sequenceList) {
 			String[] splitSequenceString = sequenceString.split(",");
-    	taxaNames[taxonIndex] = splitSequenceString[0];
+    	if (splitSequenceString.length != nrOfLoci + 1) {
+    		throw new IllegalArgumentException("Row " + Integer.toString(taxonIndex + 1) + " has unequal length: " + 
+    			splitSequenceString.length + " != " + Integer.toString(nrOfLoci + 1));
+    	}
 
+    	taxaNames[taxonIndex] = splitSequenceString[0];
     	if (taxaNames[taxonIndex] == null || taxaNames[taxonIndex].trim().length() == 0) {
 				// check if not null and not only white space
 				throw new IllegalArgumentException("Expected taxon defined on first line");
 			}
+
 			for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-				int parsedAllel = Integer.parseInt(splitSequenceString[locusIndex + 1]);
-				sequenceDataRepeats[taxonIndex][locusIndex] = parsedAllel;
-			}
-			taxonIndex += 1;
-		}
-	}
-
-	private void parseFileAsNucleotides(File file) throws IOException {
-		BufferedReader fin = new BufferedReader(new FileReader(file));
-    List<String> sequenceList = new ArrayList<String>();
-
-    while (fin.ready()) {
-    	String line = fin.readLine();
-    	if ( line.trim().length() == 0 ) {
-					continue;  // Skip blank lines
-			}
-			sequenceList.add(line);
-		}
-		fin.close();
-
-		nrOfTaxa = sequenceList.size();
-		nrOfLoci = sequenceList.get(0).split(",").length - 1;
-		sequenceDataNucleotides = new String[nrOfTaxa][nrOfLoci];
-		taxaNames = new String[nrOfTaxa];
-
-		int taxonIndex = 0;
-		for(String sequenceString : sequenceList) {
-			String[] splitSequenceString = sequenceString.split(",");
-    	taxaNames[taxonIndex] = splitSequenceString[0];
-
-    	if (taxaNames[taxonIndex] == null || taxaNames[taxonIndex].trim().length() == 0) {
-				// check if not null and not only white space
-				throw new IllegalArgumentException("Expected taxon defined on first line");
-			}
-			for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-				String parsedAllel = splitSequenceString[locusIndex + 1];
-				sequenceDataNucleotides[taxonIndex][locusIndex] = parsedAllel;
+				Object row = Array.get(sequenceData, taxonIndex);
+				switch(choice) {
+					case REPEATS_HOMOGEN:
+					case REPEATS_INHOMOGEN:
+						Array.setInt(row, locusIndex, Integer.parseInt(splitSequenceString[locusIndex + 1]));
+						break;
+					case NUCLEOTIDES:
+						Array.setChar(row, locusIndex, splitSequenceString[locusIndex + 1].charAt(0));
+						break;
+				}
 			}
 			taxonIndex += 1;
 		}
@@ -133,8 +123,8 @@ public class CSVImporter implements AlignmentImporter {
 		FiniteIntegerData finiteIntegerData = new FiniteIntegerData();;
 		List<BEASTInterface> alignmentList = new ArrayList<BEASTInterface>();;
 
-		int minRepeat = 1, maxRepeat = 15;
-		ParseOption choice = ParseOption.REPEATS_HOMOGEN;
+		int minRepeat = -1, maxRepeat = -1;
+		choice = ParseOption.REPEATS_HOMOGEN;
 
 		String[] parseOptions = {"Repeats (homogen)", "Repeats (inhomogen)", "Nucleotides"};
 		String	selectedOption = (String) JOptionPane.showInputDialog(
@@ -191,26 +181,25 @@ public class CSVImporter implements AlignmentImporter {
 		ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 
 		try {
-			// Put the sequences into alignments
+			parseFile(file);
+			// Initialize the datatype for repeats
 			switch(choice) {
 				case REPEATS_HOMOGEN:
 				case REPEATS_INHOMOGEN:
-					parseFileAsRepeats(file);
 					finiteIntegerData.setInputValue("minRepeat", minRepeat);
 					finiteIntegerData.setInputValue("maxRepeat", maxRepeat);
 					finiteIntegerData.initAndValidate();
-				break;
+					break;
 				case NUCLEOTIDES:
-					parseFileAsNucleotides(file);
+					break;
 			}
 			switch(choice){
 				case REPEATS_HOMOGEN:
-					// case of homogeneous
 					alignment = new Alignment();
 					for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
 						StringBuilder sb = new StringBuilder();
 						for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-							sb.append(sequenceDataRepeats[taxonIndex][locusIndex]);
+							sb.append(((int[][])sequenceData)[taxonIndex][locusIndex]);
 			    		sb.append(",");
 						}
 						Sequence sequence = new Sequence();
@@ -228,7 +217,8 @@ public class CSVImporter implements AlignmentImporter {
 						alignment = new Alignment();
 						for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
 							Sequence sequence = new Sequence();
-							sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], Integer.toString(sequenceDataRepeats[taxonIndex][locusIndex]) + ",");
+							sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], 
+								((int[][])sequenceData)[taxonIndex][locusIndex] + ",");
 							sequence.setID("seq_" + taxaNames[taxonIndex]);
 							alignment.sequenceInput.setValue(sequence, alignment);
 						}
@@ -243,8 +233,7 @@ public class CSVImporter implements AlignmentImporter {
 					for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
 						StringBuilder sb = new StringBuilder();
 						for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-							sb.append(sequenceDataNucleotides[taxonIndex][locusIndex]);
-			    		sb.append(",");
+							sb.append(String.valueOf(((char[][])sequenceData)[taxonIndex][locusIndex]));
 						}
 						Sequence sequence = new Sequence();
 						sequence.init(4, taxaNames[taxonIndex], sb.toString());
