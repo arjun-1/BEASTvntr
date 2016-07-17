@@ -14,11 +14,11 @@ public class SainudiinTest extends TestCase {
 	public interface Instance {
 		Double[] getPi();
 
-		Double getRb();
-		Double getIeq();
+		Double getBiasMagnitude();
+		Double getFocalState();
 		Double getG();
-		Double getOneOnA1();
-		Integer getStartLinearRegime();
+		Double getA1();
+		Integer getStartOfLinearity();
 
 		double getDistance();
 
@@ -37,11 +37,11 @@ public class SainudiinTest extends TestCase {
 		}
 
 		@Override
-		public Double getRb() {
+		public Double getBiasMagnitude() {
 			return 0.5;
 		}
 		@Override
-		public Double getIeq() {
+		public Double getFocalState() {
 			return 5.5;
 		}
 		@Override
@@ -49,11 +49,11 @@ public class SainudiinTest extends TestCase {
 			return 0.1;
 		}
 		@Override
-		public Double getOneOnA1() {
+		public Double getA1() {
 			return 1.0;
 		}
 		@Override
-		public Integer getStartLinearRegime() {
+		public Integer getStartOfLinearity() {
 			return 0;
 		}
 		
@@ -99,11 +99,11 @@ public class SainudiinTest extends TestCase {
 			Sainudiin sainudiin = new Sainudiin();
 			sainudiin.setNrOfStates(15);
 			sainudiin.setMinRepeat(0);
-			sainudiin.initByName("rb", test.getRb().toString(),
-				"ieq", test.getIeq().toString(), 
+			sainudiin.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
+				"focalState", test.getFocalState().toString(), 
 				"g", test.getG().toString(), 
-				"oneOnA1", test.getOneOnA1().toString(),
-				"startLinRegime", test.getStartLinearRegime().toString(),
+				"a1", test.getA1().toString(),
+				"startOfLinearity", test.getStartOfLinearity().toString(),
 				"frequencies", freqs);
 
 			double distance = test.getDistance();
@@ -121,11 +121,11 @@ public class SainudiinTest extends TestCase {
 			Sainudiin sainudiinstepwise = new Sainudiin();
 			sainudiinstepwise.setNrOfStates(15);
 			sainudiinstepwise.setMinRepeat(0);
-			sainudiinstepwise.initByName("rb", test.getRb().toString(),
-				"ieq", test.getIeq().toString(), 
+			sainudiinstepwise.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
+				"focalState", test.getFocalState().toString(), 
 				"g", "0.0", 
-				"oneOnA1", test.getOneOnA1().toString(),
-				"startLinRegime", test.getStartLinearRegime().toString(),
+				"a1", test.getA1().toString(),
+				"startOfLinearity", test.getStartOfLinearity().toString(),
 				"frequencies", freqs);
 
 			double distanceStepWise = test.getDistanceStepWise();

@@ -1,5 +1,5 @@
 /*
-* File SainudiinFreqsComputed.java
+* File SainudiinFrequenciesComputed.java
 *
 * Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
 *
@@ -46,8 +46,8 @@ import beast.core.util.Log;
 	"  Genetics 188:151-164",
 	DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
 
-public class SainudiinFreqsComputed extends Sainudiin {
-	public SainudiinFreqsComputed() {
+public class SainudiinFrequenciesComputed extends Sainudiin {
+	public SainudiinFrequenciesComputed() {
 		// this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
 		frequenciesInput.setRule(Validate.OPTIONAL);
 	}
@@ -57,17 +57,17 @@ public class SainudiinFreqsComputed extends Sainudiin {
 		updateMatrix = true;
 		setStateBoundsFromAlignment();
 
-		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
-		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
+		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
+		focalStateInput.get().setBounds(focalStateInput.get().getLower(), focalStateInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
-		startLinearRegimeInput.get().setBounds(startLinearRegimeInput.get().getLower(), startLinearRegimeInput.get().getUpper());
+		a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
+		startOfLinearityInput.get().setBounds(startOfLinearityInput.get().getLower(), startOfLinearityInput.get().getUpper());
 		
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
 
 		if (frequenciesInput.get() != null) {
-			throw new RuntimeException("Frequencies must not be specified in SainudiinFreqsComputed. The Frequencies are calculated from the other parameters.");
+			throw new RuntimeException("Frequencies must not be specified in SainudiinFrequenciesComputed. The Frequencies are calculated from the other parameters.");
 		}
 	}
 

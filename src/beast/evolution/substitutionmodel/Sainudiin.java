@@ -52,11 +52,11 @@ import beast.core.util.Log;
 	DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
 
 public class Sainudiin extends SubstitutionModel.Base {
-	final public Input<RealParameter> rbInput = new Input<>("rb", "force of attraction to equilibrium state i_eq", Validate.REQUIRED);
-	final public Input<RealParameter> ieqInput = new Input<>("ieq", "equilibrium state i_eq of mutational bias", Validate.REQUIRED);
+	final public Input<RealParameter> biasMagnitudeInput = new Input<>("biasMagnitude", "magnitude of the mutational bias", Validate.REQUIRED);
+	final public Input<RealParameter> focalStateInput = new Input<>("focalState", "focal state of the mutational bias", Validate.REQUIRED);
 	final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
-	final public Input<RealParameter> oneOnA1Input = new Input<>("oneOnA1", "one over the proportionality of mutation rate to repeat length (i - minRepeat)", Validate.REQUIRED);
-	final public Input<IntegerParameter> startLinearRegimeInput = new Input<>("startLinRegime", "lowest repeat where the mutation rate starts to become proportional to repeat length", Validate.REQUIRED);
+	final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length (i - minimum repeat)", Validate.REQUIRED);
+	final public Input<IntegerParameter> startOfLinearityInput = new Input<>("startOfLinearity", "repeat length where linearity of the mutation rate starts to hold", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
 	private EigenDecomposition eigenDecomposition;
@@ -140,11 +140,11 @@ public class Sainudiin extends SubstitutionModel.Base {
 				);
 		}
 
-		rbInput.get().setBounds(Math.max(0.0, rbInput.get().getLower()), rbInput.get().getUpper());
-		ieqInput.get().setBounds(ieqInput.get().getLower(), ieqInput.get().getUpper());
+		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
+		focalStateInput.get().setBounds(focalStateInput.get().getLower(), focalStateInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
-		startLinearRegimeInput.get().setBounds(startLinearRegimeInput.get().getLower(), startLinearRegimeInput.get().getUpper());
+		a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
+		startOfLinearityInput.get().setBounds(startOfLinearityInput.get().getLower(), startOfLinearityInput.get().getUpper());
 		
 		//eigenSystem = new DefaultEigenSystem(nrOfStates);
 		eigenSystem = new EJMLEigenSystem(nrOfStates);
@@ -172,7 +172,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		// is the following really necessary?
 		// implemented a pool of iexp matrices to support multiple threads
 		// without creating a new matrix each call. - AJD
-		// a quick timing experiment shows no difference - RRB
+		// a quick timing experiment shows no difference - RBB
 		double[] iexp = new double[nrOfStates * nrOfStates];
 		// Eigen vectors
 		double[] Evec = eigenDecomposition.getEigenVectors();
@@ -245,15 +245,15 @@ public class Sainudiin extends SubstitutionModel.Base {
 	protected void setupRateMatrix() {
 		// Since the data is already corrected for minRepeat in FiniteIntegerData,
 		// we always assume minRepeat is 0 in the substitution model. Except for
-		// parameters ieq, startLinearRegime, which are not from FiniteIntegerData.
-		final double rb = rbInput.get().getValue();
-		final double ieq = ieqInput.get().getValue() - minRepeat;
-		final int startLinearRegime = startLinearRegimeInput.get().getValue() - minRepeat;
+		// parameters focalState, startOfLinearity, which are not from FiniteIntegerData.
+		final double biasMagnitude = biasMagnitudeInput.get().getValue();
+		final double focalState = focalStateInput.get().getValue() - minRepeat;
+		final int startOfLinearity = startOfLinearityInput.get().getValue() - minRepeat;
 		final double g = gInput.get().getValue();
-		final double oneOnA1 = oneOnA1Input.get().getValue();
+		final double a1 = a1Input.get().getValue();
 
-		double b0 = rb * Math.abs(ieq) / Math.sqrt(ieq * ieq + 1.0);
-		double b1 = -rb / (Math.sqrt(ieq * ieq + 1.0));
+		double b0 = biasMagnitude * Math.abs(focalState) / Math.sqrt(focalState * focalState + 1.0);
+		double b1 = -biasMagnitude / (Math.sqrt(focalState * focalState + 1.0));
 
 		rowSum = new double[nrOfStates];
 		rowSum2 = new double[nrOfStates];
@@ -262,8 +262,8 @@ public class Sainudiin extends SubstitutionModel.Base {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
 
-			// Note that 1.0 + oneOnA1 * (i - 0) and oneOnA1 + (i - 0) are equivalent.
-			double alpha = i <= startLinearRegime ? oneOnA1 : oneOnA1 + (i - startLinearRegime);
+			// Note that 1.0 + a1 * (i - 0) and a1 + (i - 0) are equivalent.
+			double alpha = i <= startOfLinearity ? 1 : 1 + a1 * (i - startOfLinearity);
 			double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {
