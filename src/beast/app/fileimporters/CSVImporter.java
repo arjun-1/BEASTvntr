@@ -49,10 +49,10 @@ public class CSVImporter implements AlignmentImporter {
 	}
 
 	enum ParseOption {
-		REPEATS, REPEATS_INHOMOGEN, NUCLEOTIDES
+		REPEATS_HOMOGEN, REPEATS_INHOMOGEN, NUCLEOTIDES
 	}
 
-	private int[][] sequenceData;
+	private int[][] sequenceDataRepeats;
 	private String[][] sequenceDataNucleotides;
 	private String[] taxaNames;
 	private int nrOfTaxa;
@@ -73,7 +73,7 @@ public class CSVImporter implements AlignmentImporter {
 
 		nrOfTaxa = sequenceList.size();
 		nrOfLoci = sequenceList.get(0).split(",").length - 1;
-		sequenceData = new int[nrOfTaxa][nrOfLoci];
+		sequenceDataRepeats = new int[nrOfTaxa][nrOfLoci];
 		taxaNames = new String[nrOfTaxa];
 
 		int taxonIndex = 0;
@@ -87,7 +87,7 @@ public class CSVImporter implements AlignmentImporter {
 			}
 			for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
 				int parsedAllel = Integer.parseInt(splitSequenceString[locusIndex + 1]);
-				sequenceData[taxonIndex][locusIndex] = parsedAllel;
+				sequenceDataRepeats[taxonIndex][locusIndex] = parsedAllel;
 			}
 			taxonIndex += 1;
 		}
@@ -131,15 +131,15 @@ public class CSVImporter implements AlignmentImporter {
 	public List<BEASTInterface> loadFile(File file) {    
 		Alignment alignment;
 		FiniteIntegerData finiteIntegerData = new FiniteIntegerData();;
-		ArrayList<BEASTInterface> alignmentList = new ArrayList<BEASTInterface>();;
+		List<BEASTInterface> alignmentList = new ArrayList<BEASTInterface>();;
 
 		int minRepeat = 1, maxRepeat = 15;
-		ParseOption choice = ParseOption.REPEATS;
+		ParseOption choice = ParseOption.REPEATS_HOMOGEN;
 
-		String[] parseOptions = {"Repeats", "Repeats (Inhomogen)", "Nucleotides"};
+		String[] parseOptions = {"Repeats (homogen)", "Repeats (inhomogen)", "Nucleotides"};
 		String	selectedOption = (String) JOptionPane.showInputDialog(
 				null,
-				"Choose Parsing Option (default: Repeats)",
+				"Choose Parsing Option (default: Repeats (homogen))",
 				"Choose Parsing Option",
 				JOptionPane.PLAIN_MESSAGE,
 				null,
@@ -147,10 +147,10 @@ public class CSVImporter implements AlignmentImporter {
 				parseOptions[0]
 			);
 			switch (selectedOption) {
-				case "Repeats":
-					choice = ParseOption.REPEATS;
+				case "Repeats (homogen)":
+					choice = ParseOption.REPEATS_HOMOGEN;
 					break;
-				case "Repeats (Inhomogen)":
+				case "Repeats (inhomogen)":
 					choice = ParseOption.REPEATS_INHOMOGEN;
 					break;
 				case "Nucleotides":
@@ -159,9 +159,8 @@ public class CSVImporter implements AlignmentImporter {
 				default:
 					throw new IllegalArgumentException("No parsing option specified");
 			}
-			
 			switch (choice) {
-				case REPEATS:
+				case REPEATS_HOMOGEN:
 				case REPEATS_INHOMOGEN:
 		      JTextField minRepeatField = new JTextField(5);
 		      JTextField maxRepeatField = new JTextField(5);
@@ -188,14 +187,13 @@ public class CSVImporter implements AlignmentImporter {
 					break;
 		}
 
-
 		String ID = file.getName();
 		ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 
 		try {
 			// Put the sequences into alignments
 			switch(choice) {
-				case REPEATS:
+				case REPEATS_HOMOGEN:
 				case REPEATS_INHOMOGEN:
 					parseFileAsRepeats(file);
 					finiteIntegerData.setInputValue("minRepeat", minRepeat);
@@ -206,13 +204,13 @@ public class CSVImporter implements AlignmentImporter {
 					parseFileAsNucleotides(file);
 			}
 			switch(choice){
-				case REPEATS:
+				case REPEATS_HOMOGEN:
 					// case of homogeneous
 					alignment = new Alignment();
 					for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
 						StringBuilder sb = new StringBuilder();
 						for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-							sb.append(sequenceData[taxonIndex][locusIndex]);
+							sb.append(sequenceDataRepeats[taxonIndex][locusIndex]);
 			    		sb.append(",");
 						}
 						Sequence sequence = new Sequence();
@@ -230,7 +228,7 @@ public class CSVImporter implements AlignmentImporter {
 						alignment = new Alignment();
 						for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
 							Sequence sequence = new Sequence();
-							sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], Integer.toString(sequenceData[taxonIndex][locusIndex]) + ",");
+							sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], Integer.toString(sequenceDataRepeats[taxonIndex][locusIndex]) + ",");
 							sequence.setID("seq_" + taxaNames[taxonIndex]);
 							alignment.sequenceInput.setValue(sequence, alignment);
 						}
