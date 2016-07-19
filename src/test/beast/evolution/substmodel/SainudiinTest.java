@@ -17,7 +17,7 @@ public class SainudiinTest extends TestCase {
 		Double getBiasMagnitude();
 		Double getFocalState();
 		Double getG();
-		Double getA1();
+		Double getOneOnA1();
 
 		double getDistance();
 
@@ -48,7 +48,7 @@ public class SainudiinTest extends TestCase {
 			return 0.1;
 		}
 		@Override
-		public Double getA1() {
+		public Double getOneOnA1() {
 			return 1.0;
 		}
 		
@@ -97,7 +97,7 @@ public class SainudiinTest extends TestCase {
 			sainudiin.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
 				"focalState", test.getFocalState().toString(), 
 				"g", test.getG().toString(), 
-				"a1", test.getA1().toString(),
+				"oneOnA1", test.getOneOnA1().toString(),
 				"frequencies", freqs);
 
 			double distance = test.getDistance();
@@ -118,7 +118,7 @@ public class SainudiinTest extends TestCase {
 			sainudiinstepwise.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
 				"focalState", test.getFocalState().toString(), 
 				"g", "0.0", 
-				"a1", test.getA1().toString(),
+				"oneOnA1", test.getOneOnA1().toString(),
 				"frequencies", freqs);
 
 			double distanceStepWise = test.getDistanceStepWise();
