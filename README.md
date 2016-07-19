@@ -58,18 +58,25 @@ Writing file comas_VNTR.trees
 ```
 
 ## Background
-To infer phylogeny, BEASTvntr uses two implementations of a model explained in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. The first implementation is called *Sainudiin* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. The second implementation called *SainudiinStepWise*, is the same as *Sainudiin*, except that it only allows single step mutations, and that the frequencies of the repeats of the root node are calculated from other model parameters. 
+To infer phylogeny, BEASTvntr uses two implementations of a model explained in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. The first implementation is called *Sainudiin* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. The second implementation called *Sainudiin Frequencies Computed*, is the same as *Sainudiin*, except that the frequencies of the states in the root node are given by the stationary distribution, which is calculated from the other model parameters. 
 
-These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b_0, b_1`. However, BEASTvntr uses a reparametrization of these parameters:
+These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b_0, b_1`. However, BEASTvntr uses a transformation of these parameters:
 ```
-b_0 =  r_b / sqrt( 1 + 1 / i_eq^2 )
-b_1 = -r_b / sqrt( 1 + i_eq^2 )
+b_0 =  biasMagnitude / sqrt( 1 + 1 / focalPoint^2 )
+b_1 = -biasMagnitude / sqrt( 1 + focalPoint^2 )
 ```
 This was done so that the equation
 ```
-beta(b_0, b_1, i_eq) = 1 - beta(b_0, b_1, i_eq)
+beta(b_0, b_1, focalPoint) = 1 - beta(b_0, b_1, focalPoint)
 ```
-is always satisfied, i.e. for a particular `i_eq` the bias for expansion is equal to that of contraction. This means that `i_eq` can intuitively be interpreted as the focal point of the mutational bias.
+is always satisfied, i.e. for that `focalPoint` the bias for expansion is equal to that of contraction. This means that `focalPoint` can intuitively be interpreted as the focal point of the mutational bias.
+
+In addition, the proportionality of the mutation rate to the number of repeats, `a1`, has been transformed into:
+```
+oneOnA1 = 1 / a1
+```
+For the cases where the mutation rate of the minimum repeat is far lower than that of the other repeats, `a1` blows up, whilst `oneOnA1` remains constrained.
+
 ##Known Issues
 During a MCMC run, it is possible that the likelihood makes a sudden unrealistic increase, and that the trace of estimated parameters becomes a flat line:
 
