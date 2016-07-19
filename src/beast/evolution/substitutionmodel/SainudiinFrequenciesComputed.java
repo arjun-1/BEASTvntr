@@ -61,7 +61,8 @@ public class SainudiinFrequenciesComputed extends Sainudiin {
 		focalStateInput.get().setBounds(focalStateInput.get().getLower(), focalStateInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
 		a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
-		startOfLinearityInput.get().setBounds(startOfLinearityInput.get().getLower(), startOfLinearityInput.get().getUpper());
+		acInput.get().setBounds(Math.max(0.0, acInput.get().getLower()), acInput.get().getUpper());
+		
 		
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];

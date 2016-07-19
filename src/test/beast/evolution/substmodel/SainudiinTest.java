@@ -18,7 +18,6 @@ public class SainudiinTest extends TestCase {
 		Double getFocalState();
 		Double getG();
 		Double getA1();
-		Integer getStartOfLinearity();
 
 		double getDistance();
 
@@ -51,10 +50,6 @@ public class SainudiinTest extends TestCase {
 		@Override
 		public Double getA1() {
 			return 1.0;
-		}
-		@Override
-		public Integer getStartOfLinearity() {
-			return 0;
 		}
 		
 		@Override
@@ -103,7 +98,6 @@ public class SainudiinTest extends TestCase {
 				"focalState", test.getFocalState().toString(), 
 				"g", test.getG().toString(), 
 				"a1", test.getA1().toString(),
-				"startOfLinearity", test.getStartOfLinearity().toString(),
 				"frequencies", freqs);
 
 			double distance = test.getDistance();
@@ -125,7 +119,6 @@ public class SainudiinTest extends TestCase {
 				"focalState", test.getFocalState().toString(), 
 				"g", "0.0", 
 				"a1", test.getA1().toString(),
-				"startOfLinearity", test.getStartOfLinearity().toString(),
 				"frequencies", freqs);
 
 			double distanceStepWise = test.getDistanceStepWise();

@@ -56,7 +56,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> focalStateInput = new Input<>("focalState", "focal state of the mutational bias", Validate.REQUIRED);
 	final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
 	final public Input<RealParameter> a1Input = new Input<>("a1", "proportionality of mutation rate to repeat length (i - minimum repeat)", Validate.REQUIRED);
-	final public Input<IntegerParameter> startOfLinearityInput = new Input<>("startOfLinearity", "repeat length where linearity of the mutation rate starts to hold", Validate.REQUIRED);
+	final public Input<RealParameter> acInput = new Input<>("ac", "proportionality of mutation rate to repeat length (i - minimum repeat)", Validate.REQUIRED);
 
 	protected EigenSystem eigenSystem;
 	private EigenDecomposition eigenDecomposition;
@@ -144,7 +144,8 @@ public class Sainudiin extends SubstitutionModel.Base {
 		focalStateInput.get().setBounds(focalStateInput.get().getLower(), focalStateInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
 		a1Input.get().setBounds(Math.max(0.0, a1Input.get().getLower()), a1Input.get().getUpper());
-		startOfLinearityInput.get().setBounds(startOfLinearityInput.get().getLower(), startOfLinearityInput.get().getUpper());
+		acInput.get().setBounds(Math.max(0.0, acInput.get().getLower()), acInput.get().getUpper());
+		
 		
 		//eigenSystem = new DefaultEigenSystem(nrOfStates);
 		eigenSystem = new EJMLEigenSystem(nrOfStates);
@@ -245,12 +246,12 @@ public class Sainudiin extends SubstitutionModel.Base {
 	protected void setupRateMatrix() {
 		// Since the data is already corrected for minRepeat in FiniteIntegerData,
 		// we always assume minRepeat is 0 in the substitution model. Except for
-		// parameters focalState, startOfLinearity, which are not from FiniteIntegerData.
+		// parameters focalState, which are not from FiniteIntegerData.
 		final double biasMagnitude = biasMagnitudeInput.get().getValue();
 		final double focalState = focalStateInput.get().getValue() - minRepeat;
-		final int startOfLinearity = startOfLinearityInput.get().getValue() - minRepeat;
 		final double g = gInput.get().getValue();
 		final double a1 = a1Input.get().getValue();
+		final double ac = acInput.get().getValue();
 
 		double b0 = biasMagnitude * Math.abs(focalState) / Math.sqrt(focalState * focalState + 1.0);
 		double b1 = -biasMagnitude / (Math.sqrt(focalState * focalState + 1.0));
@@ -262,8 +263,10 @@ public class Sainudiin extends SubstitutionModel.Base {
 			rowSum[i] = 0.0;
 			rowSum2[i] = 0.0;
 
-			// Note that 1.0 + a1 * (i - 0) and a1 + (i - 0) are equivalent.
-			double alpha = i <= startOfLinearity ? 1 : 1 + a1 * (i - startOfLinearity);
+			// This is the model of Kruglyak, for ac = 1, but with a seperate
+			// parametrization for state 1.
+			double alpha = i <= 1 ? a1 : 1 + ac * (i - 2);	
+
 			double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
 			for (int j = 0; j < nrOfStates; j++) {

@@ -9,8 +9,8 @@
                 <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
                 <parameter id="focalState.s:$(n)" name='focalState' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
-                <parameter id="startOfLinearity.s:$(n)" spec='parameter.IntegerParameter' name='startOfLinearity' value='3' lower='1' upper='15' estimate='false'/>
+                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' estimate='true'/>
+                <parameter id="ac.s:$(n)" name='ac' value='1.0' lower='0.5' estimate='true'/>
                 <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
                     <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='16' value='0.0625' lower='0' upper='1'/>
                     <!-- dimension and value get's corrected by Sainudiin -->
@@ -20,7 +20,8 @@
             <plugin id='focalStateWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@focalState.s:$(n)"/>
             <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
             <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
-            <plugin id='startOfLinearityWalker.s:$(n)' spec='IntRandomWalkOperator' windowSize="1" weight="0.1" parameter="@startOfLinearity.s:$(n)"/>
+            <plugin id='acWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ac.s:$(n)"/>
+            
             <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
             <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
@@ -35,8 +36,8 @@
             <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
                 <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
             </prior>
-            <prior id='startOfLinearityPrior.s:$(n)' x='@startOfLinearity.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='1' upper='15'/>
+            <prior id='acPrior.s:$(n)' x='@ac.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
             </prior>
 ]]>
 
@@ -48,8 +49,8 @@
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
             <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
-            <connect srcID='startOfLinearity.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'/>
+            <connect srcID='ac.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'/>
             <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
@@ -64,8 +65,8 @@
             <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
             </connect>
-            <connect srcID='startOfLinearityWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'>
+            <connect srcID='acWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'>
             </connect>
             <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
@@ -80,8 +81,8 @@
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
             <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
-            <connect srcID='startOfLinearity.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'/>
+            <connect srcID='ac.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'/>
             <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
@@ -97,8 +98,8 @@
             <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
             </connect>
-            <connect srcID='startOfLinearityPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'>
+            <connect srcID='acPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'>
             </connect>
         </subtemplate>
 
@@ -108,14 +109,16 @@
                 <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
                 <parameter id="focalState.s:$(n)" name='focalState' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
-                <parameter id="startOfLinearity.s:$(n)" spec='parameter.IntegerParameter' name='startOfLinearity' value='3' lower='1' upper='15' estimate='false'/>
+                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.5' estimate='true'/>
+                <parameter id="ac.s:$(n)" name='ac' value='1.0' lower='0.5' estimate='true'/>
+                
             </plugin>
             <plugin id='biasMagnitudeWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@biasMagnitude.s:$(n)"/>
             <plugin id='focalStateWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@focalState.s:$(n)"/>
             <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
             <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
-            <plugin id='startOfLinearityWalker.s:$(n)' spec='IntRandomWalkOperator' windowSize="1" weight="0.1" parameter="@startOfLinearity.s:$(n)"/>
+            <plugin id='acWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@ac.s:$(n)"/>
+            
 
             <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
 				<distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
@@ -129,9 +132,10 @@
             <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
                 <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
             </prior>
-            <prior id='startOfLinearityPrior.s:$(n)' x='@startOfLinearity.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='1' upper='15'/>
+            <prior id='acPrior.s:$(n)' x='@ac.s:$(n)'>
+                <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
             </prior>
+            
 ]]>
 
             <connect srcID='biasMagnitude.s:$(n)' targetID='state' inputName='stateNode'
@@ -142,6 +146,8 @@
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
             <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+            <connect srcID='ac.s:$(n)' targetID='state' inputName='stateNode'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'/>
 
 
             <connect srcID='biasMagnitudeWalker.s:$(n)' targetID='mcmc' inputName='operator'
@@ -155,9 +161,10 @@
             <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
             </connect>
-            <connect srcID='startOfLinearityWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'>
+            <connect srcID='acWalker.s:$(n)' targetID='mcmc' inputName='operator'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'>
             </connect>
+            
 
             <connect srcID='biasMagnitude.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
@@ -167,8 +174,9 @@
                      if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
             <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
-            <connect srcID='startOfLinearity.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'/>
+            <connect srcID='ac.s:$(n)' targetID='tracelog' inputName='log'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'/>
+            
 
             <connect srcID='biasMagnitudePrior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
@@ -182,9 +190,10 @@
             <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
                      if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
             </connect>
-            <connect srcID='startOfLinearityPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(startOfLinearity.s:$(n)) and startOfLinearity.s:$(n)/estimate=true'>
+            <connect srcID='acPrior.s:$(n)' targetID='prior' inputName='distribution'
+                     if='inlikelihood(ac.s:$(n)) and ac.s:$(n)/estimate=true'>
             </connect>
+            
         </subtemplate>
     </mergewith>
 </beast>
