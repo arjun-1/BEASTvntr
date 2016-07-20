@@ -37,7 +37,7 @@ cp release/add-on ~/.beast/2.4/BEASTvntr
 ## Example
 These instructions will show how to infer phylogeny for VNTR data of a set of taxa provided in a [paper](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0007815) by Comas.
 ### Setting up the XML file
-First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beauti.BeautiLauncher` in `beast2/`. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats (homogen), repeats (inhomogen) or nucleotides to import. Select *Repeats (homogen)* and click **OK**.
+First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beauti.BeautiLauncher` in `beast2/`. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats (homogeneous), repeats (in-homogeneous) or nucleotides to import. Select *Repeats (homogeneous)* and click **OK**.
 
 After selecting repeats, we must specify the minimum and maximum repeat which will bound our state space. For *Minimum repeat* specify **1** and for *Maximum repeat* specify **15**, and click **OK**.
 
