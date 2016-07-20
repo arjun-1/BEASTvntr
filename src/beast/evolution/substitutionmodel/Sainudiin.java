@@ -53,7 +53,7 @@ import beast.core.util.Log;
 
 public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> biasMagnitudeInput = new Input<>("biasMagnitude", "magnitude of the mutational bias", Validate.REQUIRED);
-	final public Input<RealParameter> focalStateInput = new Input<>("focalState", "focal state of the mutational bias", Validate.REQUIRED);
+	final public Input<RealParameter> focalPointInput = new Input<>("focalPoint", "focal state of the mutational bias", Validate.REQUIRED);
 	final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
 	final public Input<RealParameter> oneOnA1Input = new Input<>("oneOnA1", "one over the proportionality of mutation rate to repeat length (i - minimum repeat)", Validate.REQUIRED);
 
@@ -140,7 +140,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		}
 
 		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
-		focalStateInput.get().setBounds(focalStateInput.get().getLower(), focalStateInput.get().getUpper());
+		focalPointInput.get().setBounds(focalPointInput.get().getLower(), focalPointInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
 		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
 		
@@ -244,14 +244,14 @@ public class Sainudiin extends SubstitutionModel.Base {
 	protected void setupRateMatrix() {
 		// Since the data is already corrected for minRepeat in FiniteIntegerData,
 		// we always assume minRepeat is 0 in the substitution model. Except for
-		// parameters focalState, which are not from FiniteIntegerData.
+		// parameters focalPoint, which are not from FiniteIntegerData.
 		final double biasMagnitude = biasMagnitudeInput.get().getValue();
-		final double focalState = focalStateInput.get().getValue() - minRepeat;
+		final double focalPoint = focalPointInput.get().getValue() - minRepeat;
 		final double g = gInput.get().getValue();
 		final double oneOnA1 = oneOnA1Input.get().getValue();
 
-		double b0 = biasMagnitude * Math.abs(focalState) / Math.sqrt(focalState * focalState + 1.0);
-		double b1 = -biasMagnitude / (Math.sqrt(focalState * focalState + 1.0));
+		double b0 = biasMagnitude * Math.abs(focalPoint) / Math.sqrt(focalPoint * focalPoint + 1.0);
+		double b1 = -biasMagnitude / (Math.sqrt(focalPoint * focalPoint + 1.0));
 
 		rowSum = new double[nrOfStates];
 		rowSum2 = new double[nrOfStates];

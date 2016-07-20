@@ -60,12 +60,17 @@ public class CSVImporter implements AlignmentImporter {
 	private Object sequenceData;
 	ParseOption choice;
 
-	private void parseFile(File file) throws IOException {
+	private void parseFile(File file, boolean skipFirstLine) throws IOException {
 		BufferedReader fin = new BufferedReader(new FileReader(file));
     List<String> sequenceList = new ArrayList<String>();
 
+    boolean firstLineIsSkipped = false;
     while (fin.ready()) {
     	String line = fin.readLine();
+    	if(skipFirstLine && !firstLineIsSkipped) {
+    		firstLineIsSkipped = true;
+    		continue;
+    	}
     	if ( line.trim().length() == 0 ) {
 				continue;  // Skip blank lines
 			}
@@ -126,62 +131,74 @@ public class CSVImporter implements AlignmentImporter {
 		int minRepeat = -1, maxRepeat = -1;
 		choice = ParseOption.REPEATS_HOMOGEN;
 
-		String[] parseOptions = {"Repeats (homogen)", "Repeats (inhomogen)", "Nucleotides"};
-		String	selectedOption = (String) JOptionPane.showInputDialog(
-				null,
-				"Choose Parsing Option (default: Repeats (homogen))",
-				"Choose Parsing Option",
-				JOptionPane.PLAIN_MESSAGE,
-				null,
-				parseOptions,
-				parseOptions[0]
-			);
-			switch (selectedOption) {
-				case "Repeats (homogen)":
-					choice = ParseOption.REPEATS_HOMOGEN;
-					break;
-				case "Repeats (inhomogen)":
-					choice = ParseOption.REPEATS_INHOMOGEN;
-					break;
-				case "Nucleotides":
-					choice = ParseOption.NUCLEOTIDES;
-					break;
-				default:
-					throw new IllegalArgumentException("No parsing option specified");
-			}
-			switch (choice) {
-				case REPEATS_HOMOGEN:
-				case REPEATS_INHOMOGEN:
-		      JTextField minRepeatField = new JTextField(5);
-		      JTextField maxRepeatField = new JTextField(5);
+		final String[] parseOptions = {"Repeats (homogen)", "Repeats (inhomogen)", "Nucleotides"};
 
-		      JPanel myPanel = new JPanel();
-		      myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+		JPanel myPanel = new JPanel();
+		//myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+		myPanel.add(new JLabel("Parsing method"));
+		DefaultComboBoxModel model = new DefaultComboBoxModel(parseOptions);
+		JComboBox comboBox = new JComboBox(model);
+		myPanel.add(comboBox);
 
-		      myPanel.add(new JLabel("<html>Choose the Minimum and Maximum repeat<br>(Maximum repeat - Minimum repeat >= 0 must hold)</html>"));
-		      myPanel.add(new JLabel("Minimum repeat ( >= 0 ):"));
-		      myPanel.add(minRepeatField);
-		      myPanel.add(new JLabel("Maximum repeat:"));
-		      myPanel.add(maxRepeatField);
+		JCheckBox checkbox = new JCheckBox("Skip first line");
+		myPanel.add(checkbox);
 
-		      int result = JOptionPane.showConfirmDialog(null, myPanel, 
-		               "Please Enter Minimum and Maximum Repeat", JOptionPane.OK_CANCEL_OPTION);
-		      if (result == JOptionPane.OK_OPTION) {
-		      	minRepeat = Integer.parseInt(minRepeatField.getText());
-		        maxRepeat = Integer.parseInt(maxRepeatField.getText());
-					} else {
-						throw new IllegalArgumentException("Minimum and maximum repeat were not specified");
-					}
-					break;
-				case NUCLEOTIDES:
-					break;
+
+    int result = JOptionPane.showConfirmDialog(null, myPanel, 
+             "Choose parsing method", JOptionPane.OK_CANCEL_OPTION);
+    switch (result) {
+    	case JOptionPane.OK_OPTION:
+    		break;
+    	default:
+				throw new IllegalArgumentException("No parsing method specified");
+		}
+
+		switch ((String) comboBox.getSelectedItem()) {
+			case "Repeats (homogen)":
+				choice = ParseOption.REPEATS_HOMOGEN;
+				break;
+			case "Repeats (inhomogen)":
+				choice = ParseOption.REPEATS_INHOMOGEN;
+				break;
+			case "Nucleotides":
+				choice = ParseOption.NUCLEOTIDES;
+				break;
+			default:
+				throw new IllegalArgumentException("No parsing method specified");
+		}
+		switch (choice) {
+			case REPEATS_HOMOGEN:
+			case REPEATS_INHOMOGEN:
+	      JTextField minRepeatField = new JTextField(5);
+	      JTextField maxRepeatField = new JTextField(5);
+
+	      myPanel = new JPanel();
+	      myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
+
+	      myPanel.add(new JLabel("<html>Choose the Minimum and Maximum repeat<br>(Maximum repeat - Minimum repeat >= 0 must hold)</html>"));
+	      myPanel.add(new JLabel("Minimum repeat ( >= 0 ):"));
+	      myPanel.add(minRepeatField);
+	      myPanel.add(new JLabel("Maximum repeat:"));
+	      myPanel.add(maxRepeatField);
+
+	      result = JOptionPane.showConfirmDialog(null, myPanel, 
+	               "Please Enter Minimum and Maximum Repeat", JOptionPane.OK_CANCEL_OPTION);
+	      if (result == JOptionPane.OK_OPTION) {
+	      	minRepeat = Integer.parseInt(minRepeatField.getText());
+	        maxRepeat = Integer.parseInt(maxRepeatField.getText());
+				} else {
+					throw new IllegalArgumentException("Minimum and maximum repeat were not specified");
+				}
+				break;
+			case NUCLEOTIDES:
+				break;
 		}
 
 		String ID = file.getName();
 		ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
 
 		try {
-			parseFile(file);
+			parseFile(file, checkbox.isSelected());
 			// Initialize the datatype for repeats
 			switch(choice) {
 				case REPEATS_HOMOGEN:

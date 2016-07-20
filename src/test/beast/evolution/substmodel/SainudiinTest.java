@@ -15,7 +15,7 @@ public class SainudiinTest extends TestCase {
 		Double[] getPi();
 
 		Double getBiasMagnitude();
-		Double getFocalState();
+		Double getFocalPoint();
 		Double getG();
 		Double getOneOnA1();
 
@@ -40,7 +40,7 @@ public class SainudiinTest extends TestCase {
 			return 0.5;
 		}
 		@Override
-		public Double getFocalState() {
+		public Double getFocalPoint() {
 			return 5.5;
 		}
 		@Override
@@ -95,7 +95,7 @@ public class SainudiinTest extends TestCase {
 			sainudiin.setNrOfStates(15);
 			sainudiin.setMinRepeat(0);
 			sainudiin.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
-				"focalState", test.getFocalState().toString(), 
+				"focalPoint", test.getFocalPoint().toString(), 
 				"g", test.getG().toString(), 
 				"oneOnA1", test.getOneOnA1().toString(),
 				"frequencies", freqs);
@@ -116,7 +116,7 @@ public class SainudiinTest extends TestCase {
 			sainudiinstepwise.setNrOfStates(15);
 			sainudiinstepwise.setMinRepeat(0);
 			sainudiinstepwise.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
-				"focalState", test.getFocalState().toString(), 
+				"focalPoint", test.getFocalPoint().toString(), 
 				"g", "0.0", 
 				"oneOnA1", test.getOneOnA1().toString(),
 				"frequencies", freqs);

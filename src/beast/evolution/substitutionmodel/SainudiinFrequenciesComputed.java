@@ -58,7 +58,7 @@ public class SainudiinFrequenciesComputed extends Sainudiin {
 		setStateBoundsFromAlignment();
 
 		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
-		focalStateInput.get().setBounds(focalStateInput.get().getLower(), focalStateInput.get().getUpper());
+		focalPointInput.get().setBounds(focalPointInput.get().getLower(), focalPointInput.get().getUpper());
 		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
 		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
 		

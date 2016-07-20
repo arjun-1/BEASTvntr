@@ -37,7 +37,7 @@ cp release/add-on ~/.beast/2.4/BEASTvntr
 ## Example
 These instructions will show how to infer phylogeny for VNTR data of a set of taxa provided in a [paper](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0007815) by Comas.
 ### Setting up the XML file
-First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beauti.BeautiLauncher` in `beast2/`. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats or nucleotides to import. Select *Repeats* and click **OK**.
+First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beauti.BeautiLauncher` in `beast2/`. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats (homogen), repeats (inhomogen) or nucleotides to import. Select *Repeats (homogen)* and click **OK**.
 
 After selecting repeats, we must specify the minimum and maximum repeat which will bound our state space. For *Minimum repeat* specify **1** and for *Maximum repeat* specify **15**, and click **OK**.
 
@@ -50,8 +50,8 @@ To save the configuration in an XML file, click **File > save** and save as **co
 Start BEAST2, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beastapp.BeastLauncher` in `beast2/`, and select comas2009_VNTR.xml. If everything went right, you should see the MCMC run starting:
 ```text
 Start likelihood: -6033.8021475437245 
-Writing file comas_VNTR.log
-Writing file comas_VNTR.trees
+Writing file comas2009_VNTR.log
+Writing file comas2009_VNTR.trees
          Sample      posterior ESS(posterior)     likelihood          prior
               0     -6024.6925              N     -5830.8518      -193.8406 --
            1000     -3573.9178         2.0        -3260.2564      -313.6613 --
@@ -62,14 +62,14 @@ Writing file comas_VNTR.trees
 ## Background
 To infer phylogeny, BEASTvntr uses two implementations of a model explained in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. The first implementation is called *Sainudiin* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. The second implementation called *Sainudiin Frequencies Computed*, is the same as *Sainudiin*, except that the frequencies of the states in the root node are given by the stationary distribution, which is calculated from the other model parameters. 
 
-These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b_0, b_1`. However, BEASTvntr uses a transformation of these parameters:
+These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b0, b1`. However, BEASTvntr uses a transformation of these parameters:
 ```
-b_0 =  biasMagnitude / sqrt( 1 + 1 / focalPoint^2 )
-b_1 = -biasMagnitude / sqrt( 1 + focalPoint^2 )
+b0 =  biasMagnitude / sqrt(1 + 1 / focalPoint^2)
+b1 = -biasMagnitude / sqrt(1 + focalPoint^2)
 ```
 This was done so that the equation
 ```
-beta(b_0, b_1, focalPoint) = 1 - beta(b_0, b_1, focalPoint)
+beta(b0, b1, focalPoint) = 1 - beta(b0, b1, focalPoint)
 ```
 is always satisfied, i.e. for that `focalPoint` the bias for expansion is equal to that of contraction. This means that `focalPoint` can intuitively be interpreted as the focal point of the mutational bias.
 
@@ -77,7 +77,7 @@ In addition, the proportionality of the mutation rate to the number of repeats, 
 ```
 oneOnA1 = 1 / a1
 ```
-For the cases where the mutation rate of the minimum repeat is far lower than that of the other repeats, `a1` blows up, whilst `oneOnA1` remains constrained.
+For the cases where the mutation rate of the minimum repeat is significantly lower than that of the other repeats, `a1` blows up, whilst `oneOnA1` remains constrained.
 
 ##Known Issues
 During a MCMC run, it is possible that the likelihood makes a sudden unrealistic increase, and that the trace of estimated parameters becomes a flat line:
@@ -87,7 +87,7 @@ During a MCMC run, it is possible that the likelihood makes a sudden unrealistic
 The cause of this issue might be that too many parameters are being estimated in the model. If you encounter such an issue, doing any of the following might resolve it:  
 1. Pass `-beagle_scaling none` as an option to beast.  
 2. Use *SainudiinStepWise* instead of *Sainudiin* as substitution model. The *SainudiinStepWise*   does not estimate the frequencies of the repeats, thus this greatly reduces any over-parametrization.  
-3. Use more restrictive priors on any of the parameters `r_b, i_eq, g, a_1` of the model.  
+3. Use more restrictive priors on any of the parameters `biasMagnitude, focalPoint, g, oneOnA1` of the model.  Bounding `oneOnA1` from above seems to be most helpful.
 4. Remove any duplicate VNTR sequence in the imported alignment.
 
 See [this](https://groups.google.com/forum/#!topic/beast-users/ScG6PEZTADE) forum post for more information on a similar problem.
