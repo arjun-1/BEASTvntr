@@ -165,7 +165,7 @@
 	<!-- JUnit test -->
 	<target name="junitBEASTvntr">
 		<mkdir dir="${report}" />
-		<junit printsummary="yes"> <!--showoutput='yes'-->
+		<junit printsummary="yes" haltonfailure="yes"> <!--showoutput='yes'-->
 			<classpath>
 				<path refid="classpath" />
 				<path location="${buildvntr}" />

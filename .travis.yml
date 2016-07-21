@@ -1,0 +1,11 @@
+language: java
+jdk:
+  - oraclejdk8
+install:
+ - git clone https://github.com/CompEvol/beast2.git "${TRAVIS_BUILD_DIR}/../beast2"
+ - cd "${TRAVIS_BUILD_DIR}/../beast2"
+ - ant compile-all
+ - cd "${TRAVIS_BUILD_DIR}"
+script: 
+ - ant compile-allBEASTvntr
+ - ant junitBEASTvntr
