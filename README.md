@@ -65,8 +65,8 @@ To infer phylogeny, BEASTvntr uses two implementations of a model explained in a
 
 These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b0, b1`. However, BEASTvntr uses a transformation of these parameters:
 ```
-b0 =  biasMagnitude / sqrt(1 + 1 / focalPoint^2)
-b1 = -biasMagnitude / sqrt(1 + focalPoint^2)
+b0 =  biasMagnitude / sqrt(1 + 1 / (focalPoint - minimum repeat)^2)
+b1 = -biasMagnitude / sqrt(1 + (focalPoint - minimum repeat)^2)
 ```
 This was done so that the equation
 ```
