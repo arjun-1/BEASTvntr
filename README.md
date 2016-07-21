@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/arjun-1/BEASTvntr.svg?branch=master)](https://travis-ci.org/arjun-1/BEASTvntr)
 # BEASTvntr
 
 A package for BEAST2 which can infer phylogeny for VNTR (=Variable Number of Tandem Repeat) data.
@@ -8,7 +9,7 @@ Note that BEASTvntr only works with BEAST 2.4.3, which is not released yet. In o
 To install BEASTvntr manually, download the [latest release](https://github.com/arjun-1/BEASTvntr/releases/download/v0.0.2/BEASTvntr.addon.v0.0.2.zip) and extract the contents into its own folder in `~/.beast/2.4/`.
 ## Building from Source
 
-These instructions will get you a copy of the BEASTvntr project up and running on for development and testing purposes.
+These instructions will get you a copy of the BEASTvntr project up and running for development and testing purposes.
 
 ### Prerequisities
 
@@ -85,10 +86,10 @@ During a MCMC run, it is possible that the likelihood makes a sudden unrealistic
 <img src="https://cloud.githubusercontent.com/assets/8102654/16612531/bd0c3032-4367-11e6-8b60-1873ff80aef8.png" alt="alt text" width="680" height="472">
 
 The cause of this issue might be that too many parameters are being estimated in the model. If you encounter such an issue, doing any of the following might resolve it:  
-1. Pass `-beagle_scaling none` as an option to beast.  
-2. Use *Sainudiin Frequencies Computed* instead of *Sainudiin* as substitution model. The *Sainudiin Frequencies Computed*   does not estimate the frequencies of the repeats, thus this greatly reduces any over-parametrization.  
-3. Use more restrictive priors on any of the parameters `biasMagnitude, focalPoint, g, oneOnA1` of the model.  Bounding `oneOnA1` from above seems to be most helpful.
-4. Remove any duplicate VNTR sequence in the imported alignment.
+* Pass `-beagle_scaling none` as an option to beast.  
+* Use *Sainudiin Frequencies Computed* instead of *Sainudiin* as substitution model. The *Sainudiin Frequencies Computed*   does not estimate the frequencies of the repeats, thus this greatly reduces any over-parametrization.  
+* Use more restrictive priors on any of the parameters `biasMagnitude, focalPoint, g, oneOnA1` of the model.  Bounding `oneOnA1` from above seems to be most helpful.  
+* Remove any duplicate VNTR sequence in the imported alignment.
 
 See [this](https://groups.google.com/forum/#!topic/beast-users/ScG6PEZTADE) forum post for more information on a similar problem.
 
