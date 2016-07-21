@@ -54,7 +54,7 @@ public class SainudiinTest extends TestCase {
 		
 		@Override
 		public double getDistance() {
-			return 0.5*4.605555574877618;
+			return 0.5*5.098426256228357;
 		}
 		// The expected result is an unnormalized matrix Q from Mathematica
 		@Override
