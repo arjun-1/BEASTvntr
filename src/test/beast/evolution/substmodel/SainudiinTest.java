@@ -60,7 +60,7 @@ public class SainudiinTest extends TestCase {
 		// Precision is 15.9546 effective digits according to Mathematica.
 		@Override
 		public double getDistance() {
-			return 0.5*4.605555567613761;
+			return 0.5*5.098426256228357;
 		}
 		// The expected result is an unnormalized matrix P from Mathematica.
 		// Precision is 15.9546 effective digits according to Mathematica.

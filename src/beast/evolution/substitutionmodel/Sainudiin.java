@@ -186,7 +186,7 @@ public class Sainudiin extends SubstitutionModel.Base {
 		double normalization = 0.0;
 
 		for (i = 0; i < nrOfStates; i++) {
-			normalization += stationaryDistribution[i] * rowSum[i];
+			normalization += stationaryDistribution[i] * rowSum2[i];
 		}
 
 		distance /= normalization;
