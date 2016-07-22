@@ -1,5 +1,5 @@
 /*
-* File SainudiinFrequenciesComputed.java
+* File SainudiinComputedFrequenciesVanilla.java
 *
 * Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
 *
@@ -39,15 +39,16 @@ import beast.core.util.Log;
 	"  where the frequencies of the root node are computed from the model.")
 @Citation(value = 
 	"Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models.\n" +
-	"  Genetics 168:383–395\n\n" + 
+	"  Genetics 168:383–395", year = 2004, firstAuthorSurname = "sainudiin")
+@Citation(value =
 	"Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
 	"  Microsatellite Mutation Models, Population History and Genealogies\n" + 
 	"  Using Transdimensional Markov Chain Monte Carlo.\n" + 
 	"  Genetics 188:151-164",
-	DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
+	DOI= "10.1534/genetics.103.022665", year = 2011, firstAuthorSurname = "wu")
 
-public class SainudiinFrequenciesComputed extends Sainudiin {
-	public SainudiinFrequenciesComputed() {
+public class SainudiinComputedFrequenciesVanilla extends SainudiinVanilla {
+	public SainudiinComputedFrequenciesVanilla() {
 		// this is added to avoid a parsing error inherited from superclass because frequencies are not provided.
 		frequenciesInput.setRule(Validate.OPTIONAL);
 	}
@@ -56,17 +57,13 @@ public class SainudiinFrequenciesComputed extends Sainudiin {
 	public void initAndValidate() {
 		updateMatrix = true;
 		setStateBoundsFromAlignment();
-
-		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
-		focalPointInput.get().setBounds(focalPointInput.get().getLower(), focalPointInput.get().getUpper());
-		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
+		setParameterBounds();
 		
 		eigenSystem = new DefaultEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
 
 		if (frequenciesInput.get() != null) {
-			throw new RuntimeException("Frequencies must not be specified in SainudiinFrequenciesComputed. The Frequencies are calculated from the other parameters.");
+			throw new RuntimeException("Frequencies must not be specified in SainudiinComputedFrequenciesVanilla. The Frequencies are calculated from the other parameters.");
 		}
 	}
 

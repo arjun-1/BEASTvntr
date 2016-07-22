@@ -137,8 +137,7 @@ public class CSVImporter implements AlignmentImporter {
 		JPanel myPanel = new JPanel();
 		//myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
 		myPanel.add(new JLabel("Parsing method"));
-		DefaultComboBoxModel model = new DefaultComboBoxModel(parseOptions);
-		JComboBox comboBox = new JComboBox(model);
+		JComboBox<String> comboBox = new JComboBox<>(parseOptions);
 		myPanel.add(comboBox);
 
 		JCheckBox checkbox = new JCheckBox("Skip first line");

@@ -44,12 +44,13 @@ import beast.core.util.Log;
 	"  Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
 @Citation(value = 
 	"Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models.\n" +
-	"  Genetics 168:383–395\n\n" + 
+	"  Genetics 168:383–395", year = 2004, firstAuthorSurname = "sainudiin")
+@Citation(value =
 	"Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
 	"  Microsatellite Mutation Models, Population History and Genealogies\n" + 
 	"  Using Transdimensional Markov Chain Monte Carlo.\n" + 
 	"  Genetics 188:151-164",
-	DOI= "10.1534/genetics.103.022665", year = 2004, firstAuthorSurname = "sainudiin")
+	DOI= "10.1534/genetics.103.022665", year = 2011, firstAuthorSurname = "wu")
 
 public class Sainudiin extends SubstitutionModel.Base {
 	final public Input<RealParameter> biasMagnitudeInput = new Input<>("biasMagnitude", "magnitude of the mutational bias", Validate.REQUIRED);
@@ -67,12 +68,12 @@ public class Sainudiin extends SubstitutionModel.Base {
 
 	protected double[] stationaryDistribution;
 	private int minRepeat;
-	private double[] rowSum;
-	private double[] rowSum2;
+	protected double[] rowSum;
+	protected double[] rowSum2;
 
 	// setStateBoundsFromAlignment navigates the graph of beast objects, 
 	// to find the alignment and find the nrOfStates and minRepeat.
-	public void setStateBoundsFromAlignment() {
+	protected void setStateBoundsFromAlignment() {
 		for (Object beastObjecti : getOutputs()) {
 			if (beastObjecti instanceof SiteModel) {
 				SiteModel sitemodel = (SiteModel) beastObjecti;
@@ -88,6 +89,13 @@ public class Sainudiin extends SubstitutionModel.Base {
 				break;
 			}
 		}
+	}
+
+	protected void setParameterBounds() {
+		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
+		focalPointInput.get().setBounds(focalPointInput.get().getLower(), focalPointInput.get().getUpper());
+		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
+		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
 	}
 
 	// setNrOfStates and setMinRepeat are required to set the state bounds during
@@ -138,16 +146,11 @@ public class Sainudiin extends SubstitutionModel.Base {
 					frequencies.getFreqs().length + ". Attempted correction failed."
 				);
 		}
+		
+		setParameterBounds();
 
-		biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
-		focalPointInput.get().setBounds(focalPointInput.get().getLower(), focalPointInput.get().getUpper());
-		gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-		oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
-		
-		
 		//eigenSystem = new DefaultEigenSystem(nrOfStates);
 		eigenSystem = new EJMLEigenSystem(nrOfStates);
-
 		rateMatrix = new double[nrOfStates][nrOfStates];
 	}
 
