@@ -9,8 +9,6 @@ import beast.evolution.alignment.Alignment;
 import junit.framework.TestCase;;
 
 public class FiniteIntegerDataTest extends TestCase {
-
-	
 	@Test
 	public void testFiniteIntegerData() {
 		FiniteIntegerData datatype = new FiniteIntegerData();
@@ -35,23 +33,19 @@ public class FiniteIntegerDataTest extends TestCase {
 		assertEquals('0' + 11, datatype.getChar(11));
 		assertEquals('0' + 12, datatype.getChar(12));
 
-		int[] statesTest;
-		statesTest = new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12};
+		final int[] expectedAll = new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12};
+		final int[] expected0 = new int[]{0};
+		final int[] expected1 = new int[]{1};
+		final int[] expected10 = new int[]{10};
+		final int[] expected12 = new int[]{12};
 
-		assertArrayEquals(statesTest, datatype.getStatesForCode(-2));
-		assertArrayEquals(statesTest, datatype.getStatesForCode(-1));
+		assertArrayEquals(expectedAll, datatype.getStatesForCode(-2));
+		assertArrayEquals(expectedAll, datatype.getStatesForCode(-1));
 
-		statesTest = new int[]{0};
-		assertArrayEquals(statesTest, datatype.getStatesForCode(0));
-
-		statesTest = new int[]{1};
-		assertArrayEquals(statesTest, datatype.getStatesForCode(1));
-
-		statesTest = new int[]{10};
-		assertArrayEquals(statesTest, datatype.getStatesForCode(10));
-
-		statesTest = new int[]{12};
-		assertArrayEquals(statesTest, datatype.getStatesForCode(12));
+		assertArrayEquals(expected0, datatype.getStatesForCode(0));
+		assertArrayEquals(expected1, datatype.getStatesForCode(1));
+		assertArrayEquals(expected10, datatype.getStatesForCode(10));
+		assertArrayEquals(expected12, datatype.getStatesForCode(12));
 
 		Sequence sequence = new Sequence();
 		sequence.init(13, "myTaxon", "5,6,16,17");
