@@ -59,7 +59,8 @@ public class SainudiinComputedFrequencies extends Sainudiin {
 		setStateBoundsFromAlignment();
 		setParameterBounds();
 		
-		eigenSystem = new DefaultEigenSystem(nrOfStates);
+		//eigenSystem = new DefaultEigenSystem(nrOfStates);
+		eigenSystem = new EJMLEigenSystem(nrOfStates);
 		rateMatrix = new double[nrOfStates][nrOfStates];
 
 		if (frequenciesInput.get() != null) {

@@ -136,7 +136,7 @@ public class CSVImporter implements AlignmentImporter {
 
 		JPanel myPanel = new JPanel();
 		//myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
-		myPanel.add(new JLabel("Parsing method"));
+		myPanel.add(new JLabel("Parse as:"));
 		JComboBox<String> comboBox = new JComboBox<>(parseOptions);
 		myPanel.add(comboBox);
 
