@@ -38,7 +38,7 @@ cp release/add-on ~/.beast/2.4/BEASTvntr
 ## Example
 These instructions will show how to infer phylogeny for VNTR data of a set of taxa provided in a [paper](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0007815) by Comas.
 ### Setting up the XML file
-First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beauti.BeautiLauncher` in `beast2/`. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats (homogeneous), repeats (in-homogeneous) or nucleotides to import. Select *Repeats (homogeneous)* and click **OK**.
+First download [comas2009_VNTR.csv](examples/csv/comas2009_VNTR.csv) which contains the repeats in CSV format. Start Beauti, either via its shortcut or by running `java -cp build/dist/launcher.jar beast.app.beauti.BeautiLauncher` in `beast2/`. In the Beauti window, click **File > Import Alignment** and select *comas2009_VNTR.csv*. In the window that appears, we can either select repeats (single partition), repeats (multiple partitions) or nucleotides to import. Select *Repeats (single partition)* and click **OK**.
 
 After selecting repeats, we must specify the minimum and maximum repeat which will bound our state space. For *Minimum repeat* specify **1** and for *Maximum repeat* specify **15**, and click **OK**.
 
@@ -61,9 +61,11 @@ Writing file comas2009_VNTR.trees
 ```
 
 ## Background
-To infer phylogeny, BEASTvntr uses two implementations of a model explained in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. The first implementation is called *Sainudiin* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. The second implementation called *Sainudiin Frequencies Computed*, is the same as *Sainudiin*, except that the frequencies of the states in the root node are given by the stationary distribution, which is calculated from the other model parameters. 
+To infer phylogeny, BEASTvntr uses a model described in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. Of this model, several implementations are available.
 
-These implementations use a modified for expression for the mutational bias beta however, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b0, b1`. However, BEASTvntr uses a transformation of these parameters:
+The standard implementation is called *Sainudiin Vanilla* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. *Sainudiin Computed Frequencies Vanilla* is a variant on the above model, where the frequencies of the states in the root node are given by the stationary distribution, which is calculated from the other model parameters. 
+
+All these implementations use a modified for expression for the mutational bias `beta`, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b0, b1`. The implementations *Sainudiin* and *Sainudiin Computed Frequencies* are an adaptation of the standard *Vanilla* models, which use a transformation of these parameters, given by:
 ```
 b0 =  biasMagnitude / sqrt(1 + 1 / (focalPoint - minimum repeat)^2)
 b1 = -biasMagnitude / sqrt(1 + (focalPoint - minimum repeat)^2)

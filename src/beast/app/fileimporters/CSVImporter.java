@@ -132,7 +132,7 @@ public class CSVImporter implements AlignmentImporter {
 		int minRepeat = -1, maxRepeat = -1;
 		choice = ParseOption.REPEATS_HOMOGEN;
 
-		final String[] parseOptions = {"Repeats (homogeneous)", "Repeats (in-homogeneous)", "Nucleotides"};
+		final String[] parseOptions = {"Repeats (single partition)", "Repeats (multiple partitions)", "Nucleotides"};
 
 		JPanel myPanel = new JPanel();
 		//myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
@@ -154,10 +154,10 @@ public class CSVImporter implements AlignmentImporter {
 		}
 
 		switch ((String) comboBox.getSelectedItem()) {
-			case "Repeats (homogeneous)":
+			case "Repeats (single partition)":
 				choice = ParseOption.REPEATS_HOMOGEN;
 				break;
-			case "Repeats (in-homogeneous)":
+			case "Repeats (multiple partitions)":
 				choice = ParseOption.REPEATS_INHOMOGEN;
 				break;
 			case "Nucleotides":
