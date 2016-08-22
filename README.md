@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/arjun-1/BEASTvntr.svg?branch=master)](https://travis-ci.org/arjun-1/BEASTvntr) [![GitHub version](https://badge.fury.io/gh/arjun-1%2FBEASTvntr.svg)](https://badge.fury.io/gh/arjun-1%2FBEASTvntr)  [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://raw.githubusercontent.com/arjun-1/BEASTvntr/master/COPYING.LESSER)
 # BEASTvntr
 
-A package for BEAST2 which can infer phylogeny for VNTR (=Variable Number of Tandem Repeat) data.
+A package for [BEAST2](https://github.com/CompEvol/beast2) 2.4.3 or higher, which can infer phylogeny for VNTR (=Variable Number of Tandem Repeat) data.
 
-## Pre-built Package
-Note that BEASTvntr only works with BEAST 2.4.3, which is not released yet. In order to have a working version of BEASTvntr, you have to build from source.
+## Installation 
+To install BEASTvntr from the BEAST2 Package Manager in Beauti, go to **File > Manage Packages**, select *BEASTvntr* and click **Install/Upgrade**.
 
 To install BEASTvntr manually, download the [latest release](https://github.com/arjun-1/BEASTvntr/releases/download/v0.1.0/BEASTvntr.addon.v0.1.0.zip) and extract the contents into its own folder in `~/.beast/2.4/`.
 ## Building from Source
@@ -63,7 +63,7 @@ Writing file comas2009_VNTR.trees
 ## Background
 To infer phylogeny, BEASTvntr uses a model described in a [paper](http://www.genetics.org/content/168/1/383.long) by Sainudiin. Of this model, several implementations are available.
 
-The standard implementation is called *Sainudiin Vanilla* and can model a mutational bias, mutation rate proportionality, and any multi-step mutations. *Sainudiin Computed Frequencies Vanilla* is a variant on the above model, where the frequencies of the states in the root node are given by the stationary distribution, which is calculated from the other model parameters. 
+The standard implementation is called *Sainudiin Vanilla* and can model mutational bias, mutation rate proportionality, and any multi-step mutations. *Sainudiin Computed Frequencies Vanilla* is a variant on the above model, where the frequencies of the states in the root node are given by the stationary distribution, which is calculated from the other model parameters. 
 
 All these implementations use a modified for expression for the mutational bias `beta`, which is described in a [paper](http://www.genetics.org/content/188/1/151.long) by Wu. In this expression, the bias `beta` for expansion given a mutation event, depends on the parameters `b0, b1`. The implementations *Sainudiin* and *Sainudiin Computed Frequencies* are an adaptation of the standard *Vanilla* models, which use a transformation of these parameters, given by:
 ```
@@ -88,7 +88,7 @@ During a MCMC run, it is possible that the likelihood makes a sudden unrealistic
 <img src="https://cloud.githubusercontent.com/assets/8102654/16612531/bd0c3032-4367-11e6-8b60-1873ff80aef8.png" alt="alt text" width="680" height="472">
 
 The cause of this issue might be that too many parameters are being estimated in the model. If you encounter such an issue, doing any of the following might resolve it:  
-* Pass `-beagle_scaling none` as an option to beast.  
+* When using the beagle library, pass `-beagle_single` as an option to beast, or try other scaling options.  
 * Use *Sainudiin Frequencies Computed* instead of *Sainudiin* as substitution model. The *Sainudiin Frequencies Computed*   does not estimate the frequencies of the repeats, thus this greatly reduces any over-parametrization.  
 * Use more restrictive priors on any of the parameters `biasMagnitude, focalPoint, g, oneOnA1` of the model.  Bounding `oneOnA1` from above seems to be most helpful.  
 * Remove any duplicate VNTR sequence in the imported alignment.

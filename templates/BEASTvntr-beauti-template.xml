@@ -11,7 +11,7 @@
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
                 <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' estimate='true'/>
                 <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
-                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='16' value='0.0625' lower='0' upper='1'/>
+                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
                     <!-- dimension and value get's corrected by Sainudiin -->
                 </frequencies>
             </plugin>
@@ -167,7 +167,7 @@
                 <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
                 <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
                 <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
-                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='16' value='0.0625' lower='0' upper='1'/>
+                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
                     <!-- dimension and value get's corrected by Sainudiin -->
                 </frequencies>
             </plugin>
