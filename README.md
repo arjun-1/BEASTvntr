@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/arjun-1/BEASTvntr.svg?branch=master)](https://travis-ci.org/arjun-1/BEASTvntr) [![GitHub version](https://badge.fury.io/gh/arjun-1%2FBEASTvntr.svg)](https://badge.fury.io/gh/arjun-1%2FBEASTvntr)  [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://raw.githubusercontent.com/arjun-1/BEASTvntr/master/COPYING.LESSER)
+[![Build Status](https://travis-ci.org/arjun-1/BEASTvntr.svg?branch=master)](https://travis-ci.org/arjun-1/BEASTvntr) [![GitHub version](https://badge.fury.io/gh/arjun-1%2FBEASTvntr.svg)](https://badge.fury.io/gh/arjun-1%2Fbeastvntr.svg)  [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://raw.githubusercontent.com/arjun-1/BEASTvntr/master/COPYING.LESSER)
 # BEASTvntr
 
 A package for [BEAST2](https://github.com/CompEvol/beast2) 2.4.3 or higher, which can infer phylogeny for VNTR (=Variable Number of Tandem Repeat) data.
