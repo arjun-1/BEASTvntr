@@ -28,30 +28,30 @@ import org.ejml.ops.CommonOps;
 import org.ejml.ops.EigenOps;
 
 public class EJMLEigenSystem implements EigenSystem {
-	private final int stateCount;
+  private final int stateCount;
 
-	public EJMLEigenSystem(int stateCount) {
-		this.stateCount = stateCount;
-	}
+  public EJMLEigenSystem(int stateCount) {
+    this.stateCount = stateCount;
+  }
 
-	@Override
-	public EigenDecomposition decomposeMatrix(double[][] qMatrix) {
-		DenseMatrix64F rateMatrix = new DenseMatrix64F(qMatrix);
-		org.ejml.interfaces.decomposition.EigenDecomposition<DenseMatrix64F> eig = DecompositionFactory.eig(stateCount, true);
-		eig.decompose(rateMatrix);
-		DenseMatrix64F eigenVectors = EigenOps.createMatrixV(eig);
-		//DenseMatrix64F eigenValues = EigenOps.createMatrixD(eig);
-		DenseMatrix64F inverseEigenVectors = new DenseMatrix64F(stateCount, stateCount);
-		CommonOps.invert(eigenVectors, inverseEigenVectors);
+  @Override
+  public EigenDecomposition decomposeMatrix(double[][] qMatrix) {
+    DenseMatrix64F rateMatrix = new DenseMatrix64F(qMatrix);
+    org.ejml.interfaces.decomposition.EigenDecomposition<DenseMatrix64F> eig = DecompositionFactory.eig(stateCount, true);
+    eig.decompose(rateMatrix);
+    DenseMatrix64F eigenVectors = EigenOps.createMatrixV(eig);
+    //DenseMatrix64F eigenValues = EigenOps.createMatrixD(eig);
+    DenseMatrix64F inverseEigenVectors = new DenseMatrix64F(stateCount, stateCount);
+    CommonOps.invert(eigenVectors, inverseEigenVectors);
 
-		double[] flatEvec = eigenVectors.getData();
-		double[] flatIevc = inverseEigenVectors.getData();
+    double[] flatEvec = eigenVectors.getData();
+    double[] flatIevc = inverseEigenVectors.getData();
 
-		double[] Eval = new double[stateCount];
-		for(int i=0; i<stateCount; i++) {
-			Eval[i] = eig.getEigenvalue(i).real;
-		}
-		return new EigenDecomposition(flatEvec, flatIevc, Eval);
-	}
+    double[] Eval = new double[stateCount];
+    for(int i=0; i<stateCount; i++) {
+      Eval[i] = eig.getEigenvalue(i).real;
+    }
+    return new EigenDecomposition(flatEvec, flatIevc, Eval);
+  }
 }
 

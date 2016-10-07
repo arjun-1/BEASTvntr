@@ -1,239 +1,239 @@
 <!-- Build BEASTvntr. JUnit test is available for this build. -->
 <project basedir="." default="build_jar_all_BEASTvntr" name="BUILD_BEAST_vntr">
-	<description>
-	    Build BEASTvntr.
-	    JUnit test is available for this build.
-	    $Id: build_BEAST_II.xml $
-	</description>
+  <description>
+      Build BEASTvntr.
+      JUnit test is available for this build.
+      $Id: build_BEAST_II.xml $
+  </description>
 
-	<!-- set global properties for this build -->
-	<property name="srcvntr" location="../BEASTvntr/src" />
-	<property name="buildvntr" location="../BEASTvntr/build" />
-	<property name="libvntr" location="../BEASTvntr/lib" />
-	<property name="release_dir" value="release" />
-	<property name="distvntr" location="${buildvntr}/dist" />
-	<property name="beast2path" location="../beast2" />
-	<property name="srcBeast2" location="${beast2path}/src" />
-	<property name="beast2classpath" location="${beast2path}/build" />
-	<property name="Add_on_dir" value="${release_dir}/add-on" />
-	<property name="version" value="0.1.0" />
+  <!-- set global properties for this build -->
+  <property name="srcvntr" location="../BEASTvntr/src" />
+  <property name="buildvntr" location="../BEASTvntr/build" />
+  <property name="libvntr" location="../BEASTvntr/lib" />
+  <property name="release_dir" value="release" />
+  <property name="distvntr" location="${buildvntr}/dist" />
+  <property name="beast2path" location="../beast2" />
+  <property name="srcBeast2" location="${beast2path}/src" />
+  <property name="beast2classpath" location="${beast2path}/build" />
+  <property name="Add_on_dir" value="${release_dir}/add-on" />
+  <property name="version" value="0.1.0" />
 
     <import file="${beast2path}/build.xml" />
 
 
-	<property name="main_class_BEAST" value="beast.app.BeastMCMC" />
-	<property name="report" value="${buildvntr}/junitreport"/>
+  <property name="main_class_BEAST" value="beast.app.BeastMCMC" />
+  <property name="report" value="${buildvntr}/junitreport"/>
 
-	<path id="classpath">
+  <path id="classpath">
         <pathelement path="${buildvntr}"/>
-		<fileset dir="${libvntr}" includes="junit-4.8.2.jar"/>
-		<fileset dir="${libvntr}" includes="EJML-core-0.29.jar"/>
-		<fileset dir="${libvntr}" includes="EJML-dense64-0.29.jar"/>
-		<fileset dir="${beast2path}/lib" includes="jam.jar"/>
-		<fileset dir="${beast2path}/lib" includes="beagle.jar"/>
-		<fileset dir="${beast2path}/lib" includes="fest.jar"/>
-		<fileset dir="${beast2path}/lib" includes="colt.jar"/>
-		<fileset dir="${beast2path}/lib" includes="antlr-runtime-4.5.jar"/>
-		<fileset dir="${beast2path}/lib" includes="commons-math3-3.1.1.jar"/>
+    <fileset dir="${libvntr}" includes="junit-4.8.2.jar"/>
+    <fileset dir="${libvntr}" includes="EJML-core-0.29.jar"/>
+    <fileset dir="${libvntr}" includes="EJML-dense64-0.29.jar"/>
+    <fileset dir="${beast2path}/lib" includes="jam.jar"/>
+    <fileset dir="${beast2path}/lib" includes="beagle.jar"/>
+    <fileset dir="${beast2path}/lib" includes="fest.jar"/>
+    <fileset dir="${beast2path}/lib" includes="colt.jar"/>
+    <fileset dir="${beast2path}/lib" includes="antlr-runtime-4.5.jar"/>
+    <fileset dir="${beast2path}/lib" includes="commons-math3-3.1.1.jar"/>
         <pathelement path="${beast2classpath}"/>
-	</path>
+  </path>
 
-	<!-- start -->
-	<target name="initBEASTvntr">
-		<echo message="${ant.project.name}: ${ant.file}" />
-	</target>
+  <!-- start -->
+  <target name="initBEASTvntr">
+    <echo message="${ant.project.name}: ${ant.file}" />
+  </target>
 
-	<target name="cleanBEASTvntr">
-    	<delete dir="${buildvntr}" />
-	</target>
+  <target name="cleanBEASTvntr">
+      <delete dir="${buildvntr}" />
+  </target>
 
-	<!-- clean previous build, and then compile Java source code, and Juint test -->
-	<target name="build_all_BEASTvntr" depends="cleanBEASTvntr,compile-allBEASTvntr,junitBEASTvntr"
+  <!-- clean previous build, and then compile Java source code, and Juint test -->
+  <target name="build_all_BEASTvntr" depends="cleanBEASTvntr,compile-allBEASTvntr,junitBEASTvntr"
         description="Clean and Build all run-time stuff">
-	</target>
+  </target>
 
-	<!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
-	<target name="build_jar_all_BEASTvntr" depends="cleanBEASTvntr,compile-allBEASTvntr,junitBEASTvntr,dist_all_BEASTvntr"
+  <!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
+  <target name="build_jar_all_BEASTvntr" depends="cleanBEASTvntr,compile-allBEASTvntr,junitBEASTvntr,dist_all_BEASTvntr"
         description="Clean and Build all run-time stuff">
-	</target>
+  </target>
 
 
-	<!-- No JUnit Test, clean previous build, compile Java source code, and make the BEASTvntr.jar and beauti.jar -->
-	<target name="build_jar_all_BEASTvntr_NoJUnitTest" depends="cleanBEASTvntr,compile-allBEASTvntr,dist_all_BEASTvntr"
+  <!-- No JUnit Test, clean previous build, compile Java source code, and make the BEASTvntr.jar and beauti.jar -->
+  <target name="build_jar_all_BEASTvntr_NoJUnitTest" depends="cleanBEASTvntr,compile-allBEASTvntr,dist_all_BEASTvntr"
         description="Clean and Build all run-time stuff">
-	</target>
+  </target>
 
-	<!-- compile Java source code -->
-	<target name="compile-allBEASTvntr" depends="initBEASTvntr">
+  <!-- compile Java source code -->
+  <target name="compile-allBEASTvntr" depends="initBEASTvntr">
 
 
-	    <!-- Capture the path as a delimited property using the refid attribute -->
-	    <property name="myclasspath" refid="classpath"/>
-	    <!-- Emit the property to the ant console -->
-	    <echo message="Classpath = ${myclasspath}"/>
+      <!-- Capture the path as a delimited property using the refid attribute -->
+      <property name="myclasspath" refid="classpath"/>
+      <!-- Emit the property to the ant console -->
+      <echo message="Classpath = ${myclasspath}"/>
 
-		<mkdir dir="${buildvntr}" />
+    <mkdir dir="${buildvntr}" />
 
-		<!-- Compile the java code from ${srcvntr} into ${buildvntr} /bin -->
-		<javac srcdir="${srcvntr}" destdir="${buildvntr}" classpathref="classpath" 
-		       fork="true"
-		       memoryinitialsize="256m"
-		       memorymaximumsize="1024m"
-			   source="1.8"
-		       target="1.8">
-			<include name="beast/**/**" />
-			<!-- compile JUnit test classes -->
-			<include name="test/beast/**" />
-		</javac>
-		<echo message="Successfully compiled." />
-	</target>
+    <!-- Compile the java code from ${srcvntr} into ${buildvntr} /bin -->
+    <javac srcdir="${srcvntr}" destdir="${buildvntr}" classpathref="classpath" 
+           fork="true"
+           memoryinitialsize="256m"
+           memorymaximumsize="1024m"
+         source="1.8"
+           target="1.8">
+      <include name="beast/**/**" />
+      <!-- compile JUnit test classes -->
+      <include name="test/beast/**" />
+    </javac>
+    <echo message="Successfully compiled." />
+  </target>
 
-	<!-- make the BEASTvntr.hjar and TreeAnnotator.jar -->
-	<target name="dist_all_BEASTvntr" depends="compile-allBEASTvntr" description="create BEASTvntr jar">
-		<!-- Create the distribution directory -->
-		<mkdir dir="${distvntr}" />
+  <!-- make the BEASTvntr.hjar and TreeAnnotator.jar -->
+  <target name="dist_all_BEASTvntr" depends="compile-allBEASTvntr" description="create BEASTvntr jar">
+    <!-- Create the distribution directory -->
+    <mkdir dir="${distvntr}" />
 
-		<!-- Put everything in ${buildvntr} into the beast.jar file -->
-		<jar jarfile="${distvntr}/BEASTvntr.jar">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="${main_class_BEAST}" />
-			</manifest>
-			<fileset dir="${buildvntr}">
-				<include name="beast/**/*.class" />
-			</fileset>
-			<fileset dir="${beast2classpath}">
-				<include name="beast/**/*.class" />
-				<include name="beast/**/*.properties" />
-				<include name="beast/**/*.png" />
-				<include name="beagle/**/*.class" />
-				<include name="org/**/*.class" />
-			</fileset>
-			<zipgroupfileset dir="${beast2path}/lib" includes="jam.jar" />
-			<zipgroupfileset dir="${beast2path}/lib" includes="beagle.jar" />
-			<zipgroupfileset dir="${beast2path}/lib" includes="colt.jar" />
-			<zipgroupfileset dir="${beast2path}/lib" includes="commons-math3-3.1.1.jar" />
-			<zipgroupfileset dir="${beast2path}/lib" includes="antlr-runtime-4.5.jar"/>
-		</jar>
+    <!-- Put everything in ${buildvntr} into the beast.jar file -->
+    <jar jarfile="${distvntr}/BEASTvntr.jar">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}" />
+        <attribute name="Main-Class" value="${main_class_BEAST}" />
+      </manifest>
+      <fileset dir="${buildvntr}">
+        <include name="beast/**/*.class" />
+      </fileset>
+      <fileset dir="${beast2classpath}">
+        <include name="beast/**/*.class" />
+        <include name="beast/**/*.properties" />
+        <include name="beast/**/*.png" />
+        <include name="beagle/**/*.class" />
+        <include name="org/**/*.class" />
+      </fileset>
+      <zipgroupfileset dir="${beast2path}/lib" includes="jam.jar" />
+      <zipgroupfileset dir="${beast2path}/lib" includes="beagle.jar" />
+      <zipgroupfileset dir="${beast2path}/lib" includes="colt.jar" />
+      <zipgroupfileset dir="${beast2path}/lib" includes="commons-math3-3.1.1.jar" />
+      <zipgroupfileset dir="${beast2path}/lib" includes="antlr-runtime-4.5.jar"/>
+    </jar>
 
-		<jar jarfile="${distvntr}/treeannotator.jar">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Main-Class" value="beast.app.treeannotator.TreeAnnotator" />
-			</manifest>
-			<fileset dir="${buildvntr}">
-				<include name="beast/**/*.class" />
-			</fileset>
-			<fileset dir="${beast2classpath}">
-				<include name="beast/**/*.class" />
-				<include name="beast/**/*.properties" />
-				<include name="beast/**/*.png" />
-				<include name="beagle/**/*.class" />
-				<include name="org/**/*.class" />
-			</fileset>
-			<zipgroupfileset dir="${beast2path}/lib" includes="jam.jar" />
-			<!--zipgroupfileset dir="${lib}" includes="commons-math-II.0.jar" /-->
-		</jar>
-		<jar jarfile="${distvntr}/BEASTvntr.src.jar">
-			<fileset dir="${srcvntr}">
-				<include name="beast/**/*.java" />
-				<include name="test/**/*.java" />
-				<include name="beast/**/*.png" />
-				<include name="beast/**/*.xsl" />
-			</fileset>
+    <jar jarfile="${distvntr}/treeannotator.jar">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}" />
+        <attribute name="Main-Class" value="beast.app.treeannotator.TreeAnnotator" />
+      </manifest>
+      <fileset dir="${buildvntr}">
+        <include name="beast/**/*.class" />
+      </fileset>
+      <fileset dir="${beast2classpath}">
+        <include name="beast/**/*.class" />
+        <include name="beast/**/*.properties" />
+        <include name="beast/**/*.png" />
+        <include name="beagle/**/*.class" />
+        <include name="org/**/*.class" />
+      </fileset>
+      <zipgroupfileset dir="${beast2path}/lib" includes="jam.jar" />
+      <!--zipgroupfileset dir="${lib}" includes="commons-math-II.0.jar" /-->
+    </jar>
+    <jar jarfile="${distvntr}/BEASTvntr.src.jar">
+      <fileset dir="${srcvntr}">
+        <include name="beast/**/*.java" />
+        <include name="test/**/*.java" />
+        <include name="beast/**/*.png" />
+        <include name="beast/**/*.xsl" />
+      </fileset>
         </jar>
-		<jar jarfile="${distvntr}/BEASTvntr.addon.jar">
-			<manifest>
-				<attribute name="Built-By" value="${user.name}" />
-			</manifest>
-			<fileset dir="${buildvntr}">
-				<include name="beast/**/*.class" />
-				<exclude name="**/**/Sequence.class"/>
-				<exclude name="**/**/Prior.class"/>
-				<exclude name="**/**/SkyrideBlockOperator.class"/>
-				<include name="**/*.properties" />
-			</fileset>
-		</jar>
-	</target>
+    <jar jarfile="${distvntr}/BEASTvntr.addon.jar">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}" />
+      </manifest>
+      <fileset dir="${buildvntr}">
+        <include name="beast/**/*.class" />
+        <exclude name="**/**/Sequence.class"/>
+        <exclude name="**/**/Prior.class"/>
+        <exclude name="**/**/SkyrideBlockOperator.class"/>
+        <include name="**/*.properties" />
+      </fileset>
+    </jar>
+  </target>
 
-	<!-- run beast.jar -->
-	<target name="run_BEASTvntr">
-		<java jar="${distvntr}/BEASTvntr.jar" fork="true" />
-	</target>
+  <!-- run beast.jar -->
+  <target name="run_BEASTvntr">
+    <java jar="${distvntr}/BEASTvntr.jar" fork="true" />
+  </target>
 
-	
-	<!-- JUnit test -->
-	<target name="junitBEASTvntr">
-		<mkdir dir="${report}" />
-		<junit printsummary="yes" haltonfailure="yes"> <!--showoutput='yes'-->
-			<classpath>
-				<path refid="classpath" />
-				<path location="${buildvntr}" />
-			</classpath>
+  
+  <!-- JUnit test -->
+  <target name="junitBEASTvntr">
+    <mkdir dir="${report}" />
+    <junit printsummary="yes" haltonfailure="yes"> <!--showoutput='yes'-->
+      <classpath>
+        <path refid="classpath" />
+        <path location="${buildvntr}" />
+      </classpath>
 
-			<formatter type="xml" />
+      <formatter type="xml" />
 
-			<batchtest fork="yes" todir="${report}">
-				<fileset dir="${srcvntr}">
+      <batchtest fork="yes" todir="${report}">
+        <fileset dir="${srcvntr}">
                     <include name="test/**/*Test.java"/>
                     <exclude name="test/beast/integration/**/*Test.java"/>
-				</fileset>
-				<fileset dir="${srcBeast2}">
+        </fileset>
+        <fileset dir="${srcBeast2}">
                     <include name="test/beast/integration/**/*Test.java"/>                                         
                     <exclude name="test/beast/integration/**/ResumeTest.java"/>                                         
                     <exclude name="test/beast/integration/**/ExampleXmlParsingTest.java"/>                                         
-				</fileset>
-			</batchtest>
-		</junit>
-		<echo message="JUnit test finished." />
-	</target>
+        </fileset>
+      </batchtest>
+    </junit>
+    <echo message="JUnit test finished." />
+  </target>
     
     <target name="junitreport">
-		<junitreport todir="${report}">
-			<fileset dir="${report}" includes="*.xml"/>
-			<report format="frames" todir="${report}"/>
-		</junitreport>
-		<echo message="JUnit test report finished." />
-	</target>
+    <junitreport todir="${report}">
+      <fileset dir="${report}" includes="*.xml"/>
+      <report format="frames" todir="${report}"/>
+    </junitreport>
+    <echo message="JUnit test report finished." />
+  </target>
 
-	<target name="addon"
-	        depends="build_jar_all_BEASTvntr"
-	        description="release BEAST 2 add-on version of BEASTvntr">
+  <target name="addon"
+          depends="build_jar_all_BEASTvntr"
+          description="release BEAST 2 add-on version of BEASTvntr">
 
-		<delete dir="${Add_on_dir}" />
-		<!-- Create the release directory -->
-		<mkdir dir="${Add_on_dir}" />
-		<mkdir dir="${Add_on_dir}/lib" />
-		<mkdir dir="${Add_on_dir}/examples" />
-		<mkdir dir="${Add_on_dir}/templates" />
+    <delete dir="${Add_on_dir}" />
+    <!-- Create the release directory -->
+    <mkdir dir="${Add_on_dir}" />
+    <mkdir dir="${Add_on_dir}/lib" />
+    <mkdir dir="${Add_on_dir}/examples" />
+    <mkdir dir="${Add_on_dir}/templates" />
 
-		<copy todir="${Add_on_dir}">
-			<fileset file="version.xml"/>
-		</copy>
-		<copy todir="${Add_on_dir}/examples">
-			<fileset dir="examples" includes="*/*">
-			</fileset>
-		</copy>
+    <copy todir="${Add_on_dir}">
+      <fileset file="version.xml"/>
+    </copy>
+    <copy todir="${Add_on_dir}/examples">
+      <fileset dir="examples" includes="*/*">
+      </fileset>
+    </copy>
 
-		<copy todir="${Add_on_dir}/lib">
-			<fileset  file="${distvntr}/BEASTvntr.addon.jar" />
-			<fileset  file="lib/EJML-core-0.29.jar" />
-			<fileset  file="lib/EJML-dense64-0.29.jar" />
-		</copy>
-		<copy todir="${Add_on_dir}">
-			<fileset file="${distvntr}/BEASTvntr.src.jar" />
-		</copy>
+    <copy todir="${Add_on_dir}/lib">
+      <fileset  file="${distvntr}/BEASTvntr.addon.jar" />
+      <fileset  file="lib/EJML-core-0.29.jar" />
+      <fileset  file="lib/EJML-dense64-0.29.jar" />
+    </copy>
+    <copy todir="${Add_on_dir}">
+      <fileset file="${distvntr}/BEASTvntr.src.jar" />
+    </copy>
 
-		<copy todir="${Add_on_dir}/templates">
-			<fileset file="templates/BEASTvntr-beauti-template.xml" />
-		</copy>
+    <copy todir="${Add_on_dir}/templates">
+      <fileset file="templates/BEASTvntr-beauti-template.xml" />
+    </copy>
 
-		<jar jarfile="${distvntr}/BEASTvntr.addon.v${version}.zip">
-			<fileset dir="${Add_on_dir}">
-				<include name="**/*" />
-			</fileset>
+    <jar jarfile="${distvntr}/BEASTvntr.addon.v${version}.zip">
+      <fileset dir="${Add_on_dir}">
+        <include name="**/*" />
+      </fileset>
         </jar>
-		<echo message="Add-on version release is finished." />
-	</target>
+    <echo message="Add-on version release is finished." />
+  </target>
 
 </project>

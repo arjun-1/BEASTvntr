@@ -1,318 +1,318 @@
 <beast version='2.0'
-       namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
-       
-    <mergewith point='substModelTemplates'>
+     namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+     
+  <mergewith point='substModelTemplates'>
 
-        <subtemplate id='Sainudiin' class='beast.evolution.substitutionmodel.Sainudiin' mainid='Sainudiin.s:$(n)'>
-            <![CDATA[
-            <plugin spec='Sainudiin' id='Sainudiin.s:$(n)'>
-                <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
-                <parameter id="focalPoint.s:$(n)" name='focalPoint' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
-                <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' estimate='true'/>
-                <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
-                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
-                    <!-- dimension and value get's corrected by Sainudiin -->
-                </frequencies>
-            </plugin>
-            <plugin id='biasMagnitudeWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@biasMagnitude.s:$(n)"/>
-            <plugin id='focalPointWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@focalPoint.s:$(n)"/>
-            <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
-            <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
-            <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
+    <subtemplate id='Sainudiin' class='beast.evolution.substitutionmodel.Sainudiin' mainid='Sainudiin.s:$(n)'>
+      <![CDATA[
+      <plugin spec='Sainudiin' id='Sainudiin.s:$(n)'>
+        <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
+        <parameter id="focalPoint.s:$(n)" name='focalPoint' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
+        <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
+        <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' estimate='true'/>
+        <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
+          <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
+          <!-- dimension and value get's corrected by Sainudiin -->
+        </frequencies>
+      </plugin>
+      <plugin id='biasMagnitudeWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@biasMagnitude.s:$(n)"/>
+      <plugin id='focalPointWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@focalPoint.s:$(n)"/>
+      <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
+      <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
+      <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
-            <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
-				<distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
-            </prior>
-            <prior id='focalPointPrior.s:$(n)' x='@focalPoint.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='1.0' upper='15.0'/>
-            </prior>
-            <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-				<distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
-            </prior>
-            <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
-            </prior>
-]]>
+      <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+      </prior>
+      <prior id='focalPointPrior.s:$(n)' x='@focalPoint.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='1.0' upper='15.0'/>
+      </prior>
+      <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+      </prior>
+      <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+      </prior>
+      ]]>
 
-            <connect srcID='biasMagnitude.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
-            <connect srcID='focalPoint.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
-            <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
-            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+      <connect srcID='biasMagnitude.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
+      <connect srcID='focalPoint.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
+      <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+      <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
-            <connect srcID='biasMagnitudeWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='focalPointWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
-            <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
-                Exchange values of frequencies of partition s:$(n)
-            </connect>
+      <connect srcID='biasMagnitudeWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='focalPointWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
+      <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
+        Exchange values of frequencies of partition s:$(n)
+      </connect>
 
-            <connect srcID='biasMagnitude.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
-            <connect srcID='focalPoint.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
-            <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
-            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+      <connect srcID='biasMagnitude.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
+      <connect srcID='focalPoint.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
+      <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+      <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
 
-            <connect srcID='biasMagnitudePrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='focalPointPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='oneOnA1Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
-            </connect>
-        </subtemplate>
+      <connect srcID='biasMagnitudePrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='focalPointPrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='oneOnA1Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
+      </connect>
+    </subtemplate>
 
-        <subtemplate id='SainudiinComputedFrequencies' class='beast.evolution.substitutionmodel.SainudiinComputedFrequencies' mainid='SainudiinComputedFrequencies.s:$(n)'>
-            <![CDATA[
-            <plugin spec='SainudiinComputedFrequencies' id='SainudiinComputedFrequencies.s:$(n)'>
-                <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
-                <parameter id="focalPoint.s:$(n)" name='focalPoint' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
-                <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' estimate='true'/>
-            </plugin>
-            <plugin id='biasMagnitudeWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@biasMagnitude.s:$(n)"/>
-            <plugin id='focalPointWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@focalPoint.s:$(n)"/>
-            <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
-            <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
+    <subtemplate id='SainudiinComputedFrequencies' class='beast.evolution.substitutionmodel.SainudiinComputedFrequencies' mainid='SainudiinComputedFrequencies.s:$(n)'>
+      <![CDATA[
+      <plugin spec='SainudiinComputedFrequencies' id='SainudiinComputedFrequencies.s:$(n)'>
+        <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
+        <parameter id="focalPoint.s:$(n)" name='focalPoint' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
+        <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
+        <parameter id="oneOnA1.s:$(n)" name='oneOnA1' value='1.0' lower='0.0' estimate='true'/>
+      </plugin>
+      <plugin id='biasMagnitudeWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@biasMagnitude.s:$(n)"/>
+      <plugin id='focalPointWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@focalPoint.s:$(n)"/>
+      <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
+      <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
 
-            <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
-				<distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
-            </prior>
-            <prior id='focalPointPrior.s:$(n)' x='@focalPoint.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='1.0' upper='15.0'/>
-            </prior>
-            <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-				<distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
-            </prior>
-            <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
-            </prior>
-]]>
+      <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+      </prior>
+      <prior id='focalPointPrior.s:$(n)' x='@focalPoint.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='1.0' upper='15.0'/>
+      </prior>
+      <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+      </prior>
+      <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+      </prior>
+      ]]>
 
-            <connect srcID='biasMagnitude.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
-            <connect srcID='focalPoint.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
-            <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
-
-
-            <connect srcID='biasMagnitudeWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='focalPointWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
-            <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
-            </connect>
-
-            <connect srcID='biasMagnitude.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
-            <connect srcID='focalPoint.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
-            <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
-
-            <connect srcID='biasMagnitudePrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='focalPointPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='oneOnA1Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
-            </connect>
-        </subtemplate>
-
-        <subtemplate id='SainudiinVanilla' class='beast.evolution.substitutionmodel.SainudiinVanilla' mainid='SainudiinVanilla.s:$(n)'>
-            <![CDATA[
-            <plugin spec='SainudiinVanilla' id='SainudiinVanilla.s:$(n)'>
-                <parameter id="b0.s:$(n)" name='b0' value='1.0' estimate='true'/>
-                <parameter id="b1.s:$(n)" name='b1' value='1.0' estimate='true'/>
-                <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
-                <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
-                    <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
-                    <!-- dimension and value get's corrected by Sainudiin -->
-                </frequencies>
-            </plugin>
-            <plugin id='b0Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b0.s:$(n)"/>
-            <plugin id='b1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b1.s:$(n)"/>
-            <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
-            <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
-            <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
-
-            <prior id='b0Prior.s:$(n)' x='@b0.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper="Infinity"/>
-            </prior>
-            <prior id='b1Prior.s:$(n)' x='@b1.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper='Infinity'/>
-            </prior>
-            <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
-            </prior>
-            <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
-            </prior>
-]]>
-
-            <connect srcID='b0.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
-            <connect srcID='b1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
-            <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
-            <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
-
-            <connect srcID='b0Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='b1Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
-            <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
-                Exchange values of frequencies of partition s:$(n)
-            </connect>
-
-            <connect srcID='b0.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
-            <connect srcID='b1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
-            <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
-            <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
-
-            <connect srcID='b0Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='b1Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
-            </connect>
-        </subtemplate>
-
-        <subtemplate id='SainudiinComputedFrequenciesVanilla' class='beast.evolution.substitutionmodel.SainudiinComputedFrequenciesVanilla' mainid='SainudiinComputedFrequenciesVanilla.s:$(n)'>
-            <![CDATA[
-            <plugin spec='SainudiinComputedFrequenciesVanilla' id='SainudiinComputedFrequenciesVanilla.s:$(n)'>
-                <parameter id="b0.s:$(n)" name='b0' value='1.0' estimate='true'/>
-                <parameter id="b1.s:$(n)" name='b1' value='1.0' estimate='true'/>
-                <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
-                <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
-            </plugin>
-            <plugin id='b0Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b0.s:$(n)"/>
-            <plugin id='b1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b1.s:$(n)"/>
-            <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
-            <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
-
-            <prior id='b0Prior.s:$(n)' x='@b0.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper="Infinity"/>
-            </prior>
-            <prior id='b1Prior.s:$(n)' x='@b1.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper='Infinity'/>
-            </prior>
-            <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
-            </prior>
-            <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
-                <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
-            </prior>
-]]>
-
-            <connect srcID='b0.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
-            <connect srcID='b1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
-            <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+      <connect srcID='biasMagnitude.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
+      <connect srcID='focalPoint.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
+      <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
 
 
-            <connect srcID='b0Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='b1Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
-            <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
-            </connect>
+      <connect srcID='biasMagnitudeWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='focalPointWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
+      <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
+      </connect>
 
-            <connect srcID='b0.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
-            <connect srcID='b1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
-            <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
-            <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+      <connect srcID='biasMagnitude.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
+      <connect srcID='focalPoint.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
+      <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
 
-            <connect srcID='b0Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='b1Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
-            </connect>
-            <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
-                     if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
-            </connect>
-        </subtemplate>
-    </mergewith>
+      <connect srcID='biasMagnitudePrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='focalPointPrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(focalPoint.s:$(n)) and focalPoint.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='oneOnA1Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
+      </connect>
+    </subtemplate>
+
+    <subtemplate id='SainudiinVanilla' class='beast.evolution.substitutionmodel.SainudiinVanilla' mainid='SainudiinVanilla.s:$(n)'>
+      <![CDATA[
+      <plugin spec='SainudiinVanilla' id='SainudiinVanilla.s:$(n)'>
+        <parameter id="b0.s:$(n)" name='b0' value='1.0' estimate='true'/>
+        <parameter id="b1.s:$(n)" name='b1' value='1.0' estimate='true'/>
+        <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
+        <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
+        <frequencies id='estimatedFreqs.s:$(n)' spec='Frequencies'>
+          <frequencies id='freqParameter.s:$(n)' spec='parameter.RealParameter' dimension='4' value='0.25' lower='0' upper='1'/>
+          <!-- dimension and value get's corrected by Sainudiin -->
+        </frequencies>
+      </plugin>
+      <plugin id='b0Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b0.s:$(n)"/>
+      <plugin id='b1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b1.s:$(n)"/>
+      <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
+      <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
+      <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
+
+      <prior id='b0Prior.s:$(n)' x='@b0.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper="Infinity"/>
+      </prior>
+      <prior id='b1Prior.s:$(n)' x='@b1.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper='Infinity'/>
+      </prior>
+      <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+      </prior>
+      <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+      </prior>
+      ]]>
+
+      <connect srcID='b0.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
+      <connect srcID='b1.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
+      <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+      <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+
+      <connect srcID='b0Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='b1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
+      <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
+        Exchange values of frequencies of partition s:$(n)
+      </connect>
+
+      <connect srcID='b0.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
+      <connect srcID='b1.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
+      <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+      <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+
+      <connect srcID='b0Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='b1Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+      </connect>
+    </subtemplate>
+
+    <subtemplate id='SainudiinComputedFrequenciesVanilla' class='beast.evolution.substitutionmodel.SainudiinComputedFrequenciesVanilla' mainid='SainudiinComputedFrequenciesVanilla.s:$(n)'>
+      <![CDATA[
+      <plugin spec='SainudiinComputedFrequenciesVanilla' id='SainudiinComputedFrequenciesVanilla.s:$(n)'>
+        <parameter id="b0.s:$(n)" name='b0' value='1.0' estimate='true'/>
+        <parameter id="b1.s:$(n)" name='b1' value='1.0' estimate='true'/>
+        <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
+        <parameter id="a1.s:$(n)" name='a1' value='1.0' lower='0.0' estimate='true'/>
+      </plugin>
+      <plugin id='b0Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b0.s:$(n)"/>
+      <plugin id='b1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@b1.s:$(n)"/>
+      <plugin id='gWalker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@g.s:$(n)"/>
+      <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
+
+      <prior id='b0Prior.s:$(n)' x='@b0.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper="Infinity"/>
+      </prior>
+      <prior id='b1Prior.s:$(n)' x='@b1.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper='Infinity'/>
+      </prior>
+      <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+      </prior>
+      <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
+        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+      </prior>
+      ]]>
+
+      <connect srcID='b0.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
+      <connect srcID='b1.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
+      <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+
+
+      <connect srcID='b0Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='b1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
+      <connect srcID='gWalker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+      </connect>
+
+      <connect srcID='b0.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
+      <connect srcID='b1.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'/>
+      <connect srcID='g.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
+      <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+
+      <connect srcID='b0Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='b1Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(b1.s:$(n)) and b1.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='gPrior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'>
+      </connect>
+      <connect srcID='a1Prior.s:$(n)' targetID='prior' inputName='distribution'
+           if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
+      </connect>
+    </subtemplate>
+  </mergewith>
 </beast>
