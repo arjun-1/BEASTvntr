@@ -56,7 +56,8 @@ public class Sainudiin extends SubstitutionModel.Base {
   final public Input<RealParameter> biasMagnitudeInput = new Input<>("biasMagnitude", "magnitude of the mutational bias", Validate.REQUIRED);
   final public Input<RealParameter> focalPointInput = new Input<>("focalPoint", "focal state of the mutational bias", Validate.REQUIRED);
   final public Input<RealParameter> gInput = new Input<>("g", "parameter of the geometric distribution of step sizes (1 - g = probability of a mutation being single step)", Validate.REQUIRED);
-  final public Input<RealParameter> oneOnA1Input = new Input<>("oneOnA1", "one over the proportionality of mutation rate to repeat length (i - minimum repeat)", Validate.REQUIRED);
+  final public Input<RealParameter> a0PrimeInput = new Input<>("a0Prime", "proportional rate at i=iMin", Validate.REQUIRED);
+  final public Input<RealParameter> a0Input = new Input<>("a0", "offset of the proportional rate at i=iMin+1", Validate.REQUIRED);
 
   protected EigenSystem eigenSystem;
   private EigenDecomposition eigenDecomposition;
@@ -95,7 +96,8 @@ public class Sainudiin extends SubstitutionModel.Base {
     biasMagnitudeInput.get().setBounds(Math.max(0.0, biasMagnitudeInput.get().getLower()), biasMagnitudeInput.get().getUpper());
     focalPointInput.get().setBounds(focalPointInput.get().getLower(), focalPointInput.get().getUpper());
     gInput.get().setBounds(Math.max(0.0, gInput.get().getLower()), Math.min(1.0, gInput.get().getUpper()));
-    oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
+    a0PrimeInput.get().setBounds(Math.max(0.0, a0PrimeInput.get().getLower()), a0PrimeInput.get().getUpper());
+    a0Input.get().setBounds(Math.max(0.0, a0Input.get().getLower()), a0Input.get().getUpper());
   }
 
   // setNrOfStates and setMinRepeat are required to set the state bounds during
@@ -251,7 +253,8 @@ public class Sainudiin extends SubstitutionModel.Base {
     final double biasMagnitude = biasMagnitudeInput.get().getValue();
     final double focalPoint = focalPointInput.get().getValue() - minRepeat;
     final double g = gInput.get().getValue();
-    final double oneOnA1 = oneOnA1Input.get().getValue();
+    final double a0Prime = a0PrimeInput.get().getValue();
+    final double a0 = a0Input.get().getValue();
 
     double b0 = biasMagnitude * Math.abs(focalPoint) / Math.sqrt(focalPoint * focalPoint + 1.0);
     double b1 = -biasMagnitude / (Math.sqrt(focalPoint * focalPoint + 1.0));
@@ -263,8 +266,8 @@ public class Sainudiin extends SubstitutionModel.Base {
       rowSum[i] = 0.0;
       rowSum2[i] = 0.0;
 
-      // Note that 1.0 + oneOnA1 * (i - 0) and oneOnA1 + (i - 0) are equivalent.
-      double alpha = oneOnA1 + (i - 0);
+      
+      double alpha = i == 0 ? a0Prime : a0 + i - 1;
       double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
       for (int j = 0; j < nrOfStates; j++) {

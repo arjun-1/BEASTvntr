@@ -55,7 +55,8 @@ public class SainudiinVanilla extends Sainudiin {
   public SainudiinVanilla() {
     biasMagnitudeInput.setRule(Validate.OPTIONAL);
     focalPointInput.setRule(Validate.OPTIONAL);
-    oneOnA1Input.setRule(Validate.OPTIONAL);
+    a0PrimeInput.setRule(Validate.OPTIONAL);
+    a0Input.setRule(Validate.OPTIONAL);
   }
   
   @Override

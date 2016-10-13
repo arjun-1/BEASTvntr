@@ -16,7 +16,8 @@ public class SainudiinTest extends TestCase {
     Double getBiasMagnitude();
     Double getFocalPoint();
     Double getG();
-    Double getOneOnA1();
+    Double getA0Prime();
+    Double getA0();
     double getDistance();
     int getMinRepeat();
     int getNrOfStates();
@@ -53,8 +54,12 @@ public class SainudiinTest extends TestCase {
       return 0.1;
     }
     @Override
-    public Double getOneOnA1() {
+    public Double getA0Prime() {
       return 1.0;
+    }
+    @Override
+    public Double getA0() {
+      return 1.0 + 1.0;
     }
     // distance = time * normalization constant (of Q).
     // Precision is 15.9546 effective digits according to Mathematica.
@@ -105,8 +110,12 @@ public class SainudiinTest extends TestCase {
       return 0.0;
     }
     @Override
-    public Double getOneOnA1() {
+    public Double getA0Prime() {
       return 1.0;
+    }
+    @Override
+    public Double getA0() {
+      return 1.0 + 1.0;
     }
     @Override
     public double getDistance() {
@@ -142,7 +151,8 @@ public class SainudiinTest extends TestCase {
       sainudiin.initByName("biasMagnitude", test.getBiasMagnitude().toString(),
         "focalPoint", test.getFocalPoint().toString(),
         "g", test.getG().toString(),
-        "oneOnA1", test.getOneOnA1().toString(),
+        "a0Prime", test.getA0Prime().toString(),
+        "a0", test.getA0().toString(),
         "frequencies", freqs);
 
       double distance = test.getDistance();
