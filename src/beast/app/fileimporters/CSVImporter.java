@@ -74,7 +74,7 @@ public class CSVImporter implements AlignmentImporter {
       lineNumber++;
       String line = fin.readLine();
 
-      if (hasHeader && lineNumber == 0) {
+      if (hasHeader && lineNumber == 1) {
         // Skip header
         continue;
       }
