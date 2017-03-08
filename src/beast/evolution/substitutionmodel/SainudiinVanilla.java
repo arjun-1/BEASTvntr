@@ -26,20 +26,13 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.core.parameter.IntegerParameter;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.FiniteIntegerData;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.likelihood.ThreadedTreeLikelihood;
-import beast.evolution.tree.Node;
-import beast.core.util.Log;
 
 @Description(
   "Substitution model of Sainudiin (R. Sainudiin et al., 2004) using\n" +
   "  Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
 @Citation(value = 
   "Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models.\n" +
-  "  Genetics 168:383–395", year = 2004, firstAuthorSurname = "sainudiin")
+  "  Genetics 168:383-395", year = 2004, firstAuthorSurname = "sainudiin")
 @Citation(value =
   "Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
   "  Microsatellite Mutation Models, Population History and Genealogies\n" + 
@@ -67,9 +60,6 @@ public class SainudiinVanilla extends Sainudiin {
   }
   
   protected void setupRateMatrix() {
-    // Since the data is already corrected for minRepeat in FiniteIntegerData,
-    // we always assume minRepeat is 0 in the substitution model. Except for
-    // parameters focalPoint, which are not from FiniteIntegerData.
     final double g = gInput.get().getValue();
     final double a1 = a1Input.get().getValue();
 
@@ -85,40 +75,40 @@ public class SainudiinVanilla extends Sainudiin {
 
       // Note that 1.0 + oneOnA1 * (i - 0) and oneOnA1 + (i - 0) are equivalent.
       double alpha = 1.0 + a1 * (i - 0);
-      double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
+      double oneOnBeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
       for (int j = 0; j < nrOfStates; j++) {
         if (j == i + 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
           // If g = 1.0, we assume the limiting case for gamma
           if(Double.isNaN(gamma)) { 
             gamma = 1 / (double) (nrOfStates - 1 - i);
           }
-          rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         } else if (j > i + 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
           if(Double.isNaN(gamma)) {
             gamma = 1 / (double) (nrOfStates - 1 - i);
           }
-          rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         } else if (j == i - 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
           if(Double.isNaN(gamma)) {
             gamma = 1.0 / (double) i;
           }
-          rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha - alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         } else if (j < i - 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0))); 
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
           if(Double.isNaN(gamma)) {
             gamma = 1.0 / (double) i;
           }
-          rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha - alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         }

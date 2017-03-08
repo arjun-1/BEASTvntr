@@ -2,6 +2,7 @@
 * File CSVImporter.java
 *
 * Copyright (C) 2016 Arjun Dhawan, RIVM <arjun.dhawan@rivm.nl>
+* Copyright (C) 2017 Arjun Dhawan
 *
 * This file is part of BEASTvntr.
 *
@@ -24,18 +25,12 @@ package beast.app.fileimporters;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.io.IOException;
-import java.lang.reflect.Array;
 
-
-import javax.swing.JOptionPane;
 import javax.swing.*;
-
-
 
 import beast.core.BEASTInterface;
 import beast.app.beauti.AlignmentImporter;
@@ -44,221 +39,202 @@ import beast.evolution.datatype.FiniteIntegerData;
 import beast.evolution.alignment.Alignment;
 import beast.evolution.alignment.Sequence;
 
-
 public class CSVImporter implements AlignmentImporter {
   
   public String [] getFileExtensions() {
     return new String[]{"csv"};
   }
 
-  enum ParseOption {
-    REPEATS_HOMOGEN, REPEATS_INHOMOGEN, NUCLEOTIDES
+  private int nrOfLoci;
+  private int nrOfTaxa;
+
+  public enum ParseOption {
+    REPEATS_HOMOGEN("Repeats (single partition)"), REPEATS_INHOMOGEN("Repeats (multiple partitions)"),
+      NUCLEOTIDES("Nucleotides");
+    private final String display;
+
+    ParseOption(String display) {
+      this.display = display;
+    }
+    @Override
+    public String toString() {
+      return display;
+    }
   }
 
-  private String[] taxaNames;
-  private int nrOfTaxa;
-  private int nrOfLoci;
-  private Object sequenceData;
-  ParseOption choice;
-
-  private void parseFile(File file, boolean skipFirstLine) throws IOException {
+  /**
+   * Returns a 2d array of Strings, containing values read from a CSV file.
+   */
+  private String[][] parseFile(File file, boolean hasHeader) throws IOException {
     BufferedReader fin = new BufferedReader(new FileReader(file));
-    List<String> sequenceList = new ArrayList<String>();
-
-    boolean firstLineIsSkipped = false;
+    List<String[]> taxaData = new ArrayList<>();
+    nrOfTaxa = 0;
+    int lineNumber = 0;
     while (fin.ready()) {
+      lineNumber++;
       String line = fin.readLine();
-      if(skipFirstLine && !firstLineIsSkipped) {
-        firstLineIsSkipped = true;
+
+      if (hasHeader && lineNumber == 0) {
+        // Skip header
         continue;
       }
-      if ( line.trim().length() == 0 ) {
-        continue;  // Skip blank lines
+      if (line.trim().length() == 0) {
+        // Skip blank lines
+        continue;
       }
-      sequenceList.add(line);
+
+      String[] taxonData = line.split(",");
+      if(nrOfTaxa > 0 && nrOfLoci != taxonData.length - 1) {
+        throw new IllegalArgumentException("Wrong number of loci at line " + lineNumber + ". Expected: " + nrOfLoci + ", got: " + (taxonData.length - 1));
+      }
+      nrOfLoci = taxonData.length - 1;
+      taxaData.add(taxonData);
+      nrOfTaxa++;
     }
     fin.close();
 
-    nrOfTaxa = sequenceList.size();
-    nrOfLoci = sequenceList.get(0).split(",").length - 1;
+    if (taxaData.size() == 0)
+      throw new IllegalArgumentException("No taxa specified in " + file.getName());
 
-    switch(choice) {
-      case REPEATS_HOMOGEN:
-      case REPEATS_INHOMOGEN:
-        sequenceData = Array.newInstance(int.class,  nrOfTaxa, nrOfLoci);
-        break;
-      case NUCLEOTIDES:
-        sequenceData = Array.newInstance(char.class,  nrOfTaxa, nrOfLoci);
-        break;
-    }
-
-    taxaNames = new String[nrOfTaxa];
-
-    int taxonIndex = 0;
-    for(String sequenceString : sequenceList) {
-      String[] splitSequenceString = sequenceString.split(",");
-      if (splitSequenceString.length != nrOfLoci + 1) {
-        throw new IllegalArgumentException("Row " + Integer.toString(taxonIndex + 1) + " has unequal length: " + 
-          splitSequenceString.length + " != " + Integer.toString(nrOfLoci + 1));
-      }
-
-      taxaNames[taxonIndex] = splitSequenceString[0];
-      if (taxaNames[taxonIndex] == null || taxaNames[taxonIndex].trim().length() == 0) {
-        // check if not null and not only white space
-        throw new IllegalArgumentException("Expected taxon defined on first line");
-      }
-
-      for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-        Object row = Array.get(sequenceData, taxonIndex);
-        switch(choice) {
-          case REPEATS_HOMOGEN:
-          case REPEATS_INHOMOGEN:
-            Array.setInt(row, locusIndex, Integer.parseInt(splitSequenceString[locusIndex + 1]));
-            break;
-          case NUCLEOTIDES:
-            Array.setChar(row, locusIndex, splitSequenceString[locusIndex + 1].charAt(0));
-            break;
-        }
-      }
-      taxonIndex += 1;
-    }
+    return taxaData.toArray(new String[][] {});
   }
 
-  public List<BEASTInterface> loadFile(File file) {    
-    Alignment alignment;
-    FiniteIntegerData finiteIntegerData = new FiniteIntegerData();;
-    List<BEASTInterface> alignmentList = new ArrayList<BEASTInterface>();;
-
+  /**
+   * Returns a list of Alignments
+   */
+  public List<BEASTInterface> loadFile(File file) {
+    // Ask the user for parsing options
     int minRepeat = -1, maxRepeat = -1;
-    choice = ParseOption.REPEATS_HOMOGEN;
-
-    final String[] parseOptions = {"Repeats (single partition)", "Repeats (multiple partitions)", "Nucleotides"};
-
     JPanel myPanel = new JPanel();
-    //myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
     myPanel.add(new JLabel("Parse as:"));
-    JComboBox<String> comboBox = new JComboBox<>(parseOptions);
+    JComboBox<ParseOption> comboBox = new JComboBox<>(ParseOption.values());
     myPanel.add(comboBox);
+    JCheckBox hasHeader = new JCheckBox("Skip header");
+    myPanel.add(hasHeader);
 
-    JCheckBox checkbox = new JCheckBox("Skip first line");
-    myPanel.add(checkbox);
-
-
-    int result = JOptionPane.showConfirmDialog(null, myPanel, 
+    int result = JOptionPane.showConfirmDialog(null, myPanel,
              "Choose parsing method", JOptionPane.OK_CANCEL_OPTION);
     switch (result) {
       case JOptionPane.OK_OPTION:
         break;
+      case JOptionPane.OK_CANCEL_OPTION:
       default:
-        throw new IllegalArgumentException("No parsing method specified");
+        // User clicked cancel
+        return new ArrayList<>();
     }
-
-    switch ((String) comboBox.getSelectedItem()) {
-      case "Repeats (single partition)":
-        choice = ParseOption.REPEATS_HOMOGEN;
-        break;
-      case "Repeats (multiple partitions)":
-        choice = ParseOption.REPEATS_INHOMOGEN;
-        break;
-      case "Nucleotides":
-        choice = ParseOption.NUCLEOTIDES;
-        break;
-      default:
-        throw new IllegalArgumentException("No parsing method specified");
-    }
-    switch (choice) {
+    ParseOption parseOption = (ParseOption) comboBox.getSelectedItem();
+    switch (parseOption) {
       case REPEATS_HOMOGEN:
       case REPEATS_INHOMOGEN:
         JTextField minRepeatField = new JTextField(5);
         JTextField maxRepeatField = new JTextField(5);
-
         myPanel = new JPanel();
         myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
-
         myPanel.add(new JLabel("<html>Choose the Minimum and Maximum repeat<br>(Maximum repeat - Minimum repeat >= 0 must hold)</html>"));
         myPanel.add(new JLabel("Minimum repeat ( >= 0 ):"));
         myPanel.add(minRepeatField);
         myPanel.add(new JLabel("Maximum repeat:"));
         myPanel.add(maxRepeatField);
 
-        result = JOptionPane.showConfirmDialog(null, myPanel, 
+        result = JOptionPane.showConfirmDialog(null, myPanel,
                  "Please Enter Minimum and Maximum Repeat", JOptionPane.OK_CANCEL_OPTION);
-        if (result == JOptionPane.OK_OPTION) {
-          minRepeat = Integer.parseInt(minRepeatField.getText());
-          maxRepeat = Integer.parseInt(maxRepeatField.getText());
-        } else {
-          throw new IllegalArgumentException("Minimum and maximum repeat were not specified");
+        while (result == JOptionPane.OK_OPTION) {
+          try {
+            minRepeat = Integer.parseInt(minRepeatField.getText());
+            maxRepeat = Integer.parseInt(maxRepeatField.getText());
+            break;
+          } catch (NumberFormatException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Not an integer: " + e.getMessage());
+            result = JOptionPane.showConfirmDialog(null, myPanel,
+                    "Please Enter Minimum and Maximum Repeat", JOptionPane.OK_CANCEL_OPTION);
+          }
+        }
+        if (result != JOptionPane.OK_OPTION) {
+          // User clicked cancel
+          return new ArrayList<>();
         }
         break;
       case NUCLEOTIDES:
         break;
     }
-
+    // Parse the CSV file, and put the results into alignment(s)
     String ID = file.getName();
     ID = ID.substring(0, ID.lastIndexOf('.')).replaceAll("\\..*", "");
-
+    List<BEASTInterface> alignmentList = new ArrayList<>();
     try {
-      parseFile(file, checkbox.isSelected());
-      // Initialize the datatype for repeats
-      switch(choice) {
+      String[][] taxaData = parseFile(file, hasHeader.isSelected());
+      Alignment alignment;
+      List<Sequence> sequenceList = new ArrayList<>();
+      FiniteIntegerData finiteIntegerData = new FiniteIntegerData();
+
+      switch(parseOption){
         case REPEATS_HOMOGEN:
-        case REPEATS_INHOMOGEN:
           finiteIntegerData.setInputValue("minRepeat", minRepeat);
           finiteIntegerData.setInputValue("maxRepeat", maxRepeat);
           finiteIntegerData.initAndValidate();
-          break;
-        case NUCLEOTIDES:
-          break;
-      }
-      switch(choice){
-        case REPEATS_HOMOGEN:
-          alignment = new Alignment();
-          for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+          for (int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+            String taxonName = taxaData[taxonIndex][0];
             StringBuilder sb = new StringBuilder();
-            for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-              sb.append(((int[][])sequenceData)[taxonIndex][locusIndex]);
+            for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+              sb.append(taxaData[taxonIndex][locusIndex + 1]);
               sb.append(",");
             }
             Sequence sequence = new Sequence();
-            sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], sb.toString());
-            sequence.setID("seq_" + taxaNames[taxonIndex]);
-            alignment.sequenceInput.setValue(sequence, alignment);
+            sequence.totalCountInput.setValue(maxRepeat - minRepeat + 1, sequence);
+            sequence.taxonInput.setValue(taxonName, sequence);
+            sequence.dataInput.setValue(sb.toString(), sequence);
+            sequence.setID("seq_" + taxonName);
+            sequenceList.add(sequence);
           }
+          alignment = new Alignment();
+          alignment.sequenceInput.setValue(sequenceList, alignment);
           alignment.setID(ID);
-          alignment.setInputValue("userDataType", finiteIntegerData);
+          alignment.userDataTypeInput.setValue(finiteIntegerData, alignment);
           alignment.initAndValidate();
           alignmentList.add(alignment);
           break;
         case REPEATS_INHOMOGEN:
-          for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-            alignment = new Alignment();
-            for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+          finiteIntegerData.setInputValue("minRepeat", minRepeat);
+          finiteIntegerData.setInputValue("maxRepeat", maxRepeat);
+          finiteIntegerData.initAndValidate();
+          for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+            sequenceList = new ArrayList<>();
+            for (int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+              String taxonName = taxaData[taxonIndex][0];
               Sequence sequence = new Sequence();
-              sequence.init(maxRepeat - minRepeat + 1, taxaNames[taxonIndex], 
-                ((int[][])sequenceData)[taxonIndex][locusIndex] + ",");
-              sequence.setID("seq_" + taxaNames[taxonIndex]);
-              alignment.sequenceInput.setValue(sequence, alignment);
+              sequence.totalCountInput.setValue(maxRepeat - minRepeat + 1, sequence);
+              sequence.taxonInput.setValue(taxonName, sequence);
+              sequence.dataInput.setValue(taxaData[taxonIndex][locusIndex + 1], sequence);
+              sequence.setID("seq_" + taxonName + "_VNTR" + String.format("%02d", locusIndex + 1));
+              sequenceList.add(sequence);
             }
-            alignment.setID("VNTR" + String.format("%02d", locusIndex + 1));
-            alignment.setInputValue("userDataType", finiteIntegerData);
+            alignment = new Alignment();
+            alignment.sequenceInput.setValue(sequenceList, alignment);
+            alignment.userDataTypeInput.setValue(finiteIntegerData, alignment);
+            alignment.setID(ID + String.format("%02d", locusIndex + 1));
             alignment.initAndValidate();
             alignmentList.add(alignment);
           }
           break;
         case NUCLEOTIDES:
-          alignment = new Alignment();
-          for(int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+          for (int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
+            String taxonName = taxaData[taxonIndex][0];
             StringBuilder sb = new StringBuilder();
-            for(int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-              sb.append(String.valueOf(((char[][])sequenceData)[taxonIndex][locusIndex]));
+            for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
+              sb.append(String.valueOf(taxaData[taxonIndex][locusIndex + 1]));
             }
             Sequence sequence = new Sequence();
-            sequence.init(4, taxaNames[taxonIndex], sb.toString());
-            sequence.setID("seq_" + taxaNames[taxonIndex]);
-            alignment.sequenceInput.setValue(sequence, alignment);
+            sequence.totalCountInput.setValue(4, sequence);
+            sequence.taxonInput.setValue(taxonName, sequence);
+            sequence.dataInput.setValue(sb.toString(), sequence);
+            sequence.setID("seq_" + taxonName);
+            sequenceList.add(sequence);
           }
-          alignment.setID(ID);
+          alignment = new Alignment();
+          alignment.sequenceInput.setValue(sequenceList, alignment);
           alignment.dataTypeInput.setValue("nucleotide", alignment);
+          alignment.setID(ID);
           alignment.initAndValidate();
           alignmentList.add(alignment);
           break;
@@ -267,7 +243,7 @@ public class CSVImporter implements AlignmentImporter {
     } catch (Exception e) {
       e.printStackTrace();
       JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
-      return null;
+      return alignmentList;
     }
   }
 }

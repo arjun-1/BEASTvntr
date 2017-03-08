@@ -162,7 +162,7 @@ public class SainudiinTest extends TestCase {
       double[] Eval = eigenDecomposition.getEigenValues();
       double[] Ievc = eigenDecomposition.getInverseEigenVectors();
 
-      double[] stationaryDistribution = sainudiin.findStationaryDistribution(Eval, Ievc);
+      double[] stationaryDistribution = Sainudiin.findStationaryDistribution(Eval, Ievc);
 
       for (int k = 0; k < nrOfStates; ++k) {
         assertEquals(expectedStationaryDistribution[k], stationaryDistribution[k], TOLERANCE);

@@ -23,15 +23,7 @@ package beast.evolution.substitutionmodel;
 
 import beast.core.Citation;
 import beast.core.Description;
-import beast.core.Input;
 import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.FiniteIntegerData;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.likelihood.ThreadedTreeLikelihood;
-import beast.evolution.tree.Node;
-import beast.core.util.Log;
 
 @Description(
   "Substitution model of Sainudiin (R. Sainudiin et al., 2004) using\n" +
@@ -39,7 +31,7 @@ import beast.core.util.Log;
   "  where the frequencies of the root node are computed from the model.")
 @Citation(value = 
   "Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models.\n" +
-  "  Genetics 168:383–395", year = 2004, firstAuthorSurname = "sainudiin")
+  "  Genetics 168:383-395", year = 2004, firstAuthorSurname = "sainudiin")
 @Citation(value =
   "Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
   "  Microsatellite Mutation Models, Population History and Genealogies\n" + 
@@ -64,7 +56,7 @@ public class SainudiinComputedFrequencies extends Sainudiin {
     rateMatrix = new double[nrOfStates][nrOfStates];
 
     if (frequenciesInput.get() != null) {
-      throw new RuntimeException("Frequencies must not be specified in SainudiinComputedFrequencies. The Frequencies are calculated from the other parameters.");
+      throw new RuntimeException("Frequencies must not be specified in SainudiinComputedFrequencies. The frequencies are calculated from the other parameters.");
     }
   }
 

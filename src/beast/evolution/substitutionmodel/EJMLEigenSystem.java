@@ -21,7 +21,6 @@
 
 package beast.evolution.substitutionmodel;
 
-import java.util.Arrays;
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.DecompositionFactory;
 import org.ejml.ops.CommonOps;
@@ -48,7 +47,7 @@ public class EJMLEigenSystem implements EigenSystem {
     double[] flatIevc = inverseEigenVectors.getData();
 
     double[] Eval = new double[stateCount];
-    for(int i=0; i<stateCount; i++) {
+    for(int i = 0; i < stateCount; i++) {
       Eval[i] = eig.getEigenvalue(i).real;
     }
     return new EigenDecomposition(flatEvec, flatIevc, Eval);

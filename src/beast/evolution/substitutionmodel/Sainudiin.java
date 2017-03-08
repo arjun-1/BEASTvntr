@@ -31,7 +31,6 @@ import beast.core.Description;
 import beast.core.Input;
 import beast.core.Input.Validate;
 import beast.core.parameter.RealParameter;
-import beast.core.parameter.IntegerParameter;
 import beast.evolution.datatype.DataType;
 import beast.evolution.datatype.FiniteIntegerData;
 import beast.evolution.sitemodel.SiteModel;
@@ -44,7 +43,7 @@ import beast.core.util.Log;
   "  Wu's modification (C. Wu and A.J. Drummond, 2011) for VNTR evolution.")
 @Citation(value = 
   "Raazesh Sainudiin et al. (2004) Microsatellite Mutation Models.\n" +
-  "  Genetics 168:383–395", year = 2004, firstAuthorSurname = "sainudiin")
+  "  Genetics 168:383-395", year = 2004, firstAuthorSurname = "sainudiin")
 @Citation(value =
   "Chieh-Hsi Wu and  Alexei J. Drummond. (2011) Joint Inference of\n" +
   "  Microsatellite Mutation Models, Population History and Genealogies\n" + 
@@ -98,8 +97,7 @@ public class Sainudiin extends SubstitutionModel.Base {
     oneOnA1Input.get().setBounds(Math.max(0.0, oneOnA1Input.get().getLower()), oneOnA1Input.get().getUpper());
   }
 
-  // setNrOfStates and setMinRepeat are required to set the state bounds during
-  // unit testing.
+  // For testing purposes only
   public void setNrOfStates(int newNrOfStates) {
     nrOfStates = newNrOfStates;
   }
@@ -113,7 +111,7 @@ public class Sainudiin extends SubstitutionModel.Base {
     updateMatrix = true;
     setStateBoundsFromAlignment();
 
-    // In case the initial frequencies in the beauti template are not of the 
+    // In case the default initial frequencies in the beauti template are not of the 
     // same dimension as the nrOfStates found in the alignment, change the 
     // dimension of the frequencies, and set them to be all equal.
     if(nrOfStates != 0 && nrOfStates != frequencies.getFreqs().length) {
@@ -187,11 +185,9 @@ public class Sainudiin extends SubstitutionModel.Base {
     // in the inverse matrix of eigenvectors.
     stationaryDistribution = findStationaryDistribution(Eval, Ievc);
     double normalization = 0.0;
-
     for (i = 0; i < nrOfStates; i++) {
       normalization += stationaryDistribution[i] * rowSum[i];
     }
-
     distance /= normalization;
 
     for (i = 0; i < nrOfStates; i++) {
@@ -247,7 +243,7 @@ public class Sainudiin extends SubstitutionModel.Base {
   protected void setupRateMatrix() {
     // Since the data is already corrected for minRepeat in FiniteIntegerData,
     // we always assume minRepeat is 0 in the substitution model. Except for
-    // parameters focalPoint, which are not from FiniteIntegerData.
+    // parameter focalPoint, which is not from FiniteIntegerData.
     final double biasMagnitude = biasMagnitudeInput.get().getValue();
     final double focalPoint = focalPointInput.get().getValue() - minRepeat;
     final double g = gInput.get().getValue();
@@ -265,32 +261,32 @@ public class Sainudiin extends SubstitutionModel.Base {
 
       // Note that 1.0 + oneOnA1 * (i - 0) and oneOnA1 + (i - 0) are equivalent.
       double alpha = oneOnA1 + (i - 0);
-      double oneOnbeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
+      double oneOnBeta = (1.0 + Math.exp(-(b0 + b1 * (i - 0))));
 
       for (int j = 0; j < nrOfStates; j++) {
         if (j == i + 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
           // If g = 1.0, we assume the limiting case for gamma
           if(Double.isNaN(gamma)) { 
             gamma = 1 / (double) (nrOfStates - 1 - i);
           }
-          rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         } else if (j > i + 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, nrOfStates - 1 - i)));
           if(Double.isNaN(gamma)) {
             gamma = 1 / (double) (nrOfStates - 1 - i);
           }
-          rateMatrix[i][j] = (alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         } else if (j == i - 1) {
-          double gamma = (1 - g) * (Math.pow(g, (int) Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
+          double gamma = (1 - g) * (Math.pow(g, Math.abs(i - j) - 1) / (1 - Math.pow(g, i - 0)));
           if(Double.isNaN(gamma)) {
             gamma = 1.0 / (double) i;
           }
-          rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha - alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         } else if (j < i - 1) {
@@ -298,7 +294,7 @@ public class Sainudiin extends SubstitutionModel.Base {
           if(Double.isNaN(gamma)) {
             gamma = 1.0 / (double) i;
           }
-          rateMatrix[i][j] = (alpha - alpha / oneOnbeta) * gamma;
+          rateMatrix[i][j] = (alpha - alpha / oneOnBeta) * gamma;
           rowSum[i] += rateMatrix[i][j];
           rowSum2[i] += rateMatrix[i][j] * Math.abs(i - j);
         }
