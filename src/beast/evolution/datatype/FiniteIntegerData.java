@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+//import java.util.stream.Collectors;
+//import java.util.stream.Stream;
 
 @Description("Datatype for finite integer sequences")
 public class FiniteIntegerData extends Base {
@@ -42,12 +44,11 @@ public class FiniteIntegerData extends Base {
 
   @Override
   public void initAndValidate() {
-    if (maxRepeatInput.get() - minRepeatInput.get() >= 0
-            && minRepeatInput.get() >= 0) {
-      stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
-    } else {
-      throw new IllegalArgumentException("Invalid values for maximum repeat: " + maxRepeatInput.get() + " or minimum repeat: " + minRepeatInput.get());
+    if (maxRepeatInput.get() - minRepeatInput.get() < 0 || minRepeatInput.get() < 0) {
+      throw new IllegalArgumentException("Invalid values for maximum repeat: " + maxRepeatInput.get()
+              + " or minimum repeat: " + minRepeatInput.get());
     }
+    stateCount = maxRepeatInput.get() - minRepeatInput.get() + 1;
     createCodeMapping();
   }
 
@@ -82,40 +83,61 @@ public class FiniteIntegerData extends Base {
     mapCodeToStateSet[stateCount] = stateSetFull;
   }
 
+  /**
+   * Maps states from {minRepeat, ..., maxRepeat} -> {0, ..., stateCount - 1}
+   */
   @Override
   public List<Integer> string2state(String data) {
-    List<Integer> sequence;
-    sequence = new ArrayList<>();
-    String[] strs = data.split(",");
-    for (String str : strs) {
-      if (mapStringToCode.containsKey(str)) {
-          sequence.add(mapStringToCode.get(str));
-      } else {
-        throw new IllegalArgumentException("Not a legal state: " + str);
-      }
+    // return Stream.of(data.split(",")).map(this::getState).collect(Collectors.toList());
+    List<Integer> states = new ArrayList<>();
+    String[] dataSplit = data.split(",");
+    for (String str : dataSplit) {
+      states.add(getState(str));
     }
-    return sequence;
+    return states;
   }
 
+  /**
+   * Maps states from {0, ..., stateCount - 1} -> {minRepeat, ..., maxRepeat}
+   */
   @Override
   public String state2string(int[] states) {
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < states.length - 1; i++) {
-      if (mapCodeToString.containsKey(states[i])) {
-        sb.append(mapCodeToString.get(states[i]));
-        sb.append(",");
-      } else {
-        throw new IllegalArgumentException("Not a legal state: " + states[i]);
-      }
+    // return Arrays.stream(states).mapToObj(this::getCode).collect(Collectors.joining(","));
+    String[] strings = new String[states.length];
+    for (int i = 0; i < states.length; i++) {
+      strings[i] = getCode(states[i]);
     }
-    if (mapCodeToString.containsKey(states[states.length - 1])) {
-      sb.append(mapCodeToString.get(states[states.length - 1]));
-    } else {
-      throw new IllegalArgumentException("Not a legal state: " + states[states.length - 1]);
-    }
-    return sb.toString();
+    return String.join(",", strings);
   }
 
+  /**
+   * Maps states from {minRepeat, ..., maxRepeat} -> {0, ..., stateCount - 1}
+   */
+  private int getState(String str) {
+    if (!mapStringToCode.containsKey(str)) {
+      throw new IllegalArgumentException("Not a legal state: " + str);
+    }
+    return mapStringToCode.get(str);
+  }
+
+  /**
+   * This implementation of getCode is defined such that string2state is its inverse,
+   * as expected by FilteredAlignment.
+   * The 'code' in the name 'getCode' thus does not refer to the 'code' in mapCodeToStateSet or mapCodeToString.
+   *
+   * Maps states from {0, ..., stateCount - 1} -> {minRepeat, ..., maxRepeat}
+   */
+  @Override
+  public String getCode(int state) {
+    if (!mapCodeToString.containsKey(state)) {
+      throw new IllegalArgumentException("Not a legal state: " + state);
+    }
+    return mapCodeToString.get(state);
+  }
+
+  /**
+   * Maps states from {0, ..., stateCount - 1} -> char form of {minRepeat, ..., maxRepeat}
+   */
   @Override
   public char getChar(int code) {
     if (!mapCodeToChar.containsKey(code)) {
@@ -127,15 +149,6 @@ public class FiniteIntegerData extends Base {
   @Override
   public boolean isAmbiguousState(int state) {
     return (state >= stateCount);
-  }
-
-  /**
-   * This implementation of getCode does not refer to the 'code' in mapCodeToStateSet,
-   * but is defined as the inverse of string2state for a single state. This is expected by FilteredAlignment.
-   */
-  @Override
-  public String getCode(int state) {
-    return isAmbiguousState(state) ? String.valueOf(getChar(state)) : Integer.toString(getChar(state) - '0');
   }
 
   @Override

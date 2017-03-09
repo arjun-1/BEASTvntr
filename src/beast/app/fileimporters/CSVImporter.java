@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -175,15 +176,11 @@ public class CSVImporter implements AlignmentImporter {
           finiteIntegerData.initAndValidate();
           for (int taxonIndex = 0; taxonIndex < nrOfTaxa; taxonIndex++) {
             String taxonName = taxaData[taxonIndex][0];
-            StringBuilder sb = new StringBuilder();
-            for (int locusIndex = 0; locusIndex < nrOfLoci; locusIndex++) {
-              sb.append(taxaData[taxonIndex][locusIndex + 1]);
-              sb.append(",");
-            }
+            String dataString = String.join(",", Arrays.copyOfRange(taxaData[taxonIndex], 1, nrOfLoci + 1));
             Sequence sequence = new Sequence();
             sequence.totalCountInput.setValue(maxRepeat - minRepeat + 1, sequence);
             sequence.taxonInput.setValue(taxonName, sequence);
-            sequence.dataInput.setValue(sb.toString(), sequence);
+            sequence.dataInput.setValue(dataString, sequence);
             sequence.setID("seq_" + taxonName);
             sequenceList.add(sequence);
           }

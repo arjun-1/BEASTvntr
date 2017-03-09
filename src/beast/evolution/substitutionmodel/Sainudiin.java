@@ -70,8 +70,8 @@ public class Sainudiin extends SubstitutionModel.Base {
   protected double[] rowSum;
   protected double[] rowSum2;
 
-  // setStateBoundsFromAlignment navigates the graph of beast objects, 
-  // to find the alignment and find the nrOfStates and minRepeat.
+  // setStateBoundsFromAlignment navigates the graph of beast objects to find the alignment,
+  // and set nrOfStates and minRepeat.
   protected void setStateBoundsFromAlignment() {
     for (Object beastObjecti : getOutputs()) {
       if (beastObjecti instanceof SiteModel) {
