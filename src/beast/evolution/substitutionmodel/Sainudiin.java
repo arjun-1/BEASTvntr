@@ -314,22 +314,24 @@ public class Sainudiin extends SubstitutionModel.Base {
   // Copied from GeneralSubstitutionModel.java
   @Override
   public void store() {
-    storedUpdateMatrix = updateMatrix;
-    if( eigenDecomposition != null ) {
-      storedEigenDecomposition = eigenDecomposition.copy();
-    }
+//    storedUpdateMatrix = updateMatrix;
+//    if( eigenDecomposition != null ) {
+//      storedEigenDecomposition = eigenDecomposition.copy();
+//    }
+	  updateMatrix = true;
     super.store();
   }
 
   // Copied from GeneralSubstitutionModel.java
   @Override
   public void restore() {
-    updateMatrix = storedUpdateMatrix;
-    if( storedEigenDecomposition != null ) {
-      EigenDecomposition tmp = storedEigenDecomposition;
-      storedEigenDecomposition = eigenDecomposition;
-      eigenDecomposition = tmp;
-    }
+//    updateMatrix = storedUpdateMatrix;
+//    if( storedEigenDecomposition != null ) {
+//      EigenDecomposition tmp = storedEigenDecomposition;
+//      storedEigenDecomposition = eigenDecomposition;
+//      eigenDecomposition = tmp;
+//    }
+	  updateMatrix = true;
     super.restore();
   }
 
