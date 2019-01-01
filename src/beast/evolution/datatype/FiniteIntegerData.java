@@ -41,6 +41,7 @@ public class FiniteIntegerData extends Base {
   private Map<String, Integer> mapStringToCode;
   private Map<Integer, String> mapCodeToString;
   private Map<Integer, Character> mapCodeToChar;
+  private int [] missing; // missing data state representation
 
   @Override
   public void initAndValidate() {
@@ -74,6 +75,10 @@ public class FiniteIntegerData extends Base {
     mapCodeToStateSet = new int[mapCodeToString.size()][];
     for (int i = 0; i < stateCount; i++) {
       mapCodeToStateSet[i] = new int[] { i };
+    }
+    missing = new int[stateCount];
+    for (int i = 0; i < stateCount; i++) {
+    	missing[i] = i;
     }
     // Map the ambiguous character to all states
     int [] stateSetFull = new int[stateCount];
@@ -133,6 +138,14 @@ public class FiniteIntegerData extends Base {
       throw new IllegalArgumentException("Not a legal state: " + state);
     }
     return mapCodeToString.get(state);
+  }
+  
+  @Override
+  public int[] getStatesForCode(int code) {
+		if (code >= 0) {
+			return super.getStatesForCode(code);
+		}
+		return missing; 
   }
 
   /**
