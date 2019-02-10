@@ -45,20 +45,5 @@ public class FiniteIntegerDataTest extends TestCase {
     assertArrayEquals(expected1, datatype.getStatesForCode(1));
     assertArrayEquals(expected10, datatype.getStatesForCode(10));
     assertArrayEquals(expected12, datatype.getStatesForCode(12));
-
-    Sequence sequence = new Sequence();
-    sequence.init(13, "myTaxon", "5,6,16,17");
-    sequence.setID("mySequence");
-
-    Alignment alignment = new Alignment();
-    alignment.sequenceInput.setValue(sequence, alignment);
-    alignment.setID("myAlignment");
-    alignment.setInputValue("userDataType", datatype);
-    alignment.initAndValidate();
-
-    assertEquals(0, alignment.getPattern(0, 0));
-    assertEquals(1, alignment.getPattern(0, 1));
-    assertEquals(11, alignment.getPattern(0, 2));
-    assertEquals(12, alignment.getPattern(0, 3));
   }
 }
