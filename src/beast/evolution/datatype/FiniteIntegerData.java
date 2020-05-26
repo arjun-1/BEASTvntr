@@ -86,6 +86,8 @@ public class FiniteIntegerData extends Base {
       stateSetFull[i] = i;
     }
     mapCodeToStateSet[stateCount] = stateSetFull;
+    
+    codeLength = -1;
   }
 
   /**
@@ -125,6 +127,17 @@ public class FiniteIntegerData extends Base {
     return mapStringToCode.get(str);
   }
 
+  
+	@Override
+	public List<Integer> stringToEncoding(String data) throws IllegalArgumentException {
+		List<Integer> sequence = new ArrayList<>();
+		String [] strs = data.split(",");
+		for (String str : strs) {
+			sequence.add(Integer.parseInt(str.trim()));
+		}
+		return sequence;
+	}
+	
   /**
    * This implementation of getCode is defined such that string2state is its inverse,
    * as expected by FilteredAlignment.
@@ -167,5 +180,10 @@ public class FiniteIntegerData extends Base {
   @Override
   public String getTypeDescription() {
     return "finiteinteger";
+  }
+  
+  // @Override -- it does override method introduced in BEAST v2.6.3
+  public boolean hasConstantCodeLength() {
+  	return false;
   }
 }
