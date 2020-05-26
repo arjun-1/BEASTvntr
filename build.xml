@@ -16,7 +16,7 @@
   <property name="srcBeast2" location="${beast2path}/src" />
   <property name="beast2classpath" location="${beast2path}/build" />
   <property name="Add_on_dir" value="${release_dir}/add-on" />
-  <property name="version" value="0.1.3" />
+  <property name="version" value="0.1.4" />
 
     <import file="${beast2path}/build.xml" />
 
@@ -53,7 +53,7 @@
   </target>
 
   <!-- clean previous build, compile Java source code, and Junit test, and make the beast.jar and beauti.jar -->
-  <target name="build_jar_all_BEASTvntr" depends="cleanBEASTvntr,compile-allBEASTvntr,junitBEASTvntr,dist_all_BEASTvntr"
+  <target name="build_jar_all_BEASTvntr" depends="cleanBEASTvntr,compile-allBEASTvntr,dist_all_BEASTvntr"
         description="Clean and Build all run-time stuff">
   </target>
 
