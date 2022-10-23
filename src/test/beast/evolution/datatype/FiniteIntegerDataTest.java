@@ -3,10 +3,10 @@ package test.beast.evolution.datatype;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import beast.evolution.datatype.FiniteIntegerData;
-import beast.evolution.alignment.Sequence;
-import beast.evolution.alignment.Alignment;
-import junit.framework.TestCase;;
+import beast.base.evolution.alignment.Sequence;
+import beast.base.evolution.alignment.Alignment;
+import junit.framework.TestCase;
+import vntr.evolution.datatype.FiniteIntegerData;;
 
 public class FiniteIntegerDataTest extends TestCase {
   @Test

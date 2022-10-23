@@ -19,12 +19,15 @@
 * along with BEASTvntr.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package beast.evolution.substitutionmodel;
+package vntr.evolution.substitutionmodel;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.factory.DecompositionFactory;
 import org.ejml.ops.CommonOps;
 import org.ejml.ops.EigenOps;
+
+import beast.base.evolution.substitutionmodel.EigenDecomposition;
+import beast.base.evolution.substitutionmodel.EigenSystem;
 
 public class EJMLEigenSystem implements EigenSystem {
   private final int stateCount;

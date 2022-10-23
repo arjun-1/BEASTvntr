@@ -19,11 +19,11 @@
 * along with BEASTvntr.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package beast.evolution.datatype;
+package vntr.evolution.datatype;
 
-import beast.core.Description;
-import beast.evolution.datatype.DataType.Base;
-import beast.core.Input;
+import beast.base.core.Description;
+import beast.base.evolution.datatype.DataType.Base;
+import beast.base.core.Input;
 
 import java.util.HashMap;
 import java.util.List;

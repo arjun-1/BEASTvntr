@@ -1,11 +1,11 @@
 package test.beast.evolution.substmodel;
 
-import beast.core.Description;
-import beast.core.parameter.RealParameter;
-import beast.evolution.substitutionmodel.Frequencies;
-import beast.evolution.substitutionmodel.Sainudiin;
+import beast.base.core.Description;
+import beast.base.inference.parameter.RealParameter;
+import beast.base.evolution.substitutionmodel.Frequencies;
 import junit.framework.TestCase;
-import beast.evolution.substitutionmodel.EigenDecomposition;
+import vntr.evolution.substitutionmodel.Sainudiin;
+import beast.base.evolution.substitutionmodel.EigenDecomposition;
 
 
 @Description("Test Sainudiin matrix exponentiation")

@@ -1,3 +1,20 @@
-<package name='BEASTvntr' version='0.1.4'>
-  <depends on='beast2' atleast='2.6.3'/>
+<package name='BEASTvntr' version='0.2.0'>
+  <depends on='BEAST.base' atleast='2.7.1'/>
+  <depends on='BEAST.app' atleast='2.7.1'/>
+
+    <service type="beast.base.core.BEASTInterface">
+        <provider classname="vntr.evolution.datatype.FiniteIntegerData"/>
+        <provider classname="vntr.evolution.substitutionmodel.Sainudiin"/>
+        <provider classname="vntr.evolution.substitutionmodel.SainudiinComputedFrequencies"/>
+        <provider classname="vntr.evolution.substitutionmodel.SainudiinComputedFrequenciesVanilla"/>
+        <provider classname="vntr.evolution.substitutionmodel.SainudiinVanilla"/>
+    </service>
+
+    <service type="beast.base.evolution.datatype.DataType">
+        <provider classname="vntr.evolution.datatype.FiniteIntegerData"/>
+    </service>
+
+    <service type="beastfx.app.inputeditor.AlignmentImporter">
+        <provider classname="vntr.app.fileimporters.CSVImporter"/>
+    </service>
 </package>

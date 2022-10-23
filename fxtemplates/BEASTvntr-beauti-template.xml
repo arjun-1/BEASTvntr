@@ -1,11 +1,11 @@
 <beast version='2.0'
-     namespace='beast.app.beauti:beast.core:beast.evolution.branchratemodel:beast.evolution.speciation:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood:beast.evolution:beast.math.distributions'>
+     namespace='beast.app.beauti:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.branchratemodel:beast.base.evolution.speciation:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood:beast.evolution:beast.base.inference.distribution'>
      
   <mergewith point='substModelTemplates'>
 
-    <subtemplate id='Sainudiin' class='beast.evolution.substitutionmodel.Sainudiin' mainid='Sainudiin.s:$(n)'>
+    <subtemplate id='Sainudiin' class='vntr.evolution.substitutionmodel.Sainudiin' mainid='Sainudiin.s:$(n)'>
       <![CDATA[
-      <plugin spec='Sainudiin' id='Sainudiin.s:$(n)'>
+      <plugin spec='vntr.evolution.substitutionmodel.Sainudiin' id='Sainudiin.s:$(n)'>
         <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
         <parameter id="focalPoint.s:$(n)" name='focalPoint' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
         <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
@@ -22,16 +22,16 @@
       <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
       <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper="Infinity"/>
       </prior>
       <prior id='focalPointPrior.s:$(n)' x='@focalPoint.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='1.0' upper='15.0'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='1.0' upper='15.0'/>
       </prior>
       <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper='1'/>
       </prior>
       <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper="Infinity"/>
       </prior>
       ]]>
 
@@ -87,9 +87,9 @@
       </connect>
     </subtemplate>
 
-    <subtemplate id='SainudiinComputedFrequencies' class='beast.evolution.substitutionmodel.SainudiinComputedFrequencies' mainid='SainudiinComputedFrequencies.s:$(n)'>
+    <subtemplate id='SainudiinComputedFrequencies' class='vntr.evolution.substitutionmodel.SainudiinComputedFrequencies' mainid='SainudiinComputedFrequencies.s:$(n)'>
       <![CDATA[
-      <plugin spec='SainudiinComputedFrequencies' id='SainudiinComputedFrequencies.s:$(n)'>
+      <plugin spec='vntr.evolution.substitutionmodel.SainudiinComputedFrequencies' id='SainudiinComputedFrequencies.s:$(n)'>
         <parameter id="biasMagnitude.s:$(n)" name='biasMagnitude' value='0.0' estimate='true' lower='0.0'/>
         <parameter id="focalPoint.s:$(n)" name='focalPoint' value='1.0' lower='1.0' upper='15.0' estimate='true'/>
         <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
@@ -101,16 +101,16 @@
       <plugin id='oneOnA1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@oneOnA1.s:$(n)"/>
 
       <prior id='biasMagnitudePrior.s:$(n)' x='@biasMagnitude.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper="Infinity"/>
       </prior>
       <prior id='focalPointPrior.s:$(n)' x='@focalPoint.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='1.0' upper='15.0'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='1.0' upper='15.0'/>
       </prior>
       <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper='1'/>
       </prior>
       <prior id='oneOnA1Prior.s:$(n)' x='@oneOnA1.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper="Infinity"/>
       </prior>
       ]]>
 
@@ -159,9 +159,9 @@
       </connect>
     </subtemplate>
 
-    <subtemplate id='SainudiinVanilla' class='beast.evolution.substitutionmodel.SainudiinVanilla' mainid='SainudiinVanilla.s:$(n)'>
+    <subtemplate id='SainudiinVanilla' class='vntr.evolution.substitutionmodel.SainudiinVanilla' mainid='SainudiinVanilla.s:$(n)'>
       <![CDATA[
-      <plugin spec='SainudiinVanilla' id='SainudiinVanilla.s:$(n)'>
+      <plugin spec='vntr.evolution.substitutionmodel.SainudiinVanilla' id='SainudiinVanilla.s:$(n)'>
         <parameter id="b0.s:$(n)" name='b0' value='1.0' estimate='true'/>
         <parameter id="b1.s:$(n)" name='b1' value='1.0' estimate='true'/>
         <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
@@ -178,16 +178,16 @@
       <plugin id='FrequenciesExchanger.s:$(n)' spec='DeltaExchangeOperator' delta="0.01" weight="0.1" parameter="@freqParameter.s:$(n)"/>
 
       <prior id='b0Prior.s:$(n)' x='@b0.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='-Infinity' upper="Infinity"/>
       </prior>
       <prior id='b1Prior.s:$(n)' x='@b1.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper='Infinity'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='-Infinity' upper='Infinity'/>
       </prior>
       <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper='1'/>
       </prior>
       <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper="Infinity"/>
       </prior>
       ]]>
 
@@ -243,9 +243,9 @@
       </connect>
     </subtemplate>
 
-    <subtemplate id='SainudiinComputedFrequenciesVanilla' class='beast.evolution.substitutionmodel.SainudiinComputedFrequenciesVanilla' mainid='SainudiinComputedFrequenciesVanilla.s:$(n)'>
+    <subtemplate id='SainudiinComputedFrequenciesVanilla' class='vntr.evolution.substitutionmodel.SainudiinComputedFrequenciesVanilla' mainid='SainudiinComputedFrequenciesVanilla.s:$(n)'>
       <![CDATA[
-      <plugin spec='SainudiinComputedFrequenciesVanilla' id='SainudiinComputedFrequenciesVanilla.s:$(n)'>
+      <plugin spec='vntr.evolution.substitutionmodel.SainudiinComputedFrequenciesVanilla' id='SainudiinComputedFrequenciesVanilla.s:$(n)'>
         <parameter id="b0.s:$(n)" name='b0' value='1.0' estimate='true'/>
         <parameter id="b1.s:$(n)" name='b1' value='1.0' estimate='true'/>
         <parameter id="g.s:$(n)" name='g' value='0.0' lower='0.0' upper='1.0' estimate='true'/>
@@ -257,16 +257,16 @@
       <plugin id='a1Walker.s:$(n)' spec='RealRandomWalkOperator' windowSize="0.01" weight="0.1" parameter="@a1.s:$(n)"/>
 
       <prior id='b0Prior.s:$(n)' x='@b0.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='-Infinity' upper="Infinity"/>
       </prior>
       <prior id='b1Prior.s:$(n)' x='@b1.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='-Infinity' upper='Infinity'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='-Infinity' upper='Infinity'/>
       </prior>
       <prior id='gPrior.s:$(n)' x='@g.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper='1'/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper='1'/>
       </prior>
       <prior id='a1Prior.s:$(n)' x='@a1.s:$(n)'>
-        <distr spec="beast.math.distributions.Uniform" lower='0' upper="Infinity"/>
+        <distr spec="beast.base.inference.distribution.Uniform" lower='0' upper="Infinity"/>
       </prior>
       ]]>
 

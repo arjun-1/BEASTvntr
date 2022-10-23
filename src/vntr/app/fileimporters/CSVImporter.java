@@ -20,7 +20,7 @@
 * along with BEASTvntr.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package beast.app.fileimporters;
+package vntr.app.fileimporters;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,16 +29,28 @@ import java.io.IOException;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.ArrayList;
 
-import javax.swing.*;
+//import javax.swing.*;
 
-import beast.core.BEASTInterface;
-import beast.app.beauti.AlignmentImporter;
-
-import beast.evolution.datatype.FiniteIntegerData;
-import beast.evolution.alignment.Alignment;
-import beast.evolution.alignment.Sequence;
+import beast.base.core.BEASTInterface;
+import beastfx.app.beauti.ThemeProvider;
+import beastfx.app.inputeditor.AlignmentImporter;
+import beastfx.app.util.Alert;
+import beastfx.app.util.FXUtils;
+import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.VBox;
+import vntr.evolution.datatype.FiniteIntegerData;
+import beast.base.evolution.alignment.Alignment;
+import beast.base.evolution.alignment.Sequence;
 
 public class CSVImporter implements AlignmentImporter {
   
@@ -86,7 +98,8 @@ public class CSVImporter implements AlignmentImporter {
 
       String[] taxonData = line.split(",");
       if(nrOfTaxa > 0 && nrOfLoci != taxonData.length - 1) {
-        throw new IllegalArgumentException("Wrong number of loci at line " + lineNumber + ". Expected: " + nrOfLoci + ", got: " + (taxonData.length - 1));
+    	  fin.close();
+    	  throw new IllegalArgumentException("Wrong number of loci at line " + lineNumber + ". Expected: " + nrOfLoci + ", got: " + (taxonData.length - 1));
       }
       nrOfLoci = taxonData.length - 1;
       taxaData.add(taxonData);
@@ -106,52 +119,70 @@ public class CSVImporter implements AlignmentImporter {
   public List<BEASTInterface> loadFile(File file) {
     // Ask the user for parsing options
     int minRepeat = -1, maxRepeat = -1;
-    JPanel myPanel = new JPanel();
-    myPanel.add(new JLabel("Parse as:"));
-    JComboBox<ParseOption> comboBox = new JComboBox<>(ParseOption.values());
-    myPanel.add(comboBox);
-    JCheckBox hasHeader = new JCheckBox("Skip header");
-    myPanel.add(hasHeader);
+    VBox myPanel = FXUtils.newVBox();
+    myPanel.getChildren().add(new Label("Parse as:"));
+    ComboBox<ParseOption> comboBox = new ComboBox<>();
+    for (ParseOption po : ParseOption.values()) {
+    	comboBox.getItems().add(po);
+    }
+    myPanel.getChildren().add(comboBox);
+    CheckBox hasHeader = new CheckBox("Skip header");
+    myPanel.getChildren().add(hasHeader);
 
-    int result = JOptionPane.showConfirmDialog(null, myPanel,
-             "Choose parsing method", JOptionPane.OK_CANCEL_OPTION);
-    switch (result) {
-      case JOptionPane.OK_OPTION:
-        break;
-      case JOptionPane.OK_CANCEL_OPTION:
-      default:
+	Dialog dlg = new Dialog();
+	dlg.getDialogPane().getChildren().add(myPanel);
+	dlg.getDialogPane().getButtonTypes().addAll(Alert.OK_CANCEL_OPTION);
+	dlg.setResizable(true);
+	Scene node = dlg.getDialogPane().getScene();
+	dlg.setX(node.getX() + node.getWidth()/2);
+	dlg.setY(node.getY() + node.getHeight()/2);
+	ThemeProvider.loadStyleSheet(dlg.getDialogPane().getScene());
+	Optional result = dlg.showAndWait();
+
+	if (result.toString().toLowerCase().contains("cancel")) { 
         // User clicked cancel
         return new ArrayList<>();
     }
-    ParseOption parseOption = (ParseOption) comboBox.getSelectedItem();
+	
+    ParseOption parseOption = (ParseOption) comboBox.getSelectionModel().getSelectedItem();
     switch (parseOption) {
       case REPEATS_HOMOGEN:
       case REPEATS_INHOMOGEN:
-        JTextField minRepeatField = new JTextField(5);
-        JTextField maxRepeatField = new JTextField(5);
-        myPanel = new JPanel();
-        myPanel.setLayout(new BoxLayout(myPanel, BoxLayout.PAGE_AXIS));
-        myPanel.add(new JLabel("<html>Choose the Minimum and Maximum repeat<br>(Maximum repeat - Minimum repeat >= 0 must hold)</html>"));
-        myPanel.add(new JLabel("Minimum repeat ( >= 0 ):"));
-        myPanel.add(minRepeatField);
-        myPanel.add(new JLabel("Maximum repeat:"));
-        myPanel.add(maxRepeatField);
+        TextField minRepeatField = new TextField();
+        minRepeatField.setPrefColumnCount(5);
+        TextField maxRepeatField = new TextField();
+        maxRepeatField.setPrefColumnCount(5);
+        myPanel = FXUtils.newVBox();
+        myPanel.getChildren().add(new Label("Choose the Minimum and Maximum repeat\n(Maximum repeat - Minimum repeat >= 0 must hold)"));
+        myPanel.getChildren().add(new Label("Minimum repeat ( >= 0 ):"));
+        myPanel.getChildren().add(minRepeatField);
+        myPanel.getChildren().add(new Label("Maximum repeat:"));
+        myPanel.getChildren().add(maxRepeatField);
 
-        result = JOptionPane.showConfirmDialog(null, myPanel,
-                 "Please Enter Minimum and Maximum Repeat", JOptionPane.OK_CANCEL_OPTION);
-        while (result == JOptionPane.OK_OPTION) {
+
+    	Dialog dlg2 = new Dialog();
+    	dlg2.getDialogPane().getChildren().add(myPanel);
+    	dlg2.getDialogPane().getButtonTypes().addAll(Alert.OK_CANCEL_OPTION);
+    	dlg2.setHeaderText("Please Enter Minimum and Maximum Repeat");
+    	dlg2.setResizable(true);
+    	Scene node2 = dlg2.getDialogPane().getScene();
+    	dlg2.setX(node2.getX() + node.getWidth()/2);
+    	dlg2.setY(node2.getY() + node.getHeight()/2);
+    	ThemeProvider.loadStyleSheet(dlg.getDialogPane().getScene());
+    	Optional result2 = dlg.showAndWait();
+
+        while (result2.toString().toLowerCase().contains("ok")) {
           try {
             minRepeat = Integer.parseInt(minRepeatField.getText());
             maxRepeat = Integer.parseInt(maxRepeatField.getText());
             break;
           } catch (NumberFormatException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Not an integer: " + e.getMessage());
-            result = JOptionPane.showConfirmDialog(null, myPanel,
-                    "Please Enter Minimum and Maximum Repeat", JOptionPane.OK_CANCEL_OPTION);
+            Alert.showMessageDialog(null, "Not an integer: " + e.getMessage());
+            result2 =  dlg.showAndWait();
           }
         }
-        if (result != JOptionPane.OK_OPTION) {
+        if (!result2.toString().toLowerCase().contains("ok")) {
           // User clicked cancel
           return new ArrayList<>();
         }
@@ -239,7 +270,7 @@ public class CSVImporter implements AlignmentImporter {
       return alignmentList;
     } catch (Exception e) {
       e.printStackTrace();
-      JOptionPane.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
+      Alert.showMessageDialog(null, "Loading of " + file.getName() + " failed: " + e.getMessage());
       return alignmentList;
     }
   }

@@ -24,19 +24,21 @@
 * Boston, MA  02110-1301  USA
 */
 
-package beast.evolution.substitutionmodel;
+package vntr.evolution.substitutionmodel;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
-import beast.evolution.datatype.DataType;
-import beast.evolution.datatype.FiniteIntegerData;
-import beast.evolution.sitemodel.SiteModel;
-import beast.evolution.likelihood.ThreadedTreeLikelihood;
-import beast.evolution.tree.Node;
-import beast.core.util.Log;
+
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
+import vntr.evolution.datatype.FiniteIntegerData;
+import beast.base.evolution.datatype.DataType;
+import beast.base.evolution.sitemodel.SiteModel;
+import beast.base.evolution.substitutionmodel.*;
+import beast.base.evolution.likelihood.ThreadedTreeLikelihood;
+import beast.base.evolution.tree.Node;
+import beast.base.core.Log;
 
 @Description(
   "Substitution model of Sainudiin (R. Sainudiin et al., 2004) using\n" +

@@ -19,13 +19,13 @@
 * along with BEASTvntr.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package beast.evolution.substitutionmodel;
+package vntr.evolution.substitutionmodel;
 
-import beast.core.Citation;
-import beast.core.Description;
-import beast.core.Input;
-import beast.core.Input.Validate;
-import beast.core.parameter.RealParameter;
+import beast.base.core.Citation;
+import beast.base.core.Description;
+import beast.base.core.Input;
+import beast.base.core.Input.Validate;
+import beast.base.inference.parameter.RealParameter;
 
 @Description(
   "Substitution model of Sainudiin (R. Sainudiin et al., 2004) using\n" +
