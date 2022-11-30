@@ -43,8 +43,10 @@
            if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
       <connect srcID='oneOnA1.s:$(n)' targetID='state' inputName='stateNode'
            if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+           <!--
       <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
            if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+           -->
 
       <connect srcID='biasMagnitudeWalker.s:$(n)' targetID='mcmc' inputName='operator'
            if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
@@ -57,11 +59,13 @@
       <connect srcID='oneOnA1Walker.s:$(n)' targetID='mcmc' inputName='operator'
            if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'>
       </connect>
+      <!-->
       <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
            if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
         Exchange values of frequencies of partition s:$(n)
       </connect>
-
+	 -->
+	 
       <connect srcID='biasMagnitude.s:$(n)' targetID='tracelog' inputName='log'
            if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'/>
       <connect srcID='focalPoint.s:$(n)' targetID='tracelog' inputName='log'
@@ -70,8 +74,10 @@
            if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
       <connect srcID='oneOnA1.s:$(n)' targetID='tracelog' inputName='log'
            if='inlikelihood(oneOnA1.s:$(n)) and oneOnA1.s:$(n)/estimate=true'/>
+      <!--
       <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
            if='inlikelihood(Sainudiin.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+      -->
 
       <connect srcID='biasMagnitudePrior.s:$(n)' targetID='prior' inputName='distribution'
            if='inlikelihood(biasMagnitude.s:$(n)) and biasMagnitude.s:$(n)/estimate=true'>
@@ -199,8 +205,10 @@
            if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/>         
       <connect srcID='a1.s:$(n)' targetID='state' inputName='stateNode'
            if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+    <!--
       <connect srcID='freqParameter.s:$(n)' targetID='state' inputName='stateNode'
            if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+    -->
 
       <connect srcID='b0Walker.s:$(n)' targetID='mcmc' inputName='operator'
            if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>
@@ -213,10 +221,12 @@
       <connect srcID='a1Walker.s:$(n)' targetID='mcmc' inputName='operator'
            if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'>
       </connect>
+      <!--
       <connect srcID='FrequenciesExchanger.s:$(n)' targetID='mcmc' inputName='operator'
            if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'>
         Exchange values of frequencies of partition s:$(n)
       </connect>
+      -->
 
       <connect srcID='b0.s:$(n)' targetID='tracelog' inputName='log'
            if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'/>
@@ -226,8 +236,10 @@
            if='inlikelihood(g.s:$(n)) and g.s:$(n)/estimate=true'/> 
       <connect srcID='a1.s:$(n)' targetID='tracelog' inputName='log'
            if='inlikelihood(a1.s:$(n)) and a1.s:$(n)/estimate=true'/>
+           <!--
       <connect srcID='freqParameter.s:$(n)' targetID='tracelog' inputName='log'
            if='inlikelihood(SainudiinVanilla.$(n)) and inlikelihood(freqParameter.s:$(n)) and freqParameter.s:$(n)/estimate=true'/>
+           -->
 
       <connect srcID='b0Prior.s:$(n)' targetID='prior' inputName='distribution'
            if='inlikelihood(b0.s:$(n)) and b0.s:$(n)/estimate=true'>

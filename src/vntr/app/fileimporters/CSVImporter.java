@@ -39,14 +39,14 @@ import beastfx.app.beauti.ThemeProvider;
 import beastfx.app.inputeditor.AlignmentImporter;
 import beastfx.app.util.Alert;
 import beastfx.app.util.FXUtils;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import vntr.evolution.datatype.FiniteIntegerData;
 import beast.base.evolution.alignment.Alignment;
@@ -119,18 +119,24 @@ public class CSVImporter implements AlignmentImporter {
   public List<BEASTInterface> loadFile(File file) {
     // Ask the user for parsing options
     int minRepeat = -1, maxRepeat = -1;
-    VBox myPanel = FXUtils.newVBox();
-    myPanel.getChildren().add(new Label("Parse as:"));
+    HBox myPanel0 = FXUtils.newHBox();
+    Label label = new Label("Parse as:");
+    myPanel0.getChildren().add(label);
+    label.setPadding(new Insets(5));
     ComboBox<ParseOption> comboBox = new ComboBox<>();
     for (ParseOption po : ParseOption.values()) {
     	comboBox.getItems().add(po);
     }
-    myPanel.getChildren().add(comboBox);
+    comboBox.setMinWidth(200);
+    comboBox.getSelectionModel().select(0);
+    myPanel0.getChildren().add(comboBox);
     CheckBox hasHeader = new CheckBox("Skip header");
-    myPanel.getChildren().add(hasHeader);
+    hasHeader.setMinWidth(200);
+    hasHeader.setPadding(new Insets(5));
+    myPanel0.getChildren().add(hasHeader);
 
 	Dialog dlg = new Dialog();
-	dlg.getDialogPane().getChildren().add(myPanel);
+	dlg.getDialogPane().setContent(myPanel0);
 	dlg.getDialogPane().getButtonTypes().addAll(Alert.OK_CANCEL_OPTION);
 	dlg.setResizable(true);
 	Scene node = dlg.getDialogPane().getScene();
@@ -152,7 +158,7 @@ public class CSVImporter implements AlignmentImporter {
         minRepeatField.setPrefColumnCount(5);
         TextField maxRepeatField = new TextField();
         maxRepeatField.setPrefColumnCount(5);
-        myPanel = FXUtils.newVBox();
+        VBox myPanel = FXUtils.newVBox();
         myPanel.getChildren().add(new Label("Choose the Minimum and Maximum repeat\n(Maximum repeat - Minimum repeat >= 0 must hold)"));
         myPanel.getChildren().add(new Label("Minimum repeat ( >= 0 ):"));
         myPanel.getChildren().add(minRepeatField);
@@ -161,7 +167,7 @@ public class CSVImporter implements AlignmentImporter {
 
 
     	Dialog dlg2 = new Dialog();
-    	dlg2.getDialogPane().getChildren().add(myPanel);
+    	dlg2.getDialogPane().setContent(myPanel);
     	dlg2.getDialogPane().getButtonTypes().addAll(Alert.OK_CANCEL_OPTION);
     	dlg2.setHeaderText("Please Enter Minimum and Maximum Repeat");
     	dlg2.setResizable(true);
@@ -169,7 +175,7 @@ public class CSVImporter implements AlignmentImporter {
     	dlg2.setX(node2.getX() + node.getWidth()/2);
     	dlg2.setY(node2.getY() + node.getHeight()/2);
     	ThemeProvider.loadStyleSheet(dlg.getDialogPane().getScene());
-    	Optional result2 = dlg.showAndWait();
+    	Optional result2 = dlg2.showAndWait();
 
         while (result2.toString().toLowerCase().contains("ok")) {
           try {
